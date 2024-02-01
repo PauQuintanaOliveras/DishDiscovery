@@ -40,8 +40,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LoginPage() {
     val username = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val confirmPassword = remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -69,27 +69,26 @@ fun LoginPage() {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = password.value,
-            onValueChange = { password.value = it },
-            label = { Text("Nova Contrasenya") },
-            visualTransformation = PasswordVisualTransformation(),
+            value = email.value,
+            onValueChange = { email.value = it },
+            label = { Text("Correu Electrònic") },
             singleLine = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = confirmPassword.value,
-            onValueChange = { confirmPassword.value = it },
-            label = { Text("Repeteix la Contrasenya") },
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
+            value = password.value,
+            onValueChange = { password.value = it },
+            label = { Text("Contrasenya") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {}) {
-            Text("Confirmar")
+            Text("Registrar-se")
         }
     }
 }
