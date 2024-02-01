@@ -12,13 +12,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,15 +38,18 @@ class DishCard {
     @OptIn(ExperimentalMaterial3Api::class)
     @Preview
     @Composable
-    fun BasicCardPreview() {
-        val tag = "test!"
+    fun BasicCardPreview(
+        tag: String = "none",
+        dishDescription: String = "none",
+        dishImage: Int = R.drawable.ic_launcher_background
+    ) {
         ElevatedCard(
             modifier = Modifier
                 .width(300.dp)
                 .height(150.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             //placeholder for card color
-            colors = CardDefaults.elevatedCardColors(containerColor = Color(0xFFFDF1EB)),
+            colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 20.dp),
             // Experimental Shit remove if Shit Breaks :3
             onClick = { /*TODO*/ },
@@ -60,8 +63,7 @@ class DishCard {
                         .weight(1f)
                 ) {
                     //placeholder for dish image
-                    CardImagePreview()
-
+                    CardImagePreview(dishImage)
                     //placeholder for favorite icon
                     Icon(
                         modifier = Modifier
@@ -69,7 +71,7 @@ class DishCard {
                             .padding(6.dp, 6.dp, 0.dp, 0.dp),
                         imageVector = Icons.Outlined.Favorite,
                         contentDescription = "Favorite",
-                        tint = Color(0xFFFFB77F),
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
@@ -80,8 +82,8 @@ class DishCard {
                         onClick = { /*TODO*/ },
                         //placeholder for tag colors
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFFB77F),
-                            contentColor = Color(0xFF4E2600),
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
                         ),
                         shape = RoundedCornerShape(30.dp, 20.dp, 0.dp, 30.dp),
 
@@ -91,7 +93,7 @@ class DishCard {
                     Text(
                         modifier = Modifier
                             .fillMaxSize(),
-                        text = "Lorem ipsum ibulum neque metustis metus. Integer eleifend, ipsum ulvinar condimentum, ipsum. Cras auctor nibh nisl, molestie.",
+                        text = dishDescription,
                         style = TextStyle(
                             fontSize = 12.sp,
                             lineHeight = 16.sp,
@@ -108,14 +110,14 @@ class DishCard {
     }
 
     @Composable
-    fun CardImagePreview() {
-        Image(
+    fun CardImagePreview(dishImage: Int) {
+        return Image(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFFDF1EB))
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .clip(RoundedCornerShape(0.dp, 10.dp, 10.dp, 0.dp)),
             //placeholder for dish image
-            painter = painterResource(id = R.drawable.ic_launcher_background),
+            painter = painterResource(id = dishImage),
             contentDescription = "Dish Image",
         )
     }
