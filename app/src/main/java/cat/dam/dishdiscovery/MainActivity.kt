@@ -27,6 +27,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
 
 
@@ -34,11 +37,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
+
             DishDiscoveryTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    SignIn()
+                    NavHost(navController, startDestination = "login_screen") {
+                        composable("login_screen") { LoginScreen(navController) }
+                        composable("sign_in_screen") { SignIn() }
+                    }
                 }
                 DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
             }
@@ -154,6 +162,6 @@ fun LoginScreen(navController: NavController) {
 
         Text(
             text = "Registrar-se",
-            modifier = Modifier.clickable { navController.navigate("register") })
+            modifier = Modifier.clickable { navController.navigate("sign_in_screen") })
     }
 }
