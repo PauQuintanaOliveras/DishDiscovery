@@ -2,14 +2,12 @@ package cat.dam.dishdiscovery
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 class preferits {
+
 }
 
 
@@ -52,13 +51,18 @@ fun ScaffoldWithTopBarAndButtonBar() {
             )
         },
         content = {
+
             Image(
                 painter = painterResource(id = R.drawable.fondo),
                 contentDescription = "Background",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
+
+            DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+
         },
+
         bottomBar = {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
