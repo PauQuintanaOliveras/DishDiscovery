@@ -102,17 +102,6 @@ fun SignIn() {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
 @Composable
 fun LoginScreen(navController: NavController) {
     val username = remember { mutableStateOf(TextFieldValue()) }
@@ -163,6 +152,8 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Registrar-se", modifier = Modifier.clickable { navController.navigate("register") })
+        Text(
+            text = "Registrar-se",
+            modifier = Modifier.clickable { navController.navigate("register") })
     }
 }
