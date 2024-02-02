@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    LoginPage()
+                    SignIn()
                 }
                 DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
             }
@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginPage() {
+fun SignIn() {
     val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -102,6 +102,6 @@ fun LoginPage() {
 @Composable
 fun LoginPagePreview() {
     DishDiscoveryTheme {
-        LoginPage()
+        SignIn()
     }
 }
