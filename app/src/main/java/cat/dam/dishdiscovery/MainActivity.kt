@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     LoginPage()
                 }
-                DishCard().BasicCardPreview()
+                DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
             }
         }
     }
