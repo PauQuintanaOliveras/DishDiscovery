@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginPage()
+                    SignIn()
                 }
             }
         }
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginPage() {
+fun SignIn() {
     val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -97,6 +97,6 @@ fun LoginPage() {
 @Composable
 fun LoginPagePreview() {
     DishDiscoveryTheme {
-        LoginPage()
+        SignIn()
     }
 }
