@@ -53,7 +53,6 @@ class MainActivity : ComponentActivity() {
                         composable("recover_password_screen") { RecoverPassword() }
                     }
                 }
-                DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
             }
         }
     }
@@ -213,22 +212,16 @@ fun SignIn() {
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
-fun PreviewMainActivity() {
+fun PreviewLoginScreen() {
+    val navController = rememberNavController()
     DishDiscoveryTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column {
-                SignIn()
-                Spacer(modifier = Modifier.height(16.dp))
-                DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
-            }
-        }
+        LoginScreen(navController)
     }
 }
+
+
 
 
 
