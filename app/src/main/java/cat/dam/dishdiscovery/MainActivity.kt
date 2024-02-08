@@ -12,14 +12,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -54,6 +57,62 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@Composable
+fun LoginScreen(navController: NavController) {
+    val username = remember { mutableStateOf(TextFieldValue()) }
+    val password = remember { mutableStateOf(TextFieldValue()) }
+    val logo = painterResource(id = R.drawable.logo)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = logo,
+            contentDescription = "Logo",
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = username.value,
+            onValueChange = { username.value = it },
+            label = { Text("Usuari") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = password.value,
+            onValueChange = { password.value = it },
+            label = { Text("Contrasenya") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "Has oblidat la contrasenya?")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { }) {
+            Text("Accedir")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Registrar-se",
+            modifier = Modifier.clickable { navController.navigate("sign_in_screen") })
+    }
+}
+
 
 @Composable
 fun UserInterface() {
@@ -69,7 +128,7 @@ fun UserInterface() {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo",
-            modifier = Modifier.size(200.dp) 
+            modifier = Modifier.size(200.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
@@ -94,6 +153,8 @@ fun UserInterface() {
             Text("Confirmar")
         }
     }
+}
+@Composable
 fun SignIn() {
     val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
@@ -164,5 +225,6 @@ fun PreviewMainActivity() {
         }
     }
 }
+
 
 
