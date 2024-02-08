@@ -82,17 +82,17 @@ fun LoginScreen(navController: NavController) {
             value = username.value,
             onValueChange = { username.value = it },
             label = { Text("Usuari") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = password.value,
             onValueChange = { password.value = it },
             label = { Text("Contrasenya") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
