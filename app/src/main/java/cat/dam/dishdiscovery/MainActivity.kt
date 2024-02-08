@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -22,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +38,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -50,9 +54,9 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController, startDestination = "login_screen") {
                         composable("login_screen") { LoginScreen(navController) }
                         composable("sign_in_screen") { SignIn() }
+                        composable("recover_password_screen") { RecoverPassword() }
                     }
                 }
-                DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
             }
         }
     }
@@ -62,6 +66,13 @@ fun LoginScreen(navController: NavController) {
     val username = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
     val logo = painterResource(id = R.drawable.logo)
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    fun isValidInput(input: String): Boolean {
+        val pattern = Regex("^[a-zA-Z0-9_]*$")
+        return pattern.matches(input)
+    }
 
     Column(
         modifier = Modifier
@@ -97,11 +108,23 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Has oblidat la contrasenya?")
+        Text(
+            text = "Has oblidat la contrasenya?",
+            modifier = Modifier.clickable { navController.navigate("recover_password_screen") }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { }) {
+        Button(onClick = {
+            if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
+                // Muestra un mensaje de error
+                scope.launch {
+                    snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
+                }
+            } else {
+                // Continúa amb l' inici de sessio
+            }
+        }) {
             Text("Accedir")
         }
 
@@ -111,14 +134,22 @@ fun LoginScreen(navController: NavController) {
             text = "Registrar-se",
             modifier = Modifier.clickable { navController.navigate("sign_in_screen") })
     }
+    SnackbarHost(hostState = snackbarHostState)
 }
 
 
 @Composable
-fun UserInterface() {
+fun RecoverPassword() {
     var username by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    fun isValidInput(input: String): Boolean {
+        val pattern = Regex("^[a-zA-Z0-9_]*$")
+        return pattern.matches(input)
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -134,31 +165,52 @@ fun UserInterface() {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Nom d'Usuari") }
+            label = { Text("Nom d'Usuari") },
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = newPassword,
             onValueChange = { newPassword = it },
-            label = { Text("Nova Contrasenya") }
+            label = { Text("Nova Contrasenya") },
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = repeatPassword,
             onValueChange = { repeatPassword = it },
-            label = { Text("Repeteix la Contrasenya") }
+            label = { Text("Repeteix la Contrasenya") },
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { /* Aquí va la lógica de confirmació */ }) {
+        Button(onClick = {
+            if (!isValidInput(username) || !isValidInput(newPassword) || !isValidInput(repeatPassword)) {
+                //Posa un missatge d'error
+                scope.launch {
+                    snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
+                }
+            } else {
+                // Aquí va la lógica de confirmació
+            }
+        }) {
             Text("Confirmar")
         }
     }
+    SnackbarHost(hostState = snackbarHostState)
 }
+
 @Composable
 fun SignIn() {
-    val username = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+    val username = remember { mutableStateOf(TextFieldValue()) }
+    val email = remember { mutableStateOf(TextFieldValue()) }
+    val password = remember { mutableStateOf(TextFieldValue()) }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    fun isValidInput(input: String): Boolean {
+        val pattern = Regex("^[a-zA-Z0-9_]*$")
+        return pattern.matches(input)
+    }
 
     Column(
         modifier = Modifier
@@ -204,27 +256,31 @@ fun SignIn() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {}) {
+        Button(onClick = {
+            if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
+                // Muestra un mensaje de error
+                scope.launch {
+                    snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
+                }
+            } else {
+                // Continúa amb l' inici de sessio
+            }
+        }) {
             Text("Registrar-se")
         }
     }
+    SnackbarHost(hostState = snackbarHostState)
 }
-
 @Preview(showBackground = true)
 @Composable
-fun PreviewMainActivity() {
+fun PreviewLoginScreen() {
+    val navController = rememberNavController()
     DishDiscoveryTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column {
-                SignIn()
-                Spacer(modifier = Modifier.height(16.dp))
-                DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
-            }
-        }
+        LoginScreen(navController)
     }
 }
+
+
 
 
 
