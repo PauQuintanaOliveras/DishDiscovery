@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController, startDestination = "login_screen") {
                         composable("login_screen") { LoginScreen(navController) }
                         composable("sign_in_screen") { SignIn() }
+                        composable("recover_password_screen") { RecoverPassword() }
                     }
                 }
                 DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
@@ -97,7 +98,10 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Has oblidat la contrasenya?")
+        Text(
+            text = "Has oblidat la contrasenya?",
+            modifier = Modifier.clickable { navController.navigate("recover_password_screen") }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -115,7 +119,7 @@ fun LoginScreen(navController: NavController) {
 
 
 @Composable
-fun UserInterface() {
+fun RecoverPassword() {
     var username by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
