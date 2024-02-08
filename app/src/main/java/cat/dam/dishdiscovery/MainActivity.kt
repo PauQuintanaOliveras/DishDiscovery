@@ -93,17 +93,17 @@ fun LoginScreen(navController: NavController) {
             value = username.value,
             onValueChange = { username.value = it },
             label = { Text("Usuari") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = password.value,
             onValueChange = { password.value = it },
             label = { Text("Contrasenya") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -143,6 +143,13 @@ fun RecoverPassword() {
     var username by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    fun isValidInput(input: String): Boolean {
+        val pattern = Regex("^[a-zA-Z0-9_]*$")
+        return pattern.matches(input)
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -158,26 +165,40 @@ fun RecoverPassword() {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Nom d'Usuari") }
+            label = { Text("Nom d'Usuari") },
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = newPassword,
             onValueChange = { newPassword = it },
-            label = { Text("Nova Contrasenya") }
+            label = { Text("Nova Contrasenya") },
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = repeatPassword,
             onValueChange = { repeatPassword = it },
-            label = { Text("Repeteix la Contrasenya") }
+            label = { Text("Repeteix la Contrasenya") },
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { /* Aquí va la lógica de confirmació */ }) {
+        Button(onClick = {
+            if (!isValidInput(username) || !isValidInput(newPassword) || !isValidInput(repeatPassword)) {
+                //Posa un missatge d'error
+                scope.launch {
+                    snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
+                }
+            } else {
+                // Aquí va la lógica de confirmació
+            }
+        }) {
             Text("Confirmar")
         }
     }
+    SnackbarHost(hostState = snackbarHostState)
 }
+
 @Composable
 fun SignIn() {
     val username = remember { mutableStateOf(TextFieldValue()) }
