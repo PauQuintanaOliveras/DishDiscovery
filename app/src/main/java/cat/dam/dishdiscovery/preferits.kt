@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,12 +35,15 @@ class preferits {
 }
 
 
-
-
+val descripcioSandvitx="Tros de pa obert per la meitat o dues llesques de pa amb embotit, formatge o un altre menjar a dins"
+val decripcioSopar="Plat típic de la cuina japonesa que consisteix en una sopa feta amb brou de carn o verdures i salsa de soja al que s'afegeixen uns fideus llargs"
+val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, més gruixut que el fideu."
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScaffoldWithTopBarAndButtonBar() {
+fun ScaffoldWithTopBarAndButtonBar()
+
+{
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,19 +73,19 @@ fun ScaffoldWithTopBarAndButtonBar() {
                         .padding(30.dp)
                 ) {
                     item {
-                        DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                        DishCard().BasicCardPreview("Sandvitx", descripcioSandvitx, R.drawable.sandwich)
                     }
                     item {
                         Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
                     }
                     item {
-                        DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                        DishCard().BasicCardPreview("Sopar", decripcioSopar, R.drawable.sopa)
                     }
                     item {
                         Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
                     }
                     item {
-                        DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                        DishCard().BasicCardPreview("Pasta", descripcioPasta, R.drawable.pasta)
                     }
 
                 }
