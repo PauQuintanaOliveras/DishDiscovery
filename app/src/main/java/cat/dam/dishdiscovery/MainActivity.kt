@@ -56,6 +56,44 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun UserInterface() {
+    var username by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
+    var repeatPassword by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo",
+            modifier = Modifier.size(200.dp) 
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Nom d'Usuari") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = newPassword,
+            onValueChange = { newPassword = it },
+            label = { Text("Nova Contrasenya") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = repeatPassword,
+            onValueChange = { repeatPassword = it },
+            label = { Text("Repeteix la Contrasenya") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { /* Aquí va la lógica de confirmació */ }) {
+            Text("Confirmar")
+        }
+    }
 fun SignIn() {
     val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
@@ -111,61 +149,6 @@ fun SignIn() {
     }
 }
 
-@Composable
-fun LoginScreen(navController: NavController) {
-    val username = remember { mutableStateOf(TextFieldValue()) }
-    val password = remember { mutableStateOf(TextFieldValue()) }
-    val logo = painterResource(id = R.drawable.logo)
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = logo,
-            contentDescription = "Logo",
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
-            value = username.value,
-            onValueChange = { username.value = it },
-            label = { Text("Usuari") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
-            value = password.value,
-            onValueChange = { password.value = it },
-            label = { Text("Contrasenya") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Has oblidat la contrasenya?")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { }) {
-            Text("Accedir")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Registrar-se",
-            modifier = Modifier.clickable { navController.navigate("sign_in_screen") })
-    }
-}
 @Preview(showBackground = true)
 @Composable
 fun PreviewMainActivity() {
