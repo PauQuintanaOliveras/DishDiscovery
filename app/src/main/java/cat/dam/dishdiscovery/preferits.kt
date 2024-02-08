@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -64,16 +65,27 @@ fun ScaffoldWithTopBarAndButtonBar() {
                     contentScale = ContentScale.Crop
                 )
 
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .padding(30.dp)
                 ) {
-                    DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
-                    Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
-                    DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
-                    Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
-                    DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                    item {
+                        DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
+                    }
+                    item {
+                        DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
+                    }
+                    item {
+                        DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                    }
+
                 }
             }
         },
