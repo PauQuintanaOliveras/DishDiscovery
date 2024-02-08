@@ -180,9 +180,16 @@ fun RecoverPassword() {
 }
 @Composable
 fun SignIn() {
-    val username = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+    val username = remember { mutableStateOf(TextFieldValue()) }
+    val email = remember { mutableStateOf(TextFieldValue()) }
+    val password = remember { mutableStateOf(TextFieldValue()) }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    fun isValidInput(input: String): Boolean {
+        val pattern = Regex("^[a-zA-Z0-9_]*$")
+        return pattern.matches(input)
+    }
 
     Column(
         modifier = Modifier
@@ -228,10 +235,20 @@ fun SignIn() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {}) {
+        Button(onClick = {
+            if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
+                // Muestra un mensaje de error
+                scope.launch {
+                    snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
+                }
+            } else {
+                // Continúa amb l' inici de sessio
+            }
+        }) {
             Text("Registrar-se")
         }
     }
+    SnackbarHost(hostState = snackbarHostState)
 }
 @Preview(showBackground = true)
 @Composable
