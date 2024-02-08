@@ -71,6 +71,7 @@ fun ScaffoldWithTopBarAndButtonBar()
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .padding(30.dp)
+                        .fillMaxWidth()
                 ) {
                     item {
                         DishCard().BasicCardPreview("Sandvitx", descripcioSandvitx, R.drawable.sandwich)
@@ -87,6 +88,7 @@ fun ScaffoldWithTopBarAndButtonBar()
                     item {
                         DishCard().BasicCardPreview("Pasta", descripcioPasta, R.drawable.pasta)
                     }
+
 
                 }
             }
