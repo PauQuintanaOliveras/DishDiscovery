@@ -9,15 +9,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -51,16 +56,26 @@ fun ScaffoldWithTopBarAndButtonBar() {
             )
         },
         content = {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(id = R.drawable.fondo),
+                    contentDescription = "Background",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
 
-            Image(
-                painter = painterResource(id = R.drawable.fondo),
-                contentDescription = "Background",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-
-            DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
-
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(30.dp)
+                ) {
+                    DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                    Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
+                    DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                    Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
+                    DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+                }
+            }
         },
 
         bottomBar = {
@@ -84,7 +99,6 @@ fun ScaffoldWithTopBarAndButtonBar() {
         }
     )
 }
-
 @Preview
 @Composable
 fun PreviewScaffoldWithTopBarAndButtonBar() {
