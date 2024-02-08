@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -165,3 +166,20 @@ fun LoginScreen(navController: NavController) {
             modifier = Modifier.clickable { navController.navigate("sign_in_screen") })
     }
 }
+@Preview(showBackground = true)
+@Composable
+fun PreviewMainActivity() {
+    DishDiscoveryTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column {
+                SignIn()
+                Spacer(modifier = Modifier.height(16.dp))
+                DishCard().BasicCardPreview("none", "none", R.drawable.testimage)
+            }
+        }
+    }
+}
+
+
