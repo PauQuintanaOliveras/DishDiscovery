@@ -1,5 +1,7 @@
 package cat.dam.dishdiscovery
 
+import android.app.Activity
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,7 +44,18 @@ import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.LatLng
+import android.Manifest
+import android.os.Looper
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -276,10 +289,14 @@ fun SignIn() {
     SnackbarHost(hostState = snackbarHostState)
 }
 
+
 @Composable
 fun MapScreen() {
     val context = LocalContext.current
     val mapView = MapView(context)
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    val permissionId = Manifest.permission.ACCESS_FINE_LOCATION
+
     mapView.onCreate(null)
     mapView.onResume()
 
@@ -294,12 +311,41 @@ fun MapScreen() {
         AndroidView({ rememberedMapView }, modifier = Modifier
             .fillMaxWidth()
             .weight(0.8f)
-            .padding(top = 50.dp, bottom = 16.dp)
+            .padding(top = 50.dp, bottom = 100.dp)
         ) { mapView ->
             mapView.getMapAsync { googleMap ->
-                setMapLocation(googleMap, context)
+                if (ContextCompat.checkSelfPermission(context, permissionId) == PackageManager.PERMISSION_GRANTED) {
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                        if (location != null) {
+                            val currentLocation = LatLng(location.latitude, location.longitude)
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 14f))
+                        } else {
+                            // Solicita una actualización de la ubicación si la última ubicación conocida es null
+                            val locationRequest = LocationRequest.create().apply {
+                                interval = 10000
+                                fastestInterval = 5000
+                                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+                            }
+                            val locationCallback = object : LocationCallback() {
+                                override fun onLocationResult(locationResult: LocationResult?) {
+                                    locationResult ?: return
+                                    for (location in locationResult.locations){
+                                        if (location != null) {
+                                            val currentLocation = LatLng(location.latitude, location.longitude)
+                                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 14f))
+                                        }
+                                    }
+                                }
+                            }
+                            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+                        }
+                    }
+                } else {
+                    ActivityCompat.requestPermissions(context as Activity, arrayOf(permissionId), 0)
+                }
             }
         }
+        //Menu de sota
     }
 }
 

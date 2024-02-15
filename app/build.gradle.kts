@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services") //firebase
 }
 
 android {
@@ -64,6 +65,9 @@ dependencies {
     implementation ("com.google.android.gms:play-services-maps:17.0.1")
     implementation ("androidx.appcompat:appcompat:1.4.1")
     implementation ("com.google.android.gms:play-services-location:18.0.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1")) //firebase
+    implementation("com.google.firebase:firebase-analytics") //firebase
+    implementation("com.google.firebase:firebase-firestore") //firebase
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
