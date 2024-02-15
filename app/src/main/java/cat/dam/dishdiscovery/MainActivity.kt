@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,7 +40,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
 import kotlinx.coroutines.launch
-
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.gms.maps.MapView
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,10 +54,11 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    NavHost(navController, startDestination = "login_screen") {
+                    NavHost(navController, startDestination = "map_screen") {
                         composable("login_screen") { LoginScreen(navController) }
                         composable("sign_in_screen") { SignIn() }
                         composable("recover_password_screen") { RecoverPassword() }
+                        composable("map_screen") { MapScreen() }
                     }
                 }
             }
@@ -271,6 +275,35 @@ fun SignIn() {
     }
     SnackbarHost(hostState = snackbarHostState)
 }
+
+@Composable
+fun MapScreen() {
+    val context = LocalContext.current
+    val mapView = MapView(context)
+    mapView.onCreate(null)
+    mapView.onResume()
+
+    val rememberedMapView = remember { mapView }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.weight(0.1f))
+        AndroidView({ rememberedMapView }, modifier = Modifier
+            .fillMaxWidth()
+            .weight(0.8f)
+            .padding(top = 50.dp, bottom = 16.dp)
+        ) { mapView ->
+            mapView.getMapAsync { googleMap ->
+                setMapLocation(googleMap, context)
+            }
+        }
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
