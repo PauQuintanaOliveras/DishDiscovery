@@ -95,7 +95,7 @@ class DishCard {
                             .fillMaxSize(),
                         text = dishDescription,
                         style = TextStyle(
-                            fontSize = 12.sp,
+                            fontSize = 18.sp,
                             lineHeight = 16.sp,
                             color = Color(0xFF201A17),
                             letterSpacing = 0.5.sp,
