@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
                         composable("login_screen") { LoginScreen(navController) }
                         composable("sign_in_screen") { SignIn() }
                         composable("recover_password_screen") { RecoverPassword() }
+                        composable("main_page") { preferits() }
                     }
                 }
                 SettingsScreen(
@@ -176,6 +177,10 @@ class MainActivity : ComponentActivity() {
                     }
                 } else {
                     // Continúa amb l' inici de sessio
+
+                    //TEMPORAL
+                    navController.navigate("main_page")
+                    //TEMPORAL
                 }
             }) {
                 Text("Accedir")
@@ -247,6 +252,8 @@ class MainActivity : ComponentActivity() {
                     }
                 } else {
                     // Aquí va la lógica de confirmació
+
+
                 }
             }) {
                 Text("Confirmar")
