@@ -40,6 +40,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 
@@ -55,20 +56,11 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController, startDestination = "login_screen") {
                         composable("login_screen") { LoginScreen(navController) }
-                        composable("sign_in_screen") { SignIn() }
+                        composable("sign_in_screen") { SignIn(navController) }
                         composable("recover_password_screen") { RecoverPassword() }
-                        composable("main_page") { preferits() }
+                        composable("main_page") { ScaffoldWithTopBarAndButtonBar() }
                     }
                 }
-                SettingsScreen(
-                      userName = "AlbertTuvi1",
-                      password = "password",
-                      onRecipesClick = { /* Navegar a las recetas guardadas */ },
-                      onDarkModeToggle = {   /* Cambiar el tema de la aplicación */ },
-                      onReturnClick = { /* Volver al menú */ }
-                )
-
-
             }
         }
     }
@@ -263,7 +255,8 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun SignIn() {
+    fun SignIn(navController: NavController) {
+        val db = FirebaseFirestore.getInstance()
         val username = remember { mutableStateOf(TextFieldValue()) }
         val email = remember { mutableStateOf(TextFieldValue()) }
         val password = remember { mutableStateOf(TextFieldValue()) }
@@ -326,7 +319,27 @@ class MainActivity : ComponentActivity() {
                         snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
                     }
                 } else {
-                    // Continúa amb l' inici de sessio
+                    // Continúa con la creación del usuario
+                    val user = hashMapOf(
+                        "Username" to username.value.text,
+                        "Email" to email.value.text,
+                        "Password" to password.value.text
+                    )
+
+                    db.collection("User")
+                        .add(user)
+                        .addOnSuccessListener { documentReference ->
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Usuario creado exitosamente")
+                                navController.navigate("main_page")
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            // Error al crear el usuario
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Error al crear el usuario")
+                            }
+                        }
                 }
             }) {
                 Text("Registrar-se")
@@ -334,6 +347,8 @@ class MainActivity : ComponentActivity() {
         }
         SnackbarHost(hostState = snackbarHostState)
     }
+
+
 
     @Preview(showBackground = true)
     @Composable
