@@ -17,8 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
@@ -35,14 +38,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -77,6 +84,7 @@ class MainActivity : ComponentActivity() {
     fun ViewRecipeScreen() {
         val boxSize = 100.dp
         val defaultPadding = 16.dp
+        val textSize = 16.sp
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -86,7 +94,7 @@ class MainActivity : ComponentActivity() {
         ) {
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.DarkGray) //MaterialTheme.colorScheme.surface)
+                .background(color = MaterialTheme.colorScheme.background)
             ){
                 Column {
                     Image(
@@ -101,17 +109,18 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .height(boxSize / 2)
                             .fillMaxWidth()
-                            .background(color = Color.DarkGray) //MaterialTheme.colorScheme.surface)
+                            .background(color = MaterialTheme.colorScheme.background)
                     )
                 }
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(boxSize)
                     .padding(defaultPadding)
-                    .background(color = Color.Red) //MaterialTheme.colorScheme.surface)
                     .align(Alignment.BottomCenter)
+                    .clip(RoundedCornerShape(20.dp, 20.dp, 20.dp, 20.dp))
+                    .background(color = MaterialTheme.colorScheme.background)
                 ){
-                    Column {
+                    Column(modifier = Modifier.align(Alignment.Center)) {
                         Text(text = "recipe")
                         Text(text = "Sandvitx")
                         Text(text = "Author")
@@ -121,7 +130,7 @@ class MainActivity : ComponentActivity() {
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .height(boxSize / 1.5f)
-                .background(color = Color.DarkGray) //MaterialTheme.colorScheme.surface)
+                .background(color = MaterialTheme.colorScheme.background)
             )
             {
             //TODO: put icon and likes
@@ -129,13 +138,42 @@ class MainActivity : ComponentActivity() {
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .height(boxSize * 1.5f)
-                .background(color = Color.DarkGray) //MaterialTheme.colorScheme.surface)
+                .background(color = MaterialTheme.colorScheme.background)
             ){
                 Text(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id consequat lectus, non ultricies nisl. Nullam pulvinar congue lacinia. Suspendisse non lacus in libero eleifend tincidunt sed ut velit. Mauris mattis sit amet libero pellentesque volutpat.",
-                modifier = Modifier.padding(defaultPadding).align(Alignment.Center)
+                modifier = Modifier
+                    .padding(defaultPadding)
+                    .align(Alignment.Center)
                 )
             }
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(boxSize)
+                .background(color = MaterialTheme.colorScheme.background)
+            ){
+                Card (modifier = Modifier
+                    .padding(defaultPadding)
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .height(boxSize),
+                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
 
+                ){
+                    Text(text = "35 Minuts")
+
+                }
+            }
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(boxSize)
+                .background(color = Color.DarkGray) //MaterialTheme.colorScheme.surface)
+            ){
+                Text(text = "Ingredients",
+                    modifier = Modifier
+                        .padding(defaultPadding)
+                        .align(Alignment.Center)
+                )
+            }
         }
     }
 
