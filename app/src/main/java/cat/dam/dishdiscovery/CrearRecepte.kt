@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
@@ -65,6 +66,13 @@ class CrearRecepte {
 
                 }
             )
+            Spacer(modifier =Modifier.height(11.dp))
+            Text(
+                text = "Per Quantes Persones",
+                fontSize = 10.sp,
+                onTextLayout = {}
+            )
+            ShowExposedDropdownMenu()
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -73,7 +81,7 @@ class CrearRecepte {
                 onTextLayout = {}
             )
             Spacer(modifier = Modifier.height(11.dp))
-            TextField( // Add this TextField
+            TextField(
                 value = productState.value,
                 onValueChange = { productState.value = it },
                 modifier = Modifier.fillMaxWidth(),
@@ -91,8 +99,6 @@ class CrearRecepte {
                 fontSize = 10.sp,
                 onTextLayout = {}
             )
-            Spacer(modifier =Modifier.height(11.dp))
-            ShowExposedDropdownMenu()
 
             Spacer(modifier = Modifier.height(11.dp))
             TextField( // Add this TextField
@@ -177,7 +183,8 @@ class CrearRecepte {
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.width(80.dp)
+
         ) {
             TextField(
                 value = numbers[selectedItemIndex],
