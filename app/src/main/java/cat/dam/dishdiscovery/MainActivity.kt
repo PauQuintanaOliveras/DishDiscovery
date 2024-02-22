@@ -330,7 +330,7 @@ class MainActivity : ComponentActivity() {
                         .add(user)
                         .addOnSuccessListener { documentReference ->
                             scope.launch {
-                                snackbarHostState.showSnackbar("Usuario creado exitosamente")
+                                snackbarHostState.showSnackbar("Usuario creado exitosamentet")
                                 navController.navigate("main_page")
                             }
                         }
