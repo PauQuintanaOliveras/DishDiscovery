@@ -53,9 +53,17 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import android.Manifest
 import android.os.Looper
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.draw.clip
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +79,7 @@ class MainActivity : ComponentActivity() {
                         composable("login_screen") { LoginScreen(navController) }
                         composable("sign_in_screen") { SignIn() }
                         composable("recover_password_screen") { RecoverPassword() }
-                        composable("map_screen") { MapScreen() }
+                        composable("map_screen") { MapSimple() }
                     }
                 }
             }
@@ -289,63 +297,30 @@ fun SignIn() {
     SnackbarHost(hostState = snackbarHostState)
 }
 
-
 @Composable
-fun MapScreen() {
-    val context = LocalContext.current
-    val mapView = MapView(context)
-    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-    val permissionId = Manifest.permission.ACCESS_FINE_LOCATION
-
-    mapView.onCreate(null)
-    mapView.onResume()
-
-    val rememberedMapView = remember { mapView }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.weight(0.1f))
-        AndroidView({ rememberedMapView }, modifier = Modifier
+fun MapSimple(){
+    val edmonton = LatLng(53.5444, -113.4909)
+    var clickedPosition by remember { mutableStateOf(edmonton) }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(edmonton, 10.5f)
+    }
+    GoogleMap(
+        modifier = Modifier
             .fillMaxWidth()
-            .weight(0.8f)
-            .padding(top = 50.dp, bottom = 100.dp)
-        ) { mapView ->
-            mapView.getMapAsync { googleMap ->
-                if (ContextCompat.checkSelfPermission(context, permissionId) == PackageManager.PERMISSION_GRANTED) {
-                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                        if (location != null) {
-                            val currentLocation = LatLng(location.latitude, location.longitude)
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 14f))
-                        } else {
-                            // Solicita una actualización de la ubicación si la última ubicación conocida es null
-                            val locationRequest = LocationRequest.create().apply {
-                                interval = 10000
-                                fastestInterval = 5000
-                                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                            }
-                            val locationCallback = object : LocationCallback() {
-                                override fun onLocationResult(locationResult: LocationResult?) {
-                                    locationResult ?: return
-                                    for (location in locationResult.locations){
-                                        if (location != null) {
-                                            val currentLocation = LatLng(location.latitude, location.longitude)
-                                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 14f))
-                                        }
-                                    }
-                                }
-                            }
-                            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-                        }
-                    }
-                } else {
-                    ActivityCompat.requestPermissions(context as Activity, arrayOf(permissionId), 0)
-                }
-            }
+            .fillMaxSize()
+            .padding(10.dp)
+            .clip(MaterialTheme.shapes.extraLarge),
+        cameraPositionState = cameraPositionState,
+        uiSettings = MapUiSettings(zoomControlsEnabled = false),
+        onMapClick = {
+            clickedPosition = it
         }
-        //Menu de sota
+    ){
+        Marker(
+            state = MarkerState(position = clickedPosition),
+            title = "Clicked position",
+            snippet = "Lat: ${clickedPosition.latitude}, Lng: ${clickedPosition.longitude}"
+        )
     }
 }
 

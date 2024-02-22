@@ -62,7 +62,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
-    implementation ("com.google.android.gms:play-services-maps:17.0.1")
+    implementation ("com.google.android.gms:play-services-maps:17.0.1") // google maps
+    implementation ("com.google.maps.android:maps-compose-utils:4.2.0")// google maps
+    implementation ("com.google.maps.android:maps-compose-widgets:4.2.0")// google maps
     implementation ("androidx.appcompat:appcompat:1.4.1")
     implementation ("com.google.android.gms:play-services-location:18.0.0")
     implementation(platform("com.google.firebase:firebase-bom:32.7.1")) //firebase
