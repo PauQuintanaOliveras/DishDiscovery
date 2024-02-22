@@ -42,7 +42,6 @@ const val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, m
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScaffoldWithTopBarAndButtonBar()
-
 {
     Scaffold(
         topBar = {
