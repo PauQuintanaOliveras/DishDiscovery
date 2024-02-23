@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -170,26 +171,37 @@ class MainActivity : ComponentActivity() {
             }
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .height(boxSize)
+                .height(boxSize*1.25f)
                 .background(color = MaterialTheme.colorScheme.background)
             ){
                 Card (modifier = Modifier
                     .padding(defaultPadding)
                     .align(Alignment.Center)
-                    .fillMaxWidth()
-                    .height(boxSize),
+                    .fillMaxSize(),
                     colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.background),
                     border = BorderStroke(2.dp, DarkGray)
 
                 ){
-                    Text(text = "1hr 20Min",
-                        modifier = Modifier
-                            .padding(defaultPadding),
-                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                        fontWeight = MaterialTheme.typography.titleMedium.fontWeight
+                    Column(modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text(text = "1hr 20Min",
+                            modifier = Modifier.padding(defaultPadding),
+                            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                            fontWeight = FontWeight.Black,
 
-                    )
-
+                            //fontWeight = MaterialTheme.typography.titleMedium.fontWeight
+                        )
+                        Text(text = "Total Time",
+                            modifier = Modifier.padding(
+                                bottom = defaultPadding
+                            ),
+                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            fontWeight = FontWeight.Normal,
+                            //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
+                        )
+                   }
                 }
             }
             Box(modifier = Modifier
