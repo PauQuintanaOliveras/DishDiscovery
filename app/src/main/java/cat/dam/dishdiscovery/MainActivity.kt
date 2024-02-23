@@ -3,8 +3,10 @@ package cat.dam.dishdiscovery
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.VerticalAlignmentLine
@@ -84,7 +88,6 @@ class MainActivity : ComponentActivity() {
     fun ViewRecipeScreen() {
         val boxSize = 100.dp
         val defaultPadding = 16.dp
-        val textSize = 16.sp
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -120,10 +123,29 @@ class MainActivity : ComponentActivity() {
                     .clip(RoundedCornerShape(20.dp, 20.dp, 20.dp, 20.dp))
                     .background(color = MaterialTheme.colorScheme.background)
                 ){
-                    Column(modifier = Modifier.align(Alignment.Center)) {
-                        Text(text = "recipe")
-                        Text(text = "Sandvitx")
-                        Text(text = "Author")
+                    Column(modifier = Modifier.align(Alignment.Center)
+                    ) {
+                        Text(text = "RECIPE",modifier = Modifier.align(Alignment.CenterHorizontally),
+                            fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            fontWeight = MaterialTheme.typography.bodySmall.fontWeight
+
+                        )
+                        Text(text = "Sandvitx",modifier = Modifier.align(Alignment.CenterHorizontally),
+                            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                            fontWeight = MaterialTheme.typography.titleMedium.fontWeight
+                        )
+                        Row (modifier = Modifier.align(Alignment.CenterHorizontally)){
+                            Text(text = "by ", modifier = Modifier.align(Alignment.CenterVertically),
+                                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+
+                            )
+                            Text(text = "Author", modifier = Modifier.align(Alignment.CenterVertically),
+                                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                fontWeight = MaterialTheme.typography.bodySmall.fontWeight
+                            )
+                        }
+
                     }
                 }
             }
@@ -156,10 +178,17 @@ class MainActivity : ComponentActivity() {
                     .align(Alignment.Center)
                     .fillMaxWidth()
                     .height(boxSize),
-                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.background),
+                    border = BorderStroke(2.dp, DarkGray)
 
                 ){
-                    Text(text = "35 Minuts")
+                    Text(text = "1hr 20Min",
+                        modifier = Modifier
+                            .padding(defaultPadding),
+                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                        fontWeight = MaterialTheme.typography.titleMedium.fontWeight
+
+                    )
 
                 }
             }
