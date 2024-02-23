@@ -49,7 +49,11 @@ fun ScaffoldWithTopBarAndButtonBar()
                 modifier = Modifier
                     .padding(top = 50.dp) // Mueve el TopAppBar hacia abajo
                     .clip(RoundedCornerShape(60.dp)), // Hace los bordes redondos
-                title = { Text("Cercar Receptes Guardades") },
+                title = {
+                    Text(
+                        text = "Cercar Receptes Guardades",
+                        onTextLayout = {}
+                    ) },
                 navigationIcon = {
                     IconButton(onClick = { /* Handle navigation icon press */ }) {
                         Icon(Icons.Filled.Menu, contentDescription = "Navigation Icon")
