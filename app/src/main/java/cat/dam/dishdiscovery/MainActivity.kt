@@ -1,12 +1,12 @@
 package cat.dam.dishdiscovery
 
 import android.os.Bundle
+import android.widget.NumberPicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,8 +18,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.magnifier
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -35,26 +36,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.VerticalAlignmentLine
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -74,11 +72,12 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    NavHost(navController, startDestination = "login_screen") {
+                    NavHost(navController, startDestination = "view_recipe_screen") {
                         composable("login_screen") { LoginScreen(navController) }
                         composable("sign_in_screen") { SignIn(navController) }
                         composable("recover_password_screen") { RecoverPassword() }
                         composable("main_page") { ScaffoldWithTopBarAndButtonBar() }
+                        composable("view_recipe_screen") { ViewRecipeScreen() }
                     }
                 }
             }
@@ -89,6 +88,11 @@ class MainActivity : ComponentActivity() {
     fun ViewRecipeScreen() {
         val boxSize = 100.dp
         val defaultPadding = 16.dp
+        val dishServings = 4
+        var servings by remember {mutableIntStateOf(4) }
+        var servingsModifier by remember { mutableStateOf(1) }
+        val ingridients = hashMapOf<Ingridient, Mesurement>()
+        ingridients[Ingridient("Bread")] = Mesurement("Kg", 2f)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -171,7 +175,7 @@ class MainActivity : ComponentActivity() {
             }
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .height(boxSize*1.25f)
+                .height(boxSize * 1.25f)
                 .background(color = MaterialTheme.colorScheme.background)
             ){
                 Card (modifier = Modifier
@@ -179,7 +183,7 @@ class MainActivity : ComponentActivity() {
                     .align(Alignment.Center)
                     .fillMaxSize(),
                     colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.background),
-                    border = BorderStroke(2.dp, DarkGray)
+                    border = BorderStroke(1.dp, DarkGray)
 
                 ){
                     Column(modifier = Modifier.fillMaxSize(),
@@ -206,15 +210,62 @@ class MainActivity : ComponentActivity() {
             }
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .height(boxSize)
-                .background(color = Color.DarkGray) //MaterialTheme.colorScheme.surface)
+                .padding(defaultPadding)
+                .height(boxSize / 2)
+                .background(Transparent) //MaterialTheme.colorScheme.surface)
             ){
                 Text(text = "Ingredients",
                     modifier = Modifier
-                        .padding(defaultPadding)
-                        .align(Alignment.Center)
+                        .align(Alignment.CenterStart),
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                    fontWeight = FontWeight.Black,
                 )
             }
+            Row(modifier = Modifier
+                .align(Alignment.Start)
+                .padding(defaultPadding),) {
+                Button(onClick = { servings--
+                                 servingsModifier = servings/dishServings},
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clip(CircleShape),){
+                }
+                Spacer(modifier = Modifier.width(defaultPadding/1.5f))
+                Text(text = "Servings $servings")
+                Spacer(modifier = Modifier.width(defaultPadding/1.5f))
+                Button(onClick = { servings++
+                    servingsModifier = servings/dishServings },
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clip(CircleShape)) {}
+            }
+            Column {
+                ingridients.forEach { (ingridient, mesurement) ->
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(defaultPadding)
+                    ) {
+                        Text(text = ingridient.name,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .weight(1f),
+                            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                            fontWeight = FontWeight.Normal,
+                            //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
+                        )
+                        Text(text = (mesurement.amount*servingsModifier).toString() + mesurement.name,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .weight(1f),
+                            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                            fontWeight = FontWeight.Normal,
+                            //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
+                        )
+                    }
+                }
+
+            }
+
         }
     }
 
