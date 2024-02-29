@@ -65,47 +65,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun SettingsScreen(
-        userName: String,
-        password: String,
-        onRecipesClick: () -> Unit,
-        onDarkModeToggle: (Boolean) -> Unit,
-        onReturnClick: () -> Unit
-    ) {
-        val darkModeState = remember { mutableStateOf(false) }
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Logo",
-                    modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
-                )
-                Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
-                Text(text = "Nombre de usuario: $userName")
-                Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
-                Text(text = "Contraseña: ${"*".repeat(password.length)}")
-                Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
-                Button(onClick = onRecipesClick) {
-                    Text(text = "Les Meves Receptes")
-                }
-                Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
-                Switch(
-                    checked = darkModeState.value,
-                    onCheckedChange = { isChecked ->
-                        darkModeState.value = isChecked
-                        onDarkModeToggle(isChecked)
-                    }
-                )
-                Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
-                Button(onClick = onReturnClick) {
-                    Text(text = "Retornar")
-                }
-                Spacer(modifier = Modifier.weight(1f)) // This will push the content to the top and fill the remaining space
-            }
-        }
-    }
 
     @Composable
     fun LoginScreen(navController: NavController) {
