@@ -1,5 +1,7 @@
 package cat.dam.dishdiscovery
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,11 +31,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
+
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import coil.compose.rememberImagePainter
 
 class CrearRecepte {
 
@@ -46,6 +55,10 @@ class CrearRecepte {
         val productState = remember { mutableStateOf("") }
         val checkboxState1 = remember { mutableStateOf(false) } // Add this line
         val checkboxState2 = remember { mutableStateOf(false) }
+        var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+        val selectImageLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            selectedImageUri = uri}
 
        Column(
             modifier = Modifier.fillMaxWidth()
@@ -80,6 +93,40 @@ class CrearRecepte {
                     )
                 }
             )
+
+           Spacer(modifier = Modifier.height(16.dp))
+           Text(
+               text = "Imatge de la Recepta",
+               fontSize = 15.sp,
+               onTextLayout = {},
+               modifier = Modifier.padding(5.dp)
+           )
+           Spacer(modifier = Modifier.height(16.dp))
+           if (selectedImageUri != null) {
+               Image(
+                   painter = rememberImagePainter(data = selectedImageUri),
+                   contentDescription = "User's recipe image",
+                   modifier = Modifier
+                       .height(200.dp)
+                       .fillMaxWidth()
+               )
+           } else {
+               Image(
+                   painter = painterResource(id = R.drawable.testimage),
+                   contentDescription = "Placeholder image",
+                   modifier = Modifier
+                       .height(200.dp)
+                       .fillMaxWidth()
+               )
+           }
+           Button(
+               onClick = { selectImageLauncher.launch("image/*") },
+               modifier = Modifier
+                   .align(Alignment.CenterHorizontally)
+                   .padding(top = 16.dp)
+           ) {
+               Text(text = "Seleccionar imatge")
+           }
             Spacer(modifier =Modifier.height(11.dp))
             Text(
                 text = "Per Quantes Persones",
@@ -97,20 +144,14 @@ class CrearRecepte {
                 modifier = Modifier.padding(5.dp)
             )
             Spacer(modifier = Modifier.height(11.dp))
-            TextField(
-                value = productState.value,
-                onValueChange = { productState.value = it },
-                modifier = Modifier.fillMaxWidth()
-                .padding(5.dp)
-                .clip(RoundedCornerShape(100.dp)),
-                label = {
-                    Text(
-                        text = "",
-                        fontSize = 10.sp,
-                        onTextLayout = {}
-                    )
-                }
-            )
+           Image(
+               painter = painterResource(id = R.drawable.ingredients),
+               contentDescription = "Imagen de ingredientes",
+               modifier = Modifier.padding(5.dp)
+                   .height(100.dp)
+                   .fillMaxWidth()
+                   .clickable { /* Aquí va el código para manejar el clic en la imagen */ }
+           )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Instruccions dels Ingredients (opcional)",
@@ -123,7 +164,8 @@ class CrearRecepte {
             TextField( // Add this TextField
                 value = productState.value,
                 onValueChange = { productState.value = it },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(5.dp)
                     .clip(RoundedCornerShape(100.dp)),
                 label = {
@@ -145,7 +187,8 @@ class CrearRecepte {
             TextField( // Add this TextField
                 value = productState.value,
                 onValueChange = { productState.value = it },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(5.dp)
                     .clip(RoundedCornerShape(100.dp)),
                 label = {
@@ -206,7 +249,8 @@ class CrearRecepte {
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.width(90.dp)
+            modifier = Modifier
+                .width(90.dp)
                 .padding(5.dp)
                 .clip(RoundedCornerShape(100.dp)),
 
