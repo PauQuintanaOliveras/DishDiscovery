@@ -16,6 +16,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -31,8 +33,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 
 class CrearRecepte {
+
+
 
     @Preview
     @Composable
@@ -41,6 +46,7 @@ class CrearRecepte {
         val productState = remember { mutableStateOf("") }
         val checkboxState1 = remember { mutableStateOf(false) } // Add this line
         val checkboxState2 = remember { mutableStateOf(false) }
+
        Column(
             modifier = Modifier.fillMaxWidth()
 
@@ -152,32 +158,29 @@ class CrearRecepte {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = checkboxState1.value,
-                    onCheckedChange = { checkboxState1.value = it }
+           var selectedOption by remember { mutableStateOf("Private") }
+           val options = listOf("Private", "Public")
 
-                )
-                Text(
-
-                    text = "Private",
-                    fontSize = 10.sp,
-                    onTextLayout = {}
-                )
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = checkboxState2.value,
-                    onCheckedChange = { checkboxState2.value = it }
-                )
-                Text(
-
-                    text = "Public",
-                    fontSize = 10.sp,
-                    onTextLayout = {}
-                )
-            }
+           Column {
+               options.forEach { text ->
+                   Row(
+                       Modifier
+                           .fillMaxWidth()
+                           .padding(8.dp),
+                       verticalAlignment = Alignment.CenterVertically
+                   ) {
+                       RadioButton(
+                           selected = (text == selectedOption),
+                           onClick = { selectedOption = text }
+                       )
+                       Text(
+                           text = text,
+                           style = MaterialTheme.typography.bodyLarge.merge(),
+                           modifier = Modifier.padding(start = 8.dp)
+                       )
+                   }
+               }
+           }
             Button(
                 onClick = { /* Handle button click */ },
             modifier= Modifier

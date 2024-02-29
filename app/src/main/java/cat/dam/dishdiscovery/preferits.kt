@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 
 class preferits {
 
@@ -43,6 +44,7 @@ const val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, m
 @Composable
 fun ScaffoldWithTopBarAndButtonBar()
 {
+    val navController = rememberNavController()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,18 +80,29 @@ fun ScaffoldWithTopBarAndButtonBar()
                 ) {
                     item {
                         DishCard().BasicCardPreview("Sandvitx", descripcioSandvitx, R.drawable.sandwich)
+
                     }
                     item {
                         Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
                     }
                     item {
-                        DishCard().BasicCardPreview("Sopar", decripcioSopar, R.drawable.sopa)
+                        DishCard().BasicCardPreview(
+                            "Sopar",
+                            decripcioSopar,
+                            R.drawable.sopa,
+
+                        )
                     }
                     item {
                         Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
                     }
                     item {
-                        DishCard().BasicCardPreview("Pasta", descripcioPasta, R.drawable.pasta)
+                        DishCard().BasicCardPreview(
+                            "Pasta",
+                            descripcioPasta,
+                            R.drawable.pasta,
+
+                        )
                     }
 
 
@@ -122,4 +135,5 @@ fun ScaffoldWithTopBarAndButtonBar()
 @Composable
 fun PreviewScaffoldWithTopBarAndButtonBar() {
     ScaffoldWithTopBarAndButtonBar()
+
 }
