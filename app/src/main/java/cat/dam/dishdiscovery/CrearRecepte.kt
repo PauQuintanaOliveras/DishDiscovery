@@ -45,12 +45,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.widget.NumberPicker
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberImagePainter
 import java.io.ByteArrayOutputStream
 
@@ -192,7 +194,7 @@ class CrearRecepte {
                 onTextLayout = {},
                 modifier = Modifier.padding(5.dp)
             )
-            ShowExposedDropdownMenu()
+            ShowNumberPicker()
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -300,51 +302,21 @@ class CrearRecepte {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun ShowExposedDropdownMenu() {
-        val context = LocalContext.current
-        val numbers = Array(12) { i -> (i + 1).toString() } // Array of numbers from 1 to 12
-        var expanded by remember { mutableStateOf(false) }
-        var selectedItemIndex by remember { mutableStateOf(0) }
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded },
-            modifier = Modifier
-                .width(90.dp)
-                .padding(5.dp)
-                .clip(RoundedCornerShape(100.dp)),
+    fun ShowNumberPicker() {
+        var selectedValue by remember { mutableStateOf(0) }
 
-            ) {
-            TextField(
-                value = numbers[selectedItemIndex],
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor()
-
-            )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                numbers.forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-
-                                text = item,
-                                fontWeight = if (index == selectedItemIndex) FontWeight.Bold else null,
-                                onTextLayout = {}
-                            )
-                        },
-                        onClick = {
-                            selectedItemIndex = index
-                            expanded = false
-                            Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
-                        }
-                    )
+        AndroidView(
+            modifier = Modifier.fillMaxWidth(),
+            factory = { context ->
+                NumberPicker(context).apply {
+                    minValue = 1
+                    maxValue = 5
+                    setOnValueChangedListener { _, _, newVal ->
+                        selectedValue = newVal
+                    }
                 }
             }
-        }
+        )
     }
 
 }
