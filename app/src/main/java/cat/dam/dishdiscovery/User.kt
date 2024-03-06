@@ -1,7 +1,7 @@
 package cat.dam.dishdiscovery
 
 data class User(
-    val id: String?,
+    val uuid: String?,
     val userName: String,
     val administrator: Boolean,
     val likedDishes: List<String>,
@@ -11,13 +11,13 @@ data class User(
 ) {
     fun userToMap(): Map<String, Any?> {
         return mapOf(
-            "id" to id,
-            "userName" to userName,
-            "administrator" to administrator,
-            "likedDishes" to likedDishes,
-            "mealPlanner" to mealPlanner,
-            "premium" to premium,
-            "publishedDishes" to publishedDishes
+            "UUID" to uuid,
+            "UserName" to userName,
+            "Administrator" to administrator,
+            "LikedDishes" to likedDishes,
+            "MealPlanner" to mealPlanner,
+            "Premium" to premium,
+            "PublishedDishes" to publishedDishes
         )
     }
 }

@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -47,6 +48,7 @@ import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -57,11 +59,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            val startDestination =
+                if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) "login_screen" else "main_page" // If the user is not logged in, the start destination is the login screen
             DishDiscoveryTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    NavHost(navController, startDestination = "login_screen") {
+                    NavHost(navController, startDestination = startDestination) {
                         composable("login_screen") { LoginScreen(navController) }
                         composable("sign_in_screen") { SignIn(navController) }
                         composable("recover_password_screen") { RecoverPassword() }
@@ -134,7 +138,13 @@ class MainActivity : ComponentActivity() {
                 val account = task.getResult(ApiException::class.java)
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                 loginViewModel.logInWithGoogleCredentials(credential) {
-                    navController.navigate("main_page")
+                    navController.navigate("main_page") {
+                        // Pop up to the login screen, removing it from the back stack
+                        popUpTo("login_screen") {
+                            inclusive = true
+                        }
+                    }
+
                 }
             } catch (e: ApiException) {
                 Log.w("GoogleSignIn", "signInResult:failed code=" + e.statusCode)
@@ -196,6 +206,12 @@ class MainActivity : ComponentActivity() {
                 launcher.launch(signInClient.signInIntent)
 
             }) {
+                Image(
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(24.dp),
+                    painter = painterResource(id = R.drawable.googlelogo), contentDescription = ""
+                )
                 Text("Accedir amb Google")
             }
 
@@ -203,19 +219,22 @@ class MainActivity : ComponentActivity() {
 
             Text(
                 text = "Registrar-se",
-                modifier = Modifier.clickable { navController.navigate("sign_in_screen") })
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.clickable { navController.navigate("sign_in_screen") }
+
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "Has oblidat la contrasenya?",
+                textDecoration = TextDecoration.Underline,
                 modifier = Modifier.clickable { navController.navigate("recover_password_screen") }
             )
         }
 
         SnackbarHost(hostState = snackbarHostState)
     }
-
 
     @Composable
     fun RecoverPassword() {
@@ -344,6 +363,7 @@ class MainActivity : ComponentActivity() {
 
             Button(onClick = {
                 signInScreenViewModel.signIn(email.value.text, password.value.text) {
+                    signInScreenViewModel.createUser()
                     navController.navigate("main_page")
                 }
                 /*if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
@@ -357,25 +377,26 @@ class MainActivity : ComponentActivity() {
                         "Username" to username.value.text,
                         "Email" to email.value.text,
                         "Password" to password.value.text
-                    )
+                    )*/
 
-                    db.collection("User")
-                        .add(user)
-                        .addOnSuccessListener { documentReference ->
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Usuario creado exitosamentet")
-                                navController.navigate("main_page")
-                            }
+
+                /*db.collection("User")
+                    .add(user)
+                    .addOnSuccessListener { documentReference ->
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Usuario creado exitosamentet")
+                            navController.navigate("main_page")
                         }
-                        .addOnFailureListener { e ->
-                            // Error al crear el usuario
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Error al crear el usuario")
-                            }
+                    }
+                    .addOnFailureListener { e ->
+                        // Error al crear el usuario
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Error al crear el usuario")
                         }
-                }*/
+                    }
+            }*/
             }) {
-                Text("Registrar-se")
+                Text(text = "Registrar-se")
             }
         }
         SnackbarHost(hostState = snackbarHostState)
@@ -405,8 +426,3 @@ class MainActivity : ComponentActivity() {
             }
     }
 }
-
-
-
-
-

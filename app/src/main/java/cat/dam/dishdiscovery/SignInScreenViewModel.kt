@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 class SignInScreenViewModel : ViewModel() {
@@ -28,10 +29,24 @@ class SignInScreenViewModel : ViewModel() {
     }
 
     fun createUser() {
-        val userId = auth.currentUser?.uid
         val user = User(
-            userId,
-            auth.currentUser?.email.toString(), false, listOf(), "", false, listOf()
-        )
+            auth.currentUser?.uid,
+            auth.currentUser?.email.toString(),
+            false,
+            listOf(),
+            "",
+            false,
+            listOf()
+        ).userToMap()
+
+        FirebaseFirestore.getInstance().collection("User")
+            .document(auth.currentUser?.uid.toString())
+            .set(user)
+            .addOnSuccessListener {
+                Log.d(TAG, "createUser: User created")
+            }
+            .addOnFailureListener {
+                Log.d(TAG, "createUser: User not created")
+            }
     }
 }
