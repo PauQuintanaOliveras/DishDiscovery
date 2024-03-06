@@ -1,8 +1,11 @@
 package cat.dam.dishdiscovery
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,16 +33,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
@@ -49,7 +57,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-
             DishDiscoveryTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
@@ -80,7 +87,9 @@ class MainActivity : ComponentActivity() {
                 Image(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = "Logo",
-                    modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
                 )
                 Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
                 Text(text = "Nombre de usuario: $userName")
@@ -112,12 +121,24 @@ class MainActivity : ComponentActivity() {
         val username = remember { mutableStateOf(TextFieldValue()) }
         val password = remember { mutableStateOf(TextFieldValue()) }
         val logo = painterResource(id = R.drawable.logo)
-        val scope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
+        val loginViewModel: LoginScreenViewModel = viewModel()
+        val context = LocalContext.current
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts
+                .StartActivityForResult()
 
-        fun isValidInput(input: String): Boolean {
-            val pattern = Regex("^[a-zA-Z0-9_]*$")
-            return pattern.matches(input)
+        ) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                loginViewModel.logInWithGoogleCredentials(credential) {
+                    navController.navigate("main_page")
+                }
+            } catch (e: ApiException) {
+                Log.w("GoogleSignIn", "signInResult:failed code=" + e.statusCode)
+            }
         }
 
         Column(
@@ -138,7 +159,7 @@ class MainActivity : ComponentActivity() {
             TextField(
                 value = username.value,
                 onValueChange = { username.value = it },
-                label = { Text("Usuari") },
+                label = { Text("Correu Electronic") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -154,25 +175,9 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Has oblidat la contrasenya?",
-                modifier = Modifier.clickable { navController.navigate("recover_password_screen") }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Button(onClick = {
-                if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
-                    // Muestra un mensaje de error
-                    scope.launch {
-                        snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
-                    }
-                } else {
-                    // Continúa amb l' inici de sessio
-
-                    //TEMPORAL
+                loginViewModel.logInWithEmailAndPassword(username.value.text, password.value.text) {
                     navController.navigate("main_page")
-                    //TEMPORAL
                 }
             }) {
                 Text("Accedir")
@@ -180,10 +185,34 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            Button(onClick = {
+                val options = GoogleSignInOptions.Builder(
+                    GoogleSignInOptions.DEFAULT_SIGN_IN
+                )
+                    .requestIdToken("819336651564-ataubgncel95p2i9or6j6ho51oluo0h6.apps.googleusercontent.com")
+                    .requestEmail()
+                    .build()
+                val signInClient = GoogleSignIn.getClient(context, options)
+                launcher.launch(signInClient.signInIntent)
+
+            }) {
+                Text("Accedir amb Google")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = "Registrar-se",
                 modifier = Modifier.clickable { navController.navigate("sign_in_screen") })
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Has oblidat la contrasenya?",
+                modifier = Modifier.clickable { navController.navigate("recover_password_screen") }
+            )
         }
+
         SnackbarHost(hostState = snackbarHostState)
     }
 
@@ -262,6 +291,7 @@ class MainActivity : ComponentActivity() {
         val password = remember { mutableStateOf(TextFieldValue()) }
         val scope = rememberCoroutineScope()
         val snackbarHostState = remember { SnackbarHostState() }
+        val signInScreenViewModel: SignInScreenViewModel = viewModel()
 
         fun isValidInput(input: String): Boolean {
             val pattern = Regex("^[a-zA-Z0-9_]*$")
@@ -313,7 +343,10 @@ class MainActivity : ComponentActivity() {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = {
-                if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
+                signInScreenViewModel.signIn(email.value.text, password.value.text) {
+                    navController.navigate("main_page")
+                }
+                /*if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
                     // Muestra un mensaje de error
                     scope.launch {
                         snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
@@ -340,7 +373,7 @@ class MainActivity : ComponentActivity() {
                                 snackbarHostState.showSnackbar("Error al crear el usuario")
                             }
                         }
-                }
+                }*/
             }) {
                 Text("Registrar-se")
             }
@@ -349,14 +382,27 @@ class MainActivity : ComponentActivity() {
     }
 
 
-
-    @Preview(showBackground = true)
     @Composable
     fun PreviewLoginScreen() {
         val navController = rememberNavController()
         DishDiscoveryTheme {
             LoginScreen(navController)
         }
+    }
+
+    fun CheckUserExists() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("User")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    if (document.data["Username"] == "username") {
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting documents: $exception")
+            }
     }
 }
 
