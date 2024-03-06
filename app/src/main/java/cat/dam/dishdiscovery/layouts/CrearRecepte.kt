@@ -46,7 +46,7 @@ import coil.compose.rememberImagePainter
 
 @Preview
 @Composable
-fun DisplayText() {
+fun CreateRecipe() {
     val context = LocalContext.current
     val textState = remember { mutableStateOf("") }
     val productState = remember { mutableStateOf("") }

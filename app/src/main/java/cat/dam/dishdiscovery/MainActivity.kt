@@ -15,6 +15,7 @@ import cat.dam.dishdiscovery.layouts.RecoverPassword
 import cat.dam.dishdiscovery.layouts.SignIn
 import cat.dam.dishdiscovery.layouts.ViewRecipeScreen
 import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
+import cat.dam.dishdiscovery.layouts.CreateRecipe
 
 
 class MainActivity : ComponentActivity() {
@@ -27,12 +28,13 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    NavHost(navController, startDestination = "view_recipe_screen") {
+                    NavHost(navController, startDestination = "create_recipe") {
                         composable("login_screen") { LogInScreen(navController) }
                         composable("sign_in_screen") { SignIn(navController) }
                         composable("recover_password_screen") { RecoverPassword() }
                         composable("main_page") { Preferits() }
                         composable("view_recipe_screen") { ViewRecipeScreen() }
+                        composable("create_recipe") { CreateRecipe() }
                     }
                 }
             }
