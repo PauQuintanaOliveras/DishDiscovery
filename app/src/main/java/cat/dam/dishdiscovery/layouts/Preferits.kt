@@ -1,4 +1,4 @@
-package cat.dam.dishdiscovery
+package cat.dam.dishdiscovery.layouts
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -30,11 +30,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-
-class preferits {
-
-}
-
+import cat.dam.dishdiscovery.DishCard
+import cat.dam.dishdiscovery.R
 
 const val descripcioSandvitx="Tros de pa obert per la meitat o dues llesques de pa amb embotit, formatge o un altre menjar a dins"
 const val decripcioSopar="Plat típic de la cuina japonesa que consisteix en una sopa feta amb brou de carn o verdures i salsa de soja al que s'afegeixen uns fideus llargs"
@@ -42,7 +39,7 @@ const val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, m
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScaffoldWithTopBarAndButtonBar()
+fun Preferits()
 {
     val navController = rememberNavController()
     Scaffold(
@@ -79,7 +76,9 @@ fun ScaffoldWithTopBarAndButtonBar()
                         .fillMaxWidth()
                 ) {
                     item {
-                        DishCard().BasicCardPreview("Sandvitx", descripcioSandvitx, R.drawable.sandwich)
+                        DishCard().BasicCardPreview("Sandvitx", descripcioSandvitx,
+                            R.drawable.sandwich
+                        )
 
                     }
                     item {
@@ -134,6 +133,6 @@ fun ScaffoldWithTopBarAndButtonBar()
 @Preview
 @Composable
 fun PreviewScaffoldWithTopBarAndButtonBar() {
-    ScaffoldWithTopBarAndButtonBar()
+    Preferits()
 
 }

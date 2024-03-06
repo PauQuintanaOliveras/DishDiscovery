@@ -1,4 +1,4 @@
-package cat.dam.dishdiscovery
+package cat.dam.dishdiscovery.layouts
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -38,6 +38,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cat.dam.dishdiscovery.Ingridient
+import cat.dam.dishdiscovery.Mesurement
+import cat.dam.dishdiscovery.R
 
 @Preview(showBackground = true)
 @Composable
@@ -188,7 +191,8 @@ fun ViewRecipeScreen() {
             .align(Alignment.Start)
             .padding(defaultPadding),) {
             Button(onClick = { if (servings>1) servings--
-                updatedIngredients = updateMesurements(ingridients, servings, dishServings)},
+                updatedIngredients = updateMesurements(ingridients, servings, dishServings)
+            },
                 modifier = Modifier
                     .size(20.dp)
                     .clip(CircleShape),){
@@ -197,7 +201,8 @@ fun ViewRecipeScreen() {
             Text(text = "Servings " + String.format("%.0f", servings))
             Spacer(modifier = Modifier.width(defaultPadding/1.5f))
             Button(onClick = { servings++
-                updatedIngredients = updateMesurements(ingridients, servings, dishServings)},
+                updatedIngredients = updateMesurements(ingridients, servings, dishServings)
+            },
                 modifier = Modifier
                     .size(20.dp)
                     .clip(CircleShape)) {}
@@ -247,6 +252,7 @@ fun ViewRecipeScreen() {
         }
     }
 }
+
 fun updateMesurements(ingridients: HashMap<Ingridient, Mesurement>, servings: Float, dishServings:Float): HashMap<Ingridient, Mesurement> {
     val updatedIngridients = hashMapOf<Ingridient, Mesurement>()
     val servingsModifier: Float = servings/dishServings
