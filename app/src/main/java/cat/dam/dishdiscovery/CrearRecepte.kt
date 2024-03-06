@@ -79,6 +79,13 @@ class CrearRecepte {
                 // Permission has not been granted, show a message to the user explaining why the operation can't be performed
             }
         }
+        val requestWriteExternalStoragePermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission has been granted, perform the operation that requires the permission
+            } else {
+                // Permission has not been granted, show a message to the user explaining why the operation can't be performed
+            }
+        }
         val imageUri = remember { mutableStateOf<Uri?>(null) }
         val takePictureLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture()) { success ->
             if (success) {
@@ -165,6 +172,7 @@ class CrearRecepte {
                 Button(
                     onClick = {
                         requestCameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                        requestWriteExternalStoragePermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         val filename = System.currentTimeMillis().toString()
                         val contentValues = ContentValues().apply {
                             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
@@ -300,7 +308,7 @@ class CrearRecepte {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+
     @Composable
     fun ShowNumberPicker() {
         var selectedValue by remember { mutableStateOf(0) }
