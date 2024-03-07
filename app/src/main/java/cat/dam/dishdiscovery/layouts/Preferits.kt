@@ -136,7 +136,7 @@ fun Preferits(navController: NavController)
                     val painter = painterResource(id = R.drawable.descobrir)
                     Icon(painter = painter, contentDescription = "Second Icon")
                 }
-                IconButton(onClick = { /* Handle first icon press */ }) {
+                IconButton(onClick = { navController.navigate("map") }) {
                     val painter = painterResource(id = R.drawable.botiga)
                     Icon(painter = painter, contentDescription = "Third Icon")
                 }
