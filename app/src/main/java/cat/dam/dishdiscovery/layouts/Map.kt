@@ -158,7 +158,6 @@ fun getMarkerIconFromDrawable(context: Context, drawableName: String, width: Int
         val resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false)
         return BitmapDescriptorFactory.fromBitmap(resizedBitmap)
     } else {
-        // Si no se encuentra el recurso gráfico, se devuelve un icono de marcador predeterminado
         return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
     }
 }

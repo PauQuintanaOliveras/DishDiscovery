@@ -23,7 +23,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,10 +57,14 @@ fun Preferits(navController: NavController)
                     .padding(top = 50.dp) // Mueve el TopAppBar hacia abajo
                     .clip(RoundedCornerShape(60.dp)), // Hace los bordes redondos
                 title = {
-                    Text(
-                        text = "Cercar Receptes Guardades",
-                        onTextLayout = {}
-                    ) },
+                    var searchText by remember { mutableStateOf("") }
+                    TextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        label = { Text("Cercar Receptes Guardades") },
+                        singleLine = true
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { /* Handle navigation icon press */ }) {
                         Icon(Icons.Filled.Menu, contentDescription = "Navigation Icon")
