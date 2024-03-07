@@ -2,6 +2,7 @@ package cat.dam.dishdiscovery
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,29 +34,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-
 
 class DishCard {
     @OptIn(ExperimentalMaterial3Api::class)
-    @Preview
     @Composable
     fun BasicCardPreview(
         tag: String = "none",
         dishDescription: String = "none",
         dishImage: Int = R.drawable.ic_launcher_background,
-
+        navController: NavController
     ) {
         ElevatedCard(
             modifier = Modifier
                 .width(300.dp)
                 .height(150.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-            //placeholder for card color
             colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 20.dp),
-            // Experimental Shit remove if Shit Breaks :3
             onClick = { /*TODO*/ },
         ) {
             Row(
@@ -66,9 +62,7 @@ class DishCard {
                     modifier = Modifier
                         .weight(1f)
                 ) {
-                    //placeholder for dish image
-                    CardImagePreview(dishImage)
-                    //placeholder for favorite icon
+                    CardImagePreview(navController, dishImage)
                     Icon(
                         modifier = Modifier
                             .align(Alignment.TopStart)
@@ -84,7 +78,6 @@ class DishCard {
                             .align(Alignment.End)
                             .padding(0.dp, 1.dp, 6.dp, 0.dp),
                         onClick = { /*TODO*/ },
-                        //placeholder for tag colors
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -114,17 +107,15 @@ class DishCard {
     }
 
     @Composable
-    fun CardImagePreview(dishImage: Int) {
-        return Image(
+    fun CardImagePreview(navController: NavController, dishImage: Int) {
+        Image(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .clip(RoundedCornerShape(0.dp, 10.dp, 10.dp, 0.dp)),
-            //placeholder for dish image
+                .clip(RoundedCornerShape(0.dp, 10.dp, 10.dp, 0.dp))
+                .clickable { navController.navigate("view_recipe_screen") },
             painter = painterResource(id = dishImage),
-            contentDescription = "Dish Image",
-
+            contentDescription = "Dish Image"
         )
-
     }
 }
