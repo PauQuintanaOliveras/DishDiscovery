@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import cat.dam.dishdiscovery.R
 import coil.compose.rememberImagePainter
 
@@ -146,7 +147,11 @@ fun CreateRecipe() {
             Button(
                 onClick = { selectImageLauncher.launch("image/*") }
             ) {
-                Text(text = "Galeria")
+                Text(
+                    text = "Galeria",
+                onTextLayout = {}
+                )
+
             }
 
             Button(
@@ -174,7 +179,10 @@ fun CreateRecipe() {
                 },
 
                 ) {
-                Text(text = "Càmera")
+                Text(
+                    text = "Càmera",
+                    onTextLayout = {}
+                )
             }
         }
         Spacer(modifier = Modifier.height(11.dp))
@@ -269,6 +277,7 @@ fun CreateRecipe() {
                     )
                     Text(
                         text = text,
+                        onTextLayout = {},
                         style = MaterialTheme.typography.bodyLarge.merge(),
                         modifier = Modifier.padding(start = 8.dp)
                     )

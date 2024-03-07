@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.DishCard
 import cat.dam.dishdiscovery.R
@@ -41,9 +42,9 @@ const val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, m
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Preferits()
+fun Preferits(navController: NavController)
 {
-    val navController = rememberNavController()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -112,7 +113,7 @@ fun Preferits()
             }
         },
         floatingActionButton = {
-                FloatingActionButton(onClick = { /*TODO*/ }) {
+                FloatingActionButton(onClick = { navController.navigate("create_recipe")}) {
                     Icon(Icons.Filled.Add, contentDescription = "Add")
                 }
 },
@@ -146,6 +147,6 @@ fun Preferits()
 @Preview
 @Composable
 fun PreviewScaffoldWithTopBarAndButtonBar() {
-    Preferits()
+    Preferits(rememberNavController())
 
 }

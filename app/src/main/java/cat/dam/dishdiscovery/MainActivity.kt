@@ -28,11 +28,11 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    NavHost(navController, startDestination = "create_recipe") {
+                    NavHost(navController, startDestination = "login_screen") {
                         composable("login_screen") { LogInScreen(navController) }
                         composable("sign_in_screen") { SignIn(navController) }
                         composable("recover_password_screen") { RecoverPassword() }
-                        composable("main_page") { Preferits() }
+                        composable("main_page") { Preferits(navController) }
                         composable("view_recipe_screen") { ViewRecipeScreen() }
                         composable("create_recipe") { CreateRecipe() }
                     }
