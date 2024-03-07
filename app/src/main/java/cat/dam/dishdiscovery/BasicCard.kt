@@ -32,6 +32,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 
 class DishCard {
@@ -41,7 +44,8 @@ class DishCard {
     fun BasicCardPreview(
         tag: String = "none",
         dishDescription: String = "none",
-        dishImage: Int = R.drawable.ic_launcher_background
+        dishImage: Int = R.drawable.ic_launcher_background,
+
     ) {
         ElevatedCard(
             modifier = Modifier
@@ -119,6 +123,8 @@ class DishCard {
             //placeholder for dish image
             painter = painterResource(id = dishImage),
             contentDescription = "Dish Image",
+
         )
+
     }
 }

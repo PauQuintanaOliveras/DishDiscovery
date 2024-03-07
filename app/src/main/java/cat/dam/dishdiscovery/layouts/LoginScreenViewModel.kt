@@ -1,4 +1,4 @@
-package cat.dam.dishdiscovery
+package cat.dam.dishdiscovery.layouts
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
