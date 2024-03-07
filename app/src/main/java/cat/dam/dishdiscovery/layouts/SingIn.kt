@@ -22,10 +22,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cat.dam.dishdiscovery.R
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.launch
 
 @Composable
 fun SignIn(navController: NavController) {
@@ -35,6 +35,7 @@ fun SignIn(navController: NavController) {
     val password = remember { mutableStateOf(TextFieldValue()) }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val signInScreenViewModel: SignInScreenViewModel = viewModel()
 
     fun isValidInput(input: String): Boolean {
         val pattern = Regex("^[a-zA-Z0-9_]*$")
@@ -86,7 +87,11 @@ fun SignIn(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
+            signInScreenViewModel.signIn(email.value.text, password.value.text) {
+                signInScreenViewModel.createUser()
+                navController.navigate("main_page")
+            }
+            /*if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
                 // Muestra un mensaje de error
                 scope.launch {
                     snackbarHostState.showSnackbar("L'usuari només pot accedir si afegeix a-z, A-Z, 0-9 o _")
@@ -97,25 +102,26 @@ fun SignIn(navController: NavController) {
                     "Username" to username.value.text,
                     "Email" to email.value.text,
                     "Password" to password.value.text
-                )
+                )*/
 
-                db.collection("User")
-                    .add(user)
-                    .addOnSuccessListener {
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Usuario creado exitosamente")
-                            navController.navigate("main_page")
-                        }
+
+            /*db.collection("User")
+                .add(user)
+                .addOnSuccessListener { documentReference ->
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Usuario creado exitosamentet")
+                        navController.navigate("main_page")
                     }
-                    .addOnFailureListener {
-                        // Error al crear el usuario
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Error al crear el usuario")
-                        }
+                }
+                .addOnFailureListener { e ->
+                    // Error al crear el usuario
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Error al crear el usuario")
                     }
-            }
+                }
+        }*/
         }) {
-            Text("Registrar-se")
+            Text(text = "Registrar-se")
         }
     }
     SnackbarHost(hostState = snackbarHostState)

@@ -29,11 +29,6 @@ fun SettingsScreen(
     onRecipesClick: () -> Unit = {},
     onDarkModeToggle: (Boolean) -> Unit = {},
     onReturnClick: () -> Unit = {},
-    //userName: String,
-    //password: String,
-    //onRecipesClick: () -> Unit,
-    //onDarkModeToggle: (Boolean) -> Unit,
-    //onReturnClick: () -> Unit
 ) {
     val darkModeState = remember { mutableStateOf(false) }
 
@@ -42,7 +37,9 @@ fun SettingsScreen(
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
-                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
             Text(text = "Nombre de usuario: $userName")
