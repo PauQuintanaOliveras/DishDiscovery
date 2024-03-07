@@ -1,29 +1,22 @@
 package cat.dam.dishdiscovery.layouts
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
@@ -31,9 +24,11 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import cat.dam.dishdiscovery.R
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MapScreen() {
+fun MapScreen(navController: NavController) {
     val context = LocalContext.current
     val mapView = rememberMapViewWithLifecycle(context)
     var searchText by remember { mutableStateOf("") }
@@ -75,44 +70,62 @@ fun MapScreen() {
         Supermarket("dia", LatLng(41.974096852447246, 2.8234526262360893))
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .clip(RoundedCornerShape(16.dp))
-    ) {
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            label = { Text("Buscar") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
+    Scaffold(
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
+                TextField(
+                    value = searchText,
+                    onValueChange = { searchText = it },
+                    label = { Text("Buscar") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
 
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-        ) {
-            AndroidView({ mapView }) { mapView ->
-                MapsInitializer.initialize(context)
-                mapView.getMapAsync { googleMap ->
-                    val initialLocation = LatLng(42.11849452583105, 2.7650268955548842)
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLocation, 10f))
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
+                ) {
+                    AndroidView({ mapView }) { mapView ->
+                        MapsInitializer.initialize(context)
+                        mapView.getMapAsync { googleMap ->
+                            val initialLocation = LatLng(42.11849452583105, 2.7650268955548842)
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLocation, 10f))
 
-                    supermarkets.forEach { supermarket ->
-                        val markerIcon = getMarkerIconFromDrawable(context, context.resources.getIdentifier(supermarket.name, "drawable", context.packageName), 100, 100)
-                        if (markerIcon != null) {
-                            googleMap.addMarker(MarkerOptions().position(supermarket.location).title(supermarket.name).icon(markerIcon))
-                        } else {
-                            // Log an error message or handle the case where the marker icon was not found
+                            supermarkets.forEach { supermarket ->
+                                val markerIcon = getMarkerIconFromDrawable(context, supermarket.name.toLowerCase().replace(" ", "_"), 100, 100)
+                                googleMap.addMarker(MarkerOptions().position(supermarket.location).title(supermarket.name).icon(markerIcon))
+                            }
                         }
                     }
                 }
             }
+        },
+        bottomBar = {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(onClick = { navController.navigate("main_page") }) {
+                    val painter = painterResource(id = R.drawable.preferits)
+                    Icon(painter = painter, contentDescription = "First Icon")
+                }
+                IconButton(onClick = { navController.navigate("main_page") }) {
+                    val painter = painterResource(id = R.drawable.descobrir)
+                    Icon(painter = painter, contentDescription = "Second Icon")
+                }
+                IconButton(onClick = { navController.navigate("map") }) {
+                    val painter = painterResource(id = R.drawable.botiga)
+                    Icon(painter = painter, contentDescription = "Third Icon")
+                }
+            }
         }
-    }
+    )
 }
 
 @Composable
@@ -134,7 +147,8 @@ fun rememberMapViewWithLifecycle(context: Context): MapView {
     return mapView
 }
 
-fun getMarkerIconFromDrawable(context: Context, drawableId: Int, width: Int, height: Int): BitmapDescriptor? {
+fun getMarkerIconFromDrawable(context: Context, drawableName: String, width: Int, height: Int): BitmapDescriptor {
+    val drawableId = context.resources.getIdentifier(drawableName, "drawable", context.packageName)
     if (drawableId != 0) {
         val drawable = ContextCompat.getDrawable(context, drawableId)
         drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
@@ -144,8 +158,7 @@ fun getMarkerIconFromDrawable(context: Context, drawableId: Int, width: Int, hei
         val resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false)
         return BitmapDescriptorFactory.fromBitmap(resizedBitmap)
     } else {
-        // Log an error message or handle the case where the drawable resource was not found
-        return null
+        // Si no se encuentra el recurso gráfico, se devuelve un icono de marcador predeterminado
+        return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
     }
 }
-
