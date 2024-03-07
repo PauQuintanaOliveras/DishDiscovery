@@ -61,6 +61,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation ("io.coil-kt:coil-compose:1.4.0")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
+    implementation ("com.google.android.gms:play-services-maps:17.0.1") // google maps
+    implementation ("com.google.maps.android:maps-compose-utils:4.2.0")// google maps
+    implementation ("com.google.maps.android:maps-compose-widgets:4.2.0")// google maps
+    implementation ("androidx.appcompat:appcompat:1.4.1")
+    implementation ("com.google.maps.android:maps-compose:1.0.1") // google maps
+    implementation ("com.google.android.gms:play-services-location:18.0.0")
     implementation(platform("com.google.firebase:firebase-bom:32.7.1")) //firebase
     implementation("com.google.firebase:firebase-analytics") //firebase analytics
     implementation("com.google.firebase:firebase-firestore") //firebase firestore
@@ -70,6 +77,8 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation("androidx.compose.material3:material3-android:1.2.0")
     implementation("androidx.compose.material3:material3:1.2.0")
+    implementation("com.google.firebase:firebase-analytics") //firebase
+    implementation("com.google.firebase:firebase-firestore") //firebase
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
