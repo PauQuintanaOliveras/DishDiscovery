@@ -52,7 +52,7 @@ class DishCard {
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 20.dp),
-            onClick = { /*TODO*/ },
+            onClick = { navController.navigate("view_recipe_screen") },
         ) {
             Row(
                 modifier = Modifier
@@ -112,8 +112,7 @@ class DishCard {
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .clip(RoundedCornerShape(0.dp, 10.dp, 10.dp, 0.dp))
-                .clickable { navController.navigate("view_recipe_screen") },
+                .clip(RoundedCornerShape(0.dp, 10.dp, 10.dp, 0.dp)),
             painter = painterResource(id = dishImage),
             contentDescription = "Dish Image"
         )

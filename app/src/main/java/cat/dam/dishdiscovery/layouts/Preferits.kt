@@ -79,8 +79,11 @@ fun Preferits(navController: NavController)
                         .fillMaxWidth()
                 ) {
                     item {
-                        DishCard().BasicCardPreview("Sandvitx", descripcioSandvitx,
-                            R.drawable.sandwich
+                        DishCard().BasicCardPreview(
+                            "Sandvitx",
+                            descripcioSandvitx,
+                            R.drawable.sandwich,
+                            navController
                         )
 
                     }
@@ -92,7 +95,7 @@ fun Preferits(navController: NavController)
                             "Sopar",
                             decripcioSopar,
                             R.drawable.sopa,
-
+                            navController
                         )
                     }
                     item {
@@ -103,7 +106,7 @@ fun Preferits(navController: NavController)
                             "Pasta",
                             descripcioPasta,
                             R.drawable.pasta,
-
+                            navController
                         )
 
                     }
