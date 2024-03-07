@@ -128,11 +128,11 @@ fun Preferits(navController: NavController)
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                IconButton(onClick = { /* Handle first icon press */ }) {
+                IconButton(onClick = { navController.navigate("main_page") }) {
                     val painter = painterResource(id = R.drawable.preferits)
                     Icon(painter = painter, contentDescription = "First Icon")
                 }
-                IconButton(onClick = { /* Handle first icon press */ }) {
+                IconButton(onClick = { navController.navigate("main_page") }) {
                     val painter = painterResource(id = R.drawable.descobrir)
                     Icon(painter = painter, contentDescription = "Second Icon")
                 }
