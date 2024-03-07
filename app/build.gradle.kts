@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation ("io.coil-kt:coil-compose:1.4.0")
     implementation(platform("com.google.firebase:firebase-bom:32.7.1")) //firebase
+
     implementation("com.google.firebase:firebase-analytics") //firebase analytics
     implementation("com.google.firebase:firebase-firestore") //firebase firestore
     implementation("com.google.firebase:firebase-auth:22.3.1") //firebase authentication
