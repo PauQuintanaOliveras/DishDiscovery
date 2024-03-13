@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-           val startDestination = if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) "map" else "map" // If the user is not logged in, the start destination is the login screen
+           val startDestination = if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) "login_screen" else "login_screen"
             DishDiscoveryTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()

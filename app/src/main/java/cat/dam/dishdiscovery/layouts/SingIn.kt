@@ -26,6 +26,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cat.dam.dishdiscovery.R
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.draw.rotate
 
 @Composable
 fun SignIn(navController: NavController) {
@@ -36,6 +42,20 @@ fun SignIn(navController: NavController) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val signInScreenViewModel: SignInScreenViewModel = viewModel()
+
+    // Add rotation state for the logo
+    val rotationState = remember { mutableStateOf(0f) }
+    val rotation by animateFloatAsState(
+        targetValue = rotationState.value,
+        animationSpec = tween(
+            durationMillis = 2000,
+            easing = LinearEasing
+        )
+    )
+
+    LaunchedEffect(key1 = true) {
+        rotationState.value = 360f
+    }
 
     fun isValidInput(input: String): Boolean {
         val pattern = Regex("^[a-zA-Z0-9_]*$")
@@ -54,6 +74,7 @@ fun SignIn(navController: NavController) {
             modifier = Modifier
                 .height(200.dp)
                 .fillMaxWidth()
+                .rotate(rotation) // Apply rotation here
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -119,7 +140,7 @@ fun SignIn(navController: NavController) {
                         snackbarHostState.showSnackbar("Error al crear el usuario")
                     }
                 }
-        }*/
+            }*/
         }) {
             Text(text = "Registrar-se")
         }

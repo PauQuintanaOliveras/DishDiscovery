@@ -3,6 +3,9 @@ package cat.dam.dishdiscovery.layouts
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,10 +22,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -69,6 +76,20 @@ fun LogInScreen(navController: NavController) {
         }
     }
 
+    // Add rotation state for the logo
+    val rotationState = remember { mutableStateOf(0f) }
+    val rotation by animateFloatAsState(
+        targetValue = rotationState.value,
+        animationSpec = tween(
+            durationMillis = 2000,
+            easing = LinearEasing
+        )
+    )
+
+    LaunchedEffect(key1 = true) {
+        rotationState.value = 360f
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,7 +100,9 @@ fun LogInScreen(navController: NavController) {
         Image(
             painter = logo,
             contentDescription = "Logo",
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .rotate(rotation)
         )
 
         Spacer(modifier = Modifier.height(16.dp))

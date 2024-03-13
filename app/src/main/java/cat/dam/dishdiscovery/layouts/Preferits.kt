@@ -49,7 +49,6 @@ const val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, m
 @Composable
 fun Preferits(navController: NavController)
 {
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -80,7 +79,6 @@ fun Preferits(navController: NavController)
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-
                 LazyColumn(
                     modifier = Modifier
                         .align(Alignment.CenterStart)
@@ -129,12 +127,7 @@ fun Preferits(navController: NavController)
                     Icon(Icons.Filled.Add, contentDescription = "Add")
                 }
 },
-
         bottomBar = {
-
-
-
-            
 
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -160,5 +153,4 @@ fun Preferits(navController: NavController)
 @Composable
 fun PreviewScaffoldWithTopBarAndButtonBar() {
     Preferits(rememberNavController())
-
 }

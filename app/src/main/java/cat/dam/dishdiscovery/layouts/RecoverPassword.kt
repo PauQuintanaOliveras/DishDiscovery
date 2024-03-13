@@ -13,17 +13,22 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import cat.dam.dishdiscovery.R
 import kotlinx.coroutines.launch
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.rotate
 
 @Composable
 fun RecoverPassword() {
@@ -32,6 +37,20 @@ fun RecoverPassword() {
     var repeatPassword by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Add rotation state for the logo
+    val rotationState = remember { mutableStateOf(0f) }
+    val rotation by animateFloatAsState(
+        targetValue = rotationState.value,
+        animationSpec = tween(
+            durationMillis = 2000,
+            easing = LinearEasing
+        )
+    )
+
+    LaunchedEffect(key1 = true) {
+        rotationState.value = 360f
+    }
 
     fun isValidInput(input: String): Boolean {
         val pattern = Regex("^[a-zA-Z0-9_]*$")
@@ -46,7 +65,9 @@ fun RecoverPassword() {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo",
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier
+                .size(200.dp)
+                .rotate(rotation) // Apply rotation here
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
