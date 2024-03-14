@@ -66,6 +66,7 @@ fun Preferits(navController: NavController)
                         placeholder = { Text("Cercar Receptes Guardades") },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
+                            textColor = MaterialTheme.colorScheme.onSurface, // color del texto
                             backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                             cursorColor = MaterialTheme.colorScheme.onPrimary,
                             focusedIndicatorColor = Color.Transparent,

@@ -157,7 +157,7 @@ fun SignIn(navController: NavController) {
         Dialog(onDismissRequest = { signInSuccessful.value = false }) {
             Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
                 Image(
-                    painter = painterResource(id = R.drawable.tick), // Replace with your tick image resource
+                    painter = painterResource(id = R.drawable.tick),
                     contentDescription = "Sign In Successful"
                 )
             }
