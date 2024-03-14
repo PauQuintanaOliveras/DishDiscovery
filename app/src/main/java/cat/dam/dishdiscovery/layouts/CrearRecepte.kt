@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.NumberPicker
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -52,31 +53,54 @@ fun CreateRecipe() {
     val textState = remember { mutableStateOf("") }
     val productState = remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val imageUri = remember { mutableStateOf<Uri?>(null) }
+
+
 
     val selectImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             selectedImageUri = uri
         }
+    val takePictureLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                selectedImageUri = imageUri.value
+            } else {
+                Toast.makeText(context, "Failed to take picture", Toast.LENGTH_LONG).show()
+            }
+        }
 
     val requestCameraPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
+                val filename = System.currentTimeMillis().toString()
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                        put(MediaStore.Images.Media.IS_PENDING, 1)
+                    }
+                }
 
+                val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                imageUri.value = context.contentResolver.insert(contentUri, contentValues)
+
+                if (imageUri.value != null) {
+                    takePictureLauncher.launch(imageUri.value)
+                }
             } else {
-                // Permission has not been granted, show a message to the user explaining why the operation can't be performed
+                Toast.makeText(context, "Camera permission is required to take pictures", Toast.LENGTH_LONG).show()
             }
         }
-    val imageUri = remember { mutableStateOf<Uri?>(null) }
-    val takePictureLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture()) { success ->
-            if (success) {
-
-                selectedImageUri = imageUri.value
+    val requestWriteExternalStoragePermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission granted, you can write to external storage here
             } else {
-
+                Toast.makeText(context, "Write external storage permission is required", Toast.LENGTH_LONG).show()
             }
         }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -156,29 +180,10 @@ fun CreateRecipe() {
 
             Button(
                 onClick = {
+                    requestWriteExternalStoragePermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     requestCameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
-                    val filename = System.currentTimeMillis().toString()
-                    val contentValues = ContentValues().apply {
-                        put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { //this one
-                            put(
-                                MediaStore.MediaColumns.RELATIVE_PATH,
-                                Environment.DIRECTORY_PICTURES
-                            )
-                            put(MediaStore.Images.Media.IS_PENDING, 1)
-                        }
-                    }
-
-                    val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    imageUri.value = context.contentResolver.insert(contentUri, contentValues)
-
-                    if (imageUri.value != null) {
-                        takePictureLauncher.launch(imageUri.value)
-                    }
                 },
-
-                ) {
+            ) {
                 Text(
                     text = "Càmera",
                     onTextLayout = {}
