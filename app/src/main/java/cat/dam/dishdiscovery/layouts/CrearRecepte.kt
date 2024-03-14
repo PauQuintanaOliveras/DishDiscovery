@@ -155,7 +155,7 @@ fun CreateRecipe() {
             )
         } else {
             Image(
-                painter = painterResource(id = R.drawable.testimage),
+                painter = painterResource(id = R.drawable.pasta),
                 contentDescription = "Placeholder image",
                 modifier = Modifier
                     .height(200.dp)
