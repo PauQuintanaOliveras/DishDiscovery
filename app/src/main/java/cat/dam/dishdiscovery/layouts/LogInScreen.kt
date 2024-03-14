@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cat.dam.dishdiscovery.R
@@ -43,7 +45,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
-
 
 @Composable
 fun LogInScreen(navController: NavController) {
@@ -90,6 +91,9 @@ fun LogInScreen(navController: NavController) {
         rotationState.value = 360f
     }
 
+    // Add state for login success
+    val loginSuccessful = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,6 +132,7 @@ fun LogInScreen(navController: NavController) {
 
         Button(onClick = {
             loginViewModel.logInWithEmailAndPassword(username.value.text, password.value.text) {
+                loginSuccessful.value = true // Set this to true when login is successful
                 navController.navigate("main_page")
             }
         }) {
@@ -175,4 +180,16 @@ fun LogInScreen(navController: NavController) {
     }
 
     SnackbarHost(hostState = snackbarHostState)
+
+    // Show the Dialog when login is successful
+    if (loginSuccessful.value) {
+        Dialog(onDismissRequest = { loginSuccessful.value = false }) {
+            Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
+                Image(
+                    painter = painterResource(id = R.drawable.tick), // Replace with your tick image resource
+                    contentDescription = "Login Successful"
+                )
+            }
+        }
+    }
 }

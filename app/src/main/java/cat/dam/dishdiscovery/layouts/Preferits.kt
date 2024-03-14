@@ -2,6 +2,7 @@ package cat.dam.dishdiscovery.layouts
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +41,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.DishCard
 import cat.dam.dishdiscovery.R
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
 
 const val descripcioSandvitx="Tros de pa obert per la meitat o dues llesques de pa amb embotit, formatge o un altre menjar a dins"
 const val decripcioSopar="Plat típic de la cuina japonesa que consisteix en una sopa feta amb brou de carn o verdures i salsa de soja al que s'afegeixen uns fideus llargs"
@@ -53,22 +56,31 @@ fun Preferits(navController: NavController)
         topBar = {
             TopAppBar(
                 modifier = Modifier
-                    .padding(top = 50.dp) // Mueve el TopAppBar hacia abajo
-                    .clip(RoundedCornerShape(60.dp)), // Hace los bordes redondos
+                    .padding(top = 50.dp)
+                    .clip(RoundedCornerShape(60.dp)),
                 title = {
                     var searchText by remember { mutableStateOf("") }
                     TextField(
                         value = searchText,
                         onValueChange = { searchText = it },
-                        label = { Text("Cercar Receptes Guardades") },
-                        singleLine = true
+                        placeholder = { Text("Cercar Receptes Guardades") },
+                        singleLine = true,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                            cursorColor = MaterialTheme.colorScheme.onPrimary,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* Handle navigation icon press */ }) {
                         Icon(Icons.Filled.Menu, contentDescription = "Navigation Icon")
                     }
-                }
+                },
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer // color de fondo del TopAppBar
             )
         },
         content = {
@@ -95,7 +107,7 @@ fun Preferits(navController: NavController)
 
                     }
                     item {
-                        Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
+                        Spacer(modifier = Modifier.height(40.dp))
                     }
                     item {
                         DishCard().BasicCardPreview(
@@ -106,7 +118,7 @@ fun Preferits(navController: NavController)
                         )
                     }
                     item {
-                        Spacer(modifier = Modifier.height(40.dp)) // Agrega un espacio entre las tarjetas
+                        Spacer(modifier = Modifier.height(40.dp))
                     }
                     item {
                         DishCard().BasicCardPreview(
@@ -115,10 +127,7 @@ fun Preferits(navController: NavController)
                             R.drawable.pasta,
                             navController
                         )
-
                     }
-
-
                 }
             }
         },
@@ -128,24 +137,26 @@ fun Preferits(navController: NavController)
                 }
 },
         bottomBar = {
-
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                IconButton(onClick = { navController.navigate("main_page") }) {
-                    val painter = painterResource(id = R.drawable.preferits)
-                    Icon(painter = painter, contentDescription = "First Icon")
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                content = {
+                    IconButton(onClick = { navController.navigate("main_page") }) {
+                        val painter = painterResource(id = R.drawable.preferits)
+                        Icon(painter = painter, contentDescription = "First Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    }
+                    IconButton(onClick = { navController.navigate("main_page") }) {
+                        val painter = painterResource(id = R.drawable.descobrir)
+                        Icon(painter = painter, contentDescription = "Second Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    }
+                    IconButton(onClick = { navController.navigate("map") }) {
+                        val painter = painterResource(id = R.drawable.botiga)
+                        Icon(painter = painter, contentDescription = "Third Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    }
                 }
-                IconButton(onClick = { navController.navigate("main_page") }) {
-                    val painter = painterResource(id = R.drawable.descobrir)
-                    Icon(painter = painter, contentDescription = "Second Icon")
-                }
-                IconButton(onClick = { navController.navigate("map") }) {
-                    val painter = painterResource(id = R.drawable.botiga)
-                    Icon(painter = painter, contentDescription = "Third Icon")
-                }
-            }
+            )
         }
     )
 }

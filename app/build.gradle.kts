@@ -61,6 +61,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation ("io.coil-kt:coil-compose:1.4.0")
+    implementation ("androidx.compose.ui:ui:1.6.3")
+    implementation ("androidx.compose.material:material:1.6.3")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.6")
     implementation ("com.google.android.gms:play-services-maps:17.0.1") // google maps
     implementation ("com.google.maps.android:maps-compose-utils:4.2.0")// google maps

@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -109,21 +110,24 @@ fun MapScreen(navController: NavController) {
         bottomBar = {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                IconButton(onClick = { navController.navigate("main_page") }) {
-                    val painter = painterResource(id = R.drawable.preferits)
-                    Icon(painter = painter, contentDescription = "First Icon")
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                content = {
+                    IconButton(onClick = { navController.navigate("main_page") }) {
+                        val painter = painterResource(id = R.drawable.preferits)
+                        Icon(painter = painter, contentDescription = "First Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    }
+                    IconButton(onClick = { navController.navigate("main_page") }) {
+                        val painter = painterResource(id = R.drawable.descobrir)
+                        Icon(painter = painter, contentDescription = "Second Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    }
+                    IconButton(onClick = { navController.navigate("map") }) {
+                        val painter = painterResource(id = R.drawable.botiga)
+                        Icon(painter = painter, contentDescription = "Third Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    }
                 }
-                IconButton(onClick = { navController.navigate("main_page") }) {
-                    val painter = painterResource(id = R.drawable.descobrir)
-                    Icon(painter = painter, contentDescription = "Second Icon")
-                }
-                IconButton(onClick = { navController.navigate("map") }) {
-                    val painter = painterResource(id = R.drawable.botiga)
-                    Icon(painter = painter, contentDescription = "Third Icon")
-                }
-            }
+            )
         }
     )
 }

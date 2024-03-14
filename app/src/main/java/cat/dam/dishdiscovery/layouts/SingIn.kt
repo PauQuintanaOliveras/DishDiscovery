@@ -29,9 +29,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.window.Dialog
 
 @Composable
 fun SignIn(navController: NavController) {
@@ -42,6 +45,7 @@ fun SignIn(navController: NavController) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val signInScreenViewModel: SignInScreenViewModel = viewModel()
+    val signInSuccessful = remember { mutableStateOf(false) }
 
     // Add rotation state for the logo
     val rotationState = remember { mutableStateOf(0f) }
@@ -110,6 +114,7 @@ fun SignIn(navController: NavController) {
         Button(onClick = {
             signInScreenViewModel.signIn(email.value.text, password.value.text) {
                 signInScreenViewModel.createUser()
+                signInSuccessful.value = true
                 navController.navigate("main_page")
             }
             /*if (!isValidInput(username.value.text) || !isValidInput(password.value.text)) {
@@ -146,4 +151,16 @@ fun SignIn(navController: NavController) {
         }
     }
     SnackbarHost(hostState = snackbarHostState)
+
+
+    if (signInSuccessful.value) {
+        Dialog(onDismissRequest = { signInSuccessful.value = false }) {
+            Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
+                Image(
+                    painter = painterResource(id = R.drawable.tick), // Replace with your tick image resource
+                    contentDescription = "Sign In Successful"
+                )
+            }
+        }
+    }
 }
