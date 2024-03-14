@@ -82,7 +82,7 @@ fun Preferits(navController: NavController)
                     }
                 },
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer // color de fondo del TopAppBar
-            )
+            ) //hola
         },
         content = {
             Box(modifier = Modifier.fillMaxSize()) {
