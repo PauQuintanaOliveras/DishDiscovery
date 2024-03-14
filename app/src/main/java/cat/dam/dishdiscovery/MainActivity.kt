@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import cat.dam.dishdiscovery.layouts.MapScreen
 import cat.dam.dishdiscovery.layouts.Preferits
 import cat.dam.dishdiscovery.layouts.RecoverPassword
+import cat.dam.dishdiscovery.layouts.SettingsScreen
 import cat.dam.dishdiscovery.layouts.SignIn
 import cat.dam.dishdiscovery.layouts.ViewRecipeScreen
 import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-           val startDestination = if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) "login_screen" else "login_screen"
+            val startDestination = if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) "login_screen" else "login_screen"
             DishDiscoveryTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
@@ -39,17 +40,10 @@ class MainActivity : ComponentActivity() {
                         composable("view_recipe_screen") { ViewRecipeScreen() }
                         composable("create_recipe") { CreateRecipe() }
                         composable("map") { MapScreen(navController) }
+                        composable("Settings") { SettingsScreen(navController) }
                     }
                 }
             }
         }
     }
 }
-
-
-
-
-
-
-
-

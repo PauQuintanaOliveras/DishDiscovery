@@ -18,16 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import cat.dam.dishdiscovery.R
 
-@Preview(showBackground = true)
+
 @Composable
 fun SettingsScreen(
-//default values for the preview
+    navController: NavController, // Add this line
     userName: String = "John Doe",
     password: String = "********",
     onRecipesClick: () -> Unit = {},
-    onDarkModeToggle: (Boolean) -> Unit = {},
     onReturnClick: () -> Unit = {},
 ) {
     val darkModeState = remember { mutableStateOf(false) }
@@ -50,15 +50,8 @@ fun SettingsScreen(
                 Text(text = "Les Meves Receptes")
             }
             Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
-            Switch(
-                checked = darkModeState.value,
-                onCheckedChange = { isChecked ->
-                    darkModeState.value = isChecked
-                    onDarkModeToggle(isChecked)
-                }
-            )
             Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
-            Button(onClick = onReturnClick) {
+            Button(onClick = { navController.navigate("main_page") }) {
                 Text(text = "Retornar")
             }
             Spacer(modifier = Modifier.weight(1f)) // This will push the content to the top and fill the remaining space

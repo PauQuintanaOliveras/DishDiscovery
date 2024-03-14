@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -66,7 +68,7 @@ fun Preferits(navController: NavController)
                         placeholder = { Text("Cercar Receptes Guardades") },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
-                            textColor = MaterialTheme.colorScheme.onSurface, // color del texto
+                            textColor = MaterialTheme.colorScheme.onSurface,
                             backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                             cursorColor = MaterialTheme.colorScheme.onPrimary,
                             focusedIndicatorColor = Color.Transparent,
@@ -77,12 +79,12 @@ fun Preferits(navController: NavController)
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle navigation icon press */ }) {
-                        Icon(Icons.Filled.Menu, contentDescription = "Navigation Icon")
+                    IconButton(onClick = { navController.navigate("Settings") }) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Settings Icon")
                     }
                 },
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer // color de fondo del TopAppBar
-            ) //hola
+            )
         },
         content = {
             Box(modifier = Modifier.fillMaxSize()) {
