@@ -1,4 +1,4 @@
-package cat.dam.dishdiscovery
+package cat.dam.dishdiscovery.objects
 
 data class User(
     val uuid: String?,
