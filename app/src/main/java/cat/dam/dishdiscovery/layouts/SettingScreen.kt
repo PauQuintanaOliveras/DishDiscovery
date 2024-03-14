@@ -41,20 +41,20 @@ fun SettingsScreen(
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
+            Spacer(modifier = Modifier.height(32.dp))
             Text(text = "Nombre de usuario: $userName")
-            Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
+            Spacer(modifier = Modifier.height(32.dp))
             Text(text = "Contraseña: ${"*".repeat(password.length)}")
-            Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
+            Spacer(modifier = Modifier.height(32.dp))
             Button(onClick = onRecipesClick) {
                 Text(text = "Les Meves Receptes")
             }
-            Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
-            Spacer(modifier = Modifier.height(32.dp)) // Increased spacer height
+            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             Button(onClick = { navController.navigate("main_page") }) {
                 Text(text = "Retornar")
             }
-            Spacer(modifier = Modifier.weight(1f)) // This will push the content to the top and fill the remaining space
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
