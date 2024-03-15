@@ -1,23 +1,33 @@
 package cat.dam.dishdiscovery.layouts
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.location.Location
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
@@ -25,7 +35,20 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.Task
 import cat.dam.dishdiscovery.R
+
+class GeoLocator(private val activity: Activity) {
+    private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
+
+    fun getLocation(): Task<Location> {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        }
+        return fusedLocationClient.lastLocation
+    }
+}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -34,6 +57,7 @@ fun MapScreen(navController: NavController) {
     val mapView = rememberMapViewWithLifecycle(context)
     var searchText by remember { mutableStateOf("") }
     data class Supermarket(val name: String, val location: LatLng)
+    var expanded by remember { mutableStateOf(false) }
 
     val supermarkets = listOf(
         Supermarket("bonarea", LatLng(42.13622150672607, 2.7653458675980644)),
@@ -71,38 +95,81 @@ fun MapScreen(navController: NavController) {
         Supermarket("dia", LatLng(41.974096852447246, 2.8234526262360893))
     )
 
+    val supermarketColors = mapOf(
+        "bonarea" to Color.Red,
+        "spar" to Color.Green,
+        "mercadona" to Color.Blue,
+        "lidl" to Color.Yellow,
+        "caprabo" to Color.Magenta,
+        "condis" to Color.Cyan,
+        "esclat" to Color(0xFFA52A2A),
+        "aldi" to Color(0xFF808080),
+        "consum" to Color.White,
+        "dia" to Color(0xFF00FF00)
+    )
+
     Scaffold(
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(16.dp))
-            ) {
-                TextField(
-                    value = searchText,
-                    onValueChange = { searchText = it },
-                    label = { Text("Buscar") },
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
                         .fillMaxSize()
+                        .clip(RoundedCornerShape(16.dp))
                 ) {
+                    TextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        label = { Text("Buscar") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+
                     AndroidView({ mapView }) { mapView ->
                         MapsInitializer.initialize(context)
                         mapView.getMapAsync { googleMap ->
-                            val initialLocation = LatLng(42.11849452583105, 2.7650268955548842)
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLocation, 10f))
+                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                googleMap.isMyLocationEnabled = true
+                            }
 
                             supermarkets.forEach { supermarket ->
-                                val markerIcon = getMarkerIconFromDrawable(context, supermarket.name.toLowerCase().replace(" ", "_"), 100, 100)
-                                googleMap.addMarker(MarkerOptions().position(supermarket.location).title(supermarket.name).icon(markerIcon))
+                                val color = supermarketColors[supermarket.name] ?: Color.Black
+                                val hue = colorToHue(color)
+                                val bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(hue)
+                                googleMap.addMarker(MarkerOptions().position(supermarket.location).title(supermarket.name).icon(bitmapDescriptor))
+                            }
+
+                            val activity = (context as Activity)
+                            val geoLocator = GeoLocator(activity)
+                            geoLocator.getLocation().addOnSuccessListener { location ->
+                                if (location != null) {
+                                    val currentLocation = LatLng(location.latitude, location.longitude)
+                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10f))
+                                }
                             }
                         }
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .padding(8.dp)
+                ) {
+                    supermarketColors.forEach { (supermarket, color) ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .background(color)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(supermarket, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
@@ -151,17 +218,8 @@ fun rememberMapViewWithLifecycle(context: Context): MapView {
     return mapView
 }
 
-fun getMarkerIconFromDrawable(context: Context, drawableName: String, width: Int, height: Int): BitmapDescriptor {
-    val drawableId = context.resources.getIdentifier(drawableName, "drawable", context.packageName)
-    if (drawableId != 0) {
-        val drawable = ContextCompat.getDrawable(context, drawableId)
-        drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-        val bitmap = Bitmap.createBitmap(drawable?.intrinsicWidth ?: 0, drawable?.intrinsicHeight ?: 0, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        drawable?.draw(canvas)
-        val resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false)
-        return BitmapDescriptorFactory.fromBitmap(resizedBitmap)
-    } else {
-        return BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
-    }
+fun colorToHue(color: Color): Float {
+    val hsv = FloatArray(3)
+    android.graphics.Color.colorToHSV(color.toArgb(), hsv)
+    return hsv[0]
 }

@@ -67,11 +67,11 @@ dependencies {
     implementation ("com.google.android.gms:play-services-maps:17.0.1") // google maps
     implementation ("com.google.maps.android:maps-compose-utils:4.2.0")// google maps
     implementation ("com.google.maps.android:maps-compose-widgets:4.2.0")// google maps
+    implementation ("com.google.android.gms:play-services-location:21.2.0") // google maps
 
     implementation("com.google.maps.android:maps-compose:4.2.0") // google maps
 
     implementation ("androidx.appcompat:appcompat:1.4.1")
-    implementation ("com.google.android.gms:play-services-location:18.0.0")
     implementation(platform("com.google.firebase:firebase-bom:32.7.1")) //firebase
     implementation("com.google.firebase:firebase-analytics") //firebase analytics
     implementation("com.google.firebase:firebase-firestore") //firebase firestore
