@@ -1,6 +1,7 @@
 package cat.dam.dishdiscovery.layouts
 
 import android.content.ContentValues
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -62,9 +63,28 @@ fun CreateRecipe() {
             selectedImageUri = uri
         }
     val takePictureLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture()) { success ->
-            if (success) {
-                selectedImageUri = imageUri.value
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+            if (bitmap != null) {
+                val filename = System.currentTimeMillis().toString()
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                    }
+                }
+
+                val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                val uri = context.contentResolver.insert(contentUri, contentValues)
+
+                if (uri != null) {
+                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                    }
+                    selectedImageUri = uri
+                } else {
+                    Toast.makeText(context, "Failed to save picture", Toast.LENGTH_LONG).show()
+                }
             } else {
                 Toast.makeText(context, "Failed to take picture", Toast.LENGTH_LONG).show()
             }
@@ -86,8 +106,8 @@ fun CreateRecipe() {
                 val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 imageUri.value = context.contentResolver.insert(contentUri, contentValues)
 
-                if (imageUri.value != null) {
-                    takePictureLauncher.launch(imageUri.value)
+                if (isGranted) {
+                    takePictureLauncher.launch(null)
                 }
             } else {
                 Toast.makeText(context, "Camera permission is required to take pictures", Toast.LENGTH_LONG).show()
@@ -155,7 +175,7 @@ fun CreateRecipe() {
             )
         } else {
             Image(
-                painter = painterResource(id = R.drawable.testimage),
+                painter = painterResource(id = R.drawable.pasta),
                 contentDescription = "Placeholder image",
                 modifier = Modifier
                     .height(200.dp)
