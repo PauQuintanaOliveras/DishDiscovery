@@ -37,6 +37,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import cat.dam.dishdiscovery.R
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import com.google.android.gms.maps.model.MapStyleOptions
 
 class GeoLocator(private val activity: Activity) {
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
@@ -58,8 +62,10 @@ fun MapScreen(navController: NavController) {
     var searchText by remember { mutableStateOf("") }
     data class Supermarket(val name: String, val location: LatLng)
     var expanded by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
-    val supermarkets = listOf(
+
+        val supermarkets = listOf(
         Supermarket("bonarea", LatLng(42.13622150672607, 2.7653458675980644)),
         Supermarket("spar", LatLng(42.11785254564711, 2.76323113769396)),
         Supermarket("mercadona", LatLng(42.1143974396487, 2.77564919536588)),
@@ -111,65 +117,72 @@ fun MapScreen(navController: NavController) {
     Scaffold(
         content = {
             Box(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(16.dp))
-                ) {
-                    TextField(
-                        value = searchText,
-                        onValueChange = { searchText = it },
-                        label = { Text("Buscar") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
+                AndroidView({ mapView }, modifier = Modifier.padding(bottom = 56.dp)) { mapView ->
+                    MapsInitializer.initialize(context)
+                    mapView.getMapAsync { googleMap ->
+                        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style))
+                        googleMap.uiSettings.isZoomControlsEnabled = true
 
-                    AndroidView({ mapView }) { mapView ->
-                        MapsInitializer.initialize(context)
-                        mapView.getMapAsync { googleMap ->
-                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                googleMap.isMyLocationEnabled = true
-                            }
+                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                            ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            googleMap.isMyLocationEnabled = true
+                        }
 
-                            supermarkets.forEach { supermarket ->
-                                val color = supermarketColors[supermarket.name] ?: Color.Black
-                                val hue = colorToHue(color)
-                                val bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(hue)
-                                googleMap.addMarker(MarkerOptions().position(supermarket.location).title(supermarket.name).icon(bitmapDescriptor))
-                            }
+                        supermarkets.forEach { supermarket ->
+                            val color = supermarketColors[supermarket.name] ?: Color.Black
+                            val hue = colorToHue(color)
+                            val bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(hue)
+                            googleMap.addMarker(MarkerOptions().position(supermarket.location).title(supermarket.name).icon(bitmapDescriptor))
+                        }
 
-                            val activity = (context as Activity)
-                            val geoLocator = GeoLocator(activity)
-                            geoLocator.getLocation().addOnSuccessListener { location ->
-                                if (location != null) {
-                                    val currentLocation = LatLng(location.latitude, location.longitude)
-                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10f))
-                                }
+                        val activity = (context as Activity)
+                        val geoLocator = GeoLocator(activity)
+                        geoLocator.getLocation().addOnSuccessListener { location ->
+                            if (location != null) {
+                                val currentLocation = LatLng(location.latitude, location.longitude)
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10f))
                             }
                         }
                     }
                 }
 
+
                 Column(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
+                        .align(Alignment.TopStart)
                         .padding(16.dp)
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .background(Color.White)
                         .padding(8.dp)
                 ) {
-                    supermarketColors.forEach { (supermarket, color) ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .background(color)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(supermarket, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
+                    IconButton(onClick = { showDialog = true }) {
+                        Icon(Icons.Filled.ArrowDropDown, contentDescription = "Expand Legend")
+                    }
+
+                    if (showDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showDialog = false },
+                            title = { Text("Legend") },
+                            text = {
+                                Column {
+                                    supermarketColors.forEach { (supermarket, color) ->
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(16.dp)
+                                                    .background(color)
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(supermarket, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                        }
+                                    }
+                                }
+                            },
+                            confirmButton = {
+                                Button(onClick = { showDialog = false }) {
+                                    Text("Close")
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -214,7 +227,6 @@ fun rememberMapViewWithLifecycle(context: Context): MapView {
             mapView.onDestroy()
         }
     }
-
     return mapView
 }
 
