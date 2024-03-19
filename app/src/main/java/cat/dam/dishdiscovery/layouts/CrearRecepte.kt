@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -38,11 +40,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.NavController
 import cat.dam.dishdiscovery.R
 import coil.compose.rememberImagePainter
 
@@ -55,7 +57,6 @@ fun CreateRecipe() {
     val productState = remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val imageUri = remember { mutableStateOf<Uri?>(null) }
-
 
 
     val selectImageLauncher =
@@ -110,7 +111,11 @@ fun CreateRecipe() {
                     takePictureLauncher.launch(null)
                 }
             } else {
-                Toast.makeText(context, "Camera permission is required to take pictures", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "Camera permission is required to take pictures",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     val requestWriteExternalStoragePermissionLauncher =
@@ -118,7 +123,11 @@ fun CreateRecipe() {
             if (isGranted) {
                 // Permission granted, you can write to external storage here
             } else {
-                Toast.makeText(context, "Write external storage permission is required", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "Write external storage permission is required",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     Column(
@@ -142,7 +151,11 @@ fun CreateRecipe() {
         Spacer(modifier = Modifier.height(11.dp))
         TextField(
             value = textState.value,
-            onValueChange = { textState.value = it },
+            onValueChange = { newValue ->
+                if (!newValue.contains("\n")) {
+                    textState.value = newValue
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
@@ -154,7 +167,10 @@ fun CreateRecipe() {
                     fontSize = 10.sp,
                     onTextLayout = {}
                 )
-            }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { /* Handle action */ })
+
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -193,7 +209,7 @@ fun CreateRecipe() {
             ) {
                 Text(
                     text = "Galeria",
-                onTextLayout = {}
+                    onTextLayout = {}
                 )
 
             }
