@@ -146,7 +146,6 @@ fun MapScreen(navController: NavController) {
                     }
                 }
 
-
                 Column(
                     modifier = Modifier
                         .align(Alignment.TopStart)

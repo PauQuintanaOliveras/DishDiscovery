@@ -20,15 +20,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cat.dam.dishdiscovery.R
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 
 @Composable
 fun SettingsScreen(
-    navController: NavController, // Add this line
-    userName: String = "John Doe",
+    navController: NavController,
+    userName: String = getUser(),
     password: String = "********",
     onRecipesClick: () -> Unit = {},
-    onReturnClick: () -> Unit = {},
 ) {
     val darkModeState = remember { mutableStateOf(false) }
 
@@ -42,9 +43,9 @@ fun SettingsScreen(
                     .align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Text(text = "Nombre de usuario: $userName")
+            Text(text = "Nom d'Usuari: $userName")
             Spacer(modifier = Modifier.height(32.dp))
-            Text(text = "Contraseña: ${"*".repeat(password.length)}")
+            Text(text = "Contrasenya: ${"*".repeat(password.length)}")
             Spacer(modifier = Modifier.height(32.dp))
             Button(onClick = onRecipesClick) {
                 Text(text = "Les Meves Receptes")
@@ -54,7 +55,22 @@ fun SettingsScreen(
             Button(onClick = { navController.navigate("main_page") }) {
                 Text(text = "Retornar")
             }
+            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+            Button(onClick = { delteUser() }) {
+                Text(text = "Eliminar Compte")
+            }
             Spacer(modifier = Modifier.weight(1f))
         }
     }
+}
+
+fun getUser():  String {
+    val client = Firebase.auth.currentUser
+    return client?.email.toString()
+}
+
+fun delteUser() {
+    val client = Firebase.auth.currentUser
+    client?.delete()
 }

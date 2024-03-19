@@ -19,11 +19,19 @@ import cat.dam.dishdiscovery.layouts.SettingsScreen
 import cat.dam.dishdiscovery.layouts.SignIn
 import cat.dam.dishdiscovery.layouts.ViewRecipeScreen
 import cat.dam.dishdiscovery.ui.theme.DishDiscoveryTheme
+import com.google.firebase.appcheck.ktx.appCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        Firebase.initialize(context = this)
+        Firebase.appCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance(),
+        )
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
