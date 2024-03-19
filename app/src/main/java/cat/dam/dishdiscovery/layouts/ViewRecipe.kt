@@ -38,7 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cat.dam.dishdiscovery.Ingridient
+import cat.dam.dishdiscovery.objects.Ingridient
 import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.R
 

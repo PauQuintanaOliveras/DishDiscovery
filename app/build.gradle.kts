@@ -73,6 +73,7 @@ dependencies {
 
     implementation ("androidx.appcompat:appcompat:1.4.1")
     implementation(platform("com.google.firebase:firebase-bom:32.7.1")) //firebase
+
     implementation("com.google.firebase:firebase-analytics") //firebase analytics
     implementation("com.google.firebase:firebase-firestore") //firebase firestore
     implementation("com.google.firebase:firebase-auth:22.3.1") //firebase authentication
