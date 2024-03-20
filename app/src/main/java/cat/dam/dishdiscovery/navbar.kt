@@ -20,7 +20,7 @@ fun navbar(navController: NavController, current: Int){
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primaryContainer),
         content = {
-            IconButton(onClick = { navController.navigate("main_page") },
+            IconButton(onClick = { navController.navigate("preferits") },
                 modifier = Modifier.background(if(current == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer)) {
                 val painter = painterResource(id = R.drawable.preferits)
 

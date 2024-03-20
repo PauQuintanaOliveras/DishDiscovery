@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -39,7 +37,8 @@ class DishCard {
         tag: String = "none",
         dishDescription: String = "none",
         dishImage: Int = R.drawable.ic_launcher_background,
-        navController: NavController
+        navController: NavController,
+        isPreferits: Boolean
     ) {
         ElevatedCard(
             modifier = Modifier
@@ -63,9 +62,11 @@ class DishCard {
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(6.dp, 6.dp, 0.dp, 0.dp),
-                        imageVector = Icons.Outlined.Favorite,
+                        painter = if (isPreferits) painterResource(id = R.drawable.outline_favorite_24) else painterResource(
+                            id = R.drawable.outline_favorite_border_24),
                         contentDescription = "Favorite",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
+
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {

@@ -48,7 +48,7 @@ const val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, m
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Preferits(navController: NavController)
+fun Preferits(navController: NavController, isPreferits: Boolean)
 {
     Scaffold(
         topBar = {
@@ -61,7 +61,7 @@ fun Preferits(navController: NavController)
                     TextField(
                         value = searchText,
                         onValueChange = { searchText = it },
-                        placeholder = { Text("Cercar Receptes Guardades") },
+                        placeholder = { Text(if (isPreferits)"Cercar Receptes Guardades" else "Cercar Receptes") },
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             textColor = MaterialTheme.colorScheme.onSurface,
@@ -102,7 +102,8 @@ fun Preferits(navController: NavController)
                             "Sandvitx",
                             descripcioSandvitx,
                             R.drawable.sandwich,
-                            navController
+                            navController,
+                            isPreferits
                         )
 
                     }
@@ -114,7 +115,8 @@ fun Preferits(navController: NavController)
                             "Sopar",
                             decripcioSopar,
                             R.drawable.sopa,
-                            navController
+                            navController,
+                            isPreferits
                         )
                     }
                     item {
@@ -125,7 +127,8 @@ fun Preferits(navController: NavController)
                             "Pasta",
                             descripcioPasta,
                             R.drawable.pasta,
-                            navController
+                            navController,
+                            isPreferits
                         )
                     }
                 }
@@ -164,5 +167,5 @@ fun Preferits(navController: NavController)
 @Preview
 @Composable
 fun PreviewScaffoldWithTopBarAndButtonBar() {
-    Preferits(rememberNavController())
+    Preferits(rememberNavController(), isPreferits = true)
 }

@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package cat.dam.dishdiscovery.layouts
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.net.Uri
@@ -26,8 +29,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -46,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import cat.dam.dishdiscovery.R
+import cat.dam.dishdiscovery.objects.Ingridient
 import coil.compose.rememberImagePainter
 
 
@@ -336,6 +343,34 @@ fun CreateRecipe() {
             Text(text = "Fet",
                 fontSize = 10.sp,
                 onTextLayout = {})
+        }
+    }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun searchbar(
+    searchQuery: String,
+    searchResult: List<Ingridient>,
+    onSearchQueryChange: (String) -> Unit
+) {
+    var text by remember { mutableStateOf("") }
+    var active by remember { mutableStateOf(false) }
+    Scaffold(
+
+    ) {
+        SearchBar(
+            query = text,
+            onQueryChange ={text = it},
+            onSearch = {active = false},
+            active = active,
+            onActiveChange = {active = it},
+            placeholder = { Text("Cerca un ingredient") },
+            trailingIcon = {}
+        ) {
+
         }
     }
 }

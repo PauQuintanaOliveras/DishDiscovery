@@ -11,7 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.layouts.CreateRecipe
 import cat.dam.dishdiscovery.layouts.LogInScreen
-import androidx.compose.runtime.Composable
 import cat.dam.dishdiscovery.layouts.MapScreen
 import cat.dam.dishdiscovery.layouts.Preferits
 import cat.dam.dishdiscovery.layouts.RecoverPassword
@@ -45,7 +44,8 @@ class MainActivity : ComponentActivity() {
                         composable("login_screen") { LogInScreen(navController) }
                         composable("sign_in_screen") { SignIn(navController) }
                         composable("recover_password_screen") { RecoverPassword() }
-                        composable("main_page") { Preferits(navController) }
+                        composable("main_page") { Preferits(navController,false) }
+                        composable("preferits") { Preferits(navController,true) }
                         composable("view_recipe_screen") { ViewRecipeScreen() }
                         composable("create_recipe") { CreateRecipe() }
                         composable("map") { MapScreen(navController) }
