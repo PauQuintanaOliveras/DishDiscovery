@@ -5,9 +5,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TextField
@@ -39,12 +38,55 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.DishCard
+import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.R
 import cat.dam.dishdiscovery.navbar
+import cat.dam.dishdiscovery.objects.Diet
+import cat.dam.dishdiscovery.objects.Dish
+import cat.dam.dishdiscovery.objects.DishHeader
+import cat.dam.dishdiscovery.objects.Ingridient
+import cat.dam.dishdiscovery.objects.MealType
+import cat.dam.dishdiscovery.objects.Tag
+import cat.dam.dishdiscovery.objects.User
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
-const val descripcioSandvitx="Tros de pa obert per la meitat o dues llesques de pa amb embotit, formatge o un altre menjar a dins"
-const val decripcioSopar="Plat típic de la cuina japonesa que consisteix en una sopa feta amb brou de carn o verdures i salsa de soja al que s'afegeixen uns fideus llargs"
-const val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, més gruixut que el fideu."
+val client = Firebase.auth.currentUser?.uid
+val descripcioSandvitx="Tros de pa obert per la meitat o dues llesques de pa amb embotit, formatge o un altre menjar a dins"
+val descripcioSopar="Plat típic de la cuina japonesa que consisteix en una sopa feta amb brou de carn o verdures i salsa de soja al que s'afegeixen uns fideus llargs"
+val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, més gruixut que el fideu."
+
+val diets = listOf(
+    Diet("Vegana"),
+    Diet("Vegatariana"),
+    Diet("Carnivora")
+)
+val ingridient = Ingridient("Ingridient1")
+val mesurement = Mesurement("unit", 1f)
+val mapingmes = mapOf<Ingridient,Mesurement>(ingridient to mesurement)
+val dish = Dish("very hard elabotarion",4,"http://nowhere.com", mapingmes)
+val author = User(client,"Username",false, listOf("dish1","dish2"),"mealplaner",false, listOf("dish1","dish2"))
+val mealType = MealType("Lunch")
+val tags = listOf(
+    Tag("yummy"),
+    Tag("veryEasy")
+)
+val dishHeaders = listOf(
+    DishHeader(diets, dish, author, descripcioSandvitx, "Dish1","imageName", mealType,false,true,
+        tags),
+    DishHeader(diets, dish, author, descripcioSopar, "Dish2","imageName", mealType,false,true,
+        tags),
+DishHeader(diets, dish, author, descripcioPasta, "Dish3","imageName", mealType,false,true,
+    tags),
+    DishHeader(diets, dish, author, descripcioSandvitx, "Dish4","imageName", mealType,false,true,
+        tags),
+    DishHeader(diets, dish, author, descripcioSandvitx, "Dish5","imageName", mealType,false,true,
+        tags),
+    DishHeader(diets, dish, author, descripcioSandvitx, "Dish6","imageName", mealType,false,true,
+        tags),
+    DishHeader(diets, dish, author, descripcioSandvitx, "Dish7","imageName", mealType,false,true,
+        tags),
+)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,46 +132,26 @@ fun Preferits(navController: NavController, isPreferits: Boolean)
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-                LazyColumn(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(30.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    item {
-                        DishCard().BasicCardPreview(
-                            "Sandvitx",
-                            descripcioSandvitx,
-                            R.drawable.sandwich,
-                            navController,
-                            isPreferits
-                        )
+                Box(modifier = Modifier.fillMaxSize().padding(top = 80.dp)) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(30.dp),
 
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(40.dp))
-                    }
-                    item {
-                        DishCard().BasicCardPreview(
-                            "Sopar",
-                            decripcioSopar,
-                            R.drawable.sopa,
-                            navController,
-                            isPreferits
-                        )
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(40.dp))
-                    }
-                    item {
-                        DishCard().BasicCardPreview(
-                            "Pasta",
-                            descripcioPasta,
-                            R.drawable.pasta,
-                            navController,
-                            isPreferits
-                        )
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        for (header in dishHeaders) {
+                            item {
+                                DishCard().BasicCardPreview(
+                                    header.dishName,
+                                    header.dishDescription,
+                                    R.drawable.sandwich,
+                                    navController,
+                                    isPreferits
+                                )
+                                Spacer(modifier = Modifier.size(25.dp))
+                            }
+                        }
                     }
                 }
             }
