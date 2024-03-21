@@ -376,7 +376,6 @@ fun searchbar(
             placeholder = { Text("Cerca un ingredient") },
             trailingIcon = {}
         ) {
-
         }
     }
 }

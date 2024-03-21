@@ -2,19 +2,30 @@ package cat.dam.dishdiscovery.layouts
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.ModalDrawer
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.rememberDrawerState
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -26,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +62,7 @@ import cat.dam.dishdiscovery.objects.Tag
 import cat.dam.dishdiscovery.objects.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.launch
 
 val client = Firebase.auth.currentUser?.uid
 val descripcioSandvitx="Tros de pa obert per la meitat o dues llesques de pa amb embotit, formatge o un altre menjar a dins"
@@ -90,102 +103,167 @@ DishHeader(diets, dish, author, descripcioPasta, "Dish3","imageName", mealType,f
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Preferits(navController: NavController, isPreferits: Boolean)
-{
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                modifier = Modifier
-                    .padding(top = 50.dp)
-                    .clip(RoundedCornerShape(60.dp)),
-                title = {
-                    var searchText by remember { mutableStateOf("") }
-                    TextField(
-                        value = searchText,
-                        onValueChange = { searchText = it },
-                        placeholder = { Text(if (isPreferits)"Cercar Receptes Guardades" else "Cercar Receptes") },
-                        singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = MaterialTheme.colorScheme.onSurface,
-                            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                            cursorColor = MaterialTheme.colorScheme.onPrimary,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        ),
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigate("Settings") }) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Settings Icon")
-                    }
-                },
-                backgroundColor = MaterialTheme.colorScheme.primaryContainer // color de fondo del TopAppBar
-            )
-        },
-        content = {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Image(
-                    painter = painterResource(id = R.drawable.fonsblurred5),
-                    contentDescription = "Background",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-                Box(modifier = Modifier.fillMaxSize().padding(top = 80.dp)) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(30.dp),
+fun Preferits(navController: NavController, isPreferits: Boolean) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    var selectedFilters by remember { mutableStateOf(listOf<String>()) }
 
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        for (header in dishHeaders) {
-                            item {
-                                DishCard().BasicCardPreview(
-                                    header.dishName,
-                                    header.dishDescription,
-                                    R.drawable.sandwich,
-                                    navController,
-                                    isPreferits
-                                )
-                                Spacer(modifier = Modifier.size(25.dp))
-                            }
+    ModalDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer)) {
+                Column {
+                    Text("Filtros seleccionados", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    ChipGroup(items = selectedFilters, onChipClick = { filter ->
+                        selectedFilters = selectedFilters.filter { it != filter }
+                    })
+
+                    Text("Dietas", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    ChipGroup(items = listOf("Vegana", "Vegetariana"), onChipClick = { filter ->
+                        if (selectedFilters.contains(filter)) {
+                            selectedFilters = selectedFilters.filter { it != filter }
+                        } else {
+                            selectedFilters = selectedFilters + filter
                         }
+                    })
+
+                    Text("Tipos de Comida", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    ChipGroup(items = listOf("Desayuno", "Almuerzo"), onChipClick = { filter ->
+                        if (selectedFilters.contains(filter)) {
+                            selectedFilters = selectedFilters.filter { it != filter }
+                        } else {
+                            selectedFilters = selectedFilters + filter
+                        }
+                    })
+
+                    Text("Ingredientes", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    ChipGroup(items = listOf("Tomate", "Bistec"), onChipClick = { filter ->
+                        if (selectedFilters.contains(filter)) {
+                            selectedFilters = selectedFilters.filter { it != filter }
+                        } else {
+                            selectedFilters = selectedFilters + filter
+                        }
+                    })
+                    ChipGroup(items = listOf("Pollo", "Pescado"), onChipClick = { filter ->
+                        if (selectedFilters.contains(filter)) {
+                            selectedFilters = selectedFilters.filter { it != filter }
+                        } else {
+                            selectedFilters = selectedFilters + filter
+                        }
+                    })
+
+                    Button(onClick = { /* Aquí va la lógica para aplicar los filtros */ }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                        Text("Aplicar")
                     }
                 }
             }
         },
-        floatingActionButton = {
-                FloatingActionButton(onClick = { navController.navigate("create_recipe")}) {
-                    Icon(Icons.Filled.Add, contentDescription = "Add")
-                }
-},
-        bottomBar = {
-           navbar(navController = navController, current = 2)
-           /* Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+        content = {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        modifier = Modifier
+                            .padding(top = 50.dp)
+                            .clip(RoundedCornerShape(60.dp)),
+                        title = {
+                            var searchText by remember { mutableStateOf("") }
+                            TextField(
+                                value = searchText,
+                                onValueChange = { searchText = it },
+                                placeholder = { Text(if (isPreferits)"Cercar Receptes Guardades" else "Cercar Receptes") },
+                                singleLine = true,
+                                colors = TextFieldDefaults.textFieldColors(
+                                    textColor = MaterialTheme.colorScheme.onSurface,
+                                    backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent
+                                ),
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                            )
+                        },
+
+                        navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Filled.Menu, contentDescription = "Menu Icon")
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { navController.navigate("Settings") }) {
+                                Icon(Icons.Filled.Settings, contentDescription = "Settings Icon")
+                            }
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                },
                 content = {
-                    IconButton(onClick = { navController.navigate("main_page") }) {
-                        val painter = painterResource(id = R.drawable.preferits)
-                        Icon(painter = painter, contentDescription = "First Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Image(
+                            painter = painterResource(id = R.drawable.fonsblurred5),
+                            contentDescription = "Background",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                        Box(modifier = Modifier.fillMaxSize().padding(top = 80.dp)) {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(30.dp),
+
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                for (header in dishHeaders) {
+                                    item {
+                                        DishCard().BasicCardPreview(
+                                            header.dishName,
+                                            header.dishDescription,
+                                            R.drawable.sandwich,
+                                            navController,
+                                            isPreferits
+                                        )
+                                        Spacer(modifier = Modifier.size(25.dp))
+                                    }
+                                }
+                            }
+                        }
                     }
-                    IconButton(onClick = { navController.navigate("main_page") }) {
-                        val painter = painterResource(id = R.drawable.descobrir)
-                        Icon(painter = painter, contentDescription = "Second Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                },
+                floatingActionButton = {
+                    FloatingActionButton(onClick = { navController.navigate("create_recipe")}) {
+                        Icon(Icons.Filled.Add, contentDescription = "Add")
                     }
-                    IconButton(onClick = { navController.navigate("map") }) {
-                        val painter = painterResource(id = R.drawable.botiga)
-                        Icon(painter = painter, contentDescription = "Third Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                    }
+                },
+                bottomBar = {
+                    navbar(navController = navController, current = 2)
                 }
             )
-        */}
+        }
     )
 }
+
+@Composable
+fun Chip(modifier: Modifier = Modifier, text: String, onChipClick: (String) -> Unit) {
+    Box(
+        modifier = modifier
+            .clickable { onChipClick(text) }
+            .border(1.dp, Color.Gray, RoundedCornerShape(50))
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(text = text)
+    }
+}
+
+@Composable
+fun ChipGroup(items: List<String>, onChipClick: (String) -> Unit = {}) {
+    LazyRow {
+        items(items) { item ->
+            Chip(modifier = Modifier.padding(8.dp), text = item, onChipClick = onChipClick)
+        }
+    }
+}
+
+
 @Preview
 @Composable
 fun PreviewScaffoldWithTopBarAndButtonBar() {
