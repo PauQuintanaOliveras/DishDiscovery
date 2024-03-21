@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -114,12 +115,11 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
             Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer)) {
                 Column {
                     Text("Filtros seleccionados", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-                    ChipGroup(items = selectedFilters, onChipClick = { filter ->
+                    ChipGroup(items = selectedFilters, selectedItems = selectedFilters, onChipClick = { filter ->
                         selectedFilters = selectedFilters.filter { it != filter }
-                    })
-
+                    }, isFilterSelected = true)
                     Text("Dietas", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-                    ChipGroup(items = listOf("Vegana", "Vegetariana"), onChipClick = { filter ->
+                    ChipGroup(items = listOf("Vegana", "Vegetariana"), selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
                         } else {
@@ -128,7 +128,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                     })
 
                     Text("Tipos de Comida", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-                    ChipGroup(items = listOf("Desayuno", "Almuerzo"), onChipClick = { filter ->
+                    ChipGroup(items = listOf("Desayuno", "Almuerzo"), selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
                         } else {
@@ -136,15 +136,15 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                         }
                     })
 
-                    Text("Ingredientes", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-                    ChipGroup(items = listOf("Tomate", "Bistec"), onChipClick = { filter ->
+                    ChipGroup(items = listOf("Tomate", "Bistec"), selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
                         } else {
                             selectedFilters = selectedFilters + filter
                         }
                     })
-                    ChipGroup(items = listOf("Pollo", "Pescado"), onChipClick = { filter ->
+                    Text("Ingredientes", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    ChipGroup(items = listOf("Pollo", "Pescado"), selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
                         } else {
@@ -243,22 +243,23 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
 }
 
 @Composable
-fun Chip(modifier: Modifier = Modifier, text: String, onChipClick: (String) -> Unit) {
+fun Chip(modifier: Modifier = Modifier, text: String, onChipClick: (String) -> Unit, isSelected: Boolean, isFilterSelected: Boolean = false) {
     Box(
         modifier = modifier
             .clickable { onChipClick(text) }
+            .background(if (isSelected) Color.Gray else MaterialTheme.colorScheme.primaryContainer)
             .border(1.dp, Color.Gray, RoundedCornerShape(50))
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        Text(text = text)
+        Text(text = text, textDecoration = if (isSelected && !isFilterSelected) TextDecoration.LineThrough else TextDecoration.None)
     }
 }
 
 @Composable
-fun ChipGroup(items: List<String>, onChipClick: (String) -> Unit = {}) {
+fun ChipGroup(items: List<String>, selectedItems: List<String>, onChipClick: (String) -> Unit = {}, isFilterSelected: Boolean = false) {
     LazyRow {
         items(items) { item ->
-            Chip(modifier = Modifier.padding(8.dp), text = item, onChipClick = onChipClick)
+            Chip(modifier = Modifier.padding(8.dp), text = item, onChipClick = onChipClick, isSelected = item in selectedItems, isFilterSelected = isFilterSelected)
         }
     }
 }
