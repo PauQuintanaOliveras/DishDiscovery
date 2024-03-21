@@ -69,7 +69,6 @@ fun CreateRecipe() {
     val dishName = remember { mutableStateOf("") }
     val dishElaboration = remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val imageUri = remember { mutableStateOf<Uri?>(null) }
     var dishServings by remember { mutableIntStateOf(0) }
 
 
@@ -109,22 +108,7 @@ fun CreateRecipe() {
     val requestCameraPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                val filename = System.currentTimeMillis().toString()
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-                        put(MediaStore.Images.Media.IS_PENDING, 1)
-                    }
-                }
-
-                val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                imageUri.value = context.contentResolver.insert(contentUri, contentValues)
-
-                if (isGranted) {
-                    takePictureLauncher.launch(null)
-                }
+                takePictureLauncher.launch(null)
             } else {
                 Toast.makeText(
                     context,
