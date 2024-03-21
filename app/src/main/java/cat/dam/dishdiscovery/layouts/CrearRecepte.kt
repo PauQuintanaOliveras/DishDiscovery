@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -31,7 +32,9 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,23 +49,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import cat.dam.dishdiscovery.R
+import cat.dam.dishdiscovery.objects.Dish
 import coil.compose.rememberImagePainter
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 @Preview
 @Composable
 fun CreateRecipe() {
     val context = LocalContext.current
-    val textState = remember { mutableStateOf("") }
-    val productState = remember { mutableStateOf("") }
+    val dishName = remember { mutableStateOf("") }
+    val dishElaboration = remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val imageUri = remember { mutableStateOf<Uri?>(null) }
+    var dishServings by remember { mutableIntStateOf(0) }
 
 
     val selectImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             selectedImageUri = uri
         }
+
     val takePictureLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
             if (bitmap != null) {
@@ -150,10 +159,10 @@ fun CreateRecipe() {
         )
         Spacer(modifier = Modifier.height(11.dp))
         TextField(
-            value = textState.value,
+            value = dishName.value,
             onValueChange = { newValue ->
                 if (!newValue.contains("\n")) {
-                    textState.value = newValue
+                    dishName.value = newValue
                 }
             },
             modifier = Modifier
@@ -233,7 +242,8 @@ fun CreateRecipe() {
             onTextLayout = {},
             modifier = Modifier.padding(5.dp)
         )
-        ShowNumberPicker()
+
+        dishServings = showNumberPicker()
 
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -256,14 +266,13 @@ fun CreateRecipe() {
         Text(
             text = "Instruccions dels Ingredients (opcional)",
             fontSize = 15.sp,
-            onTextLayout = {},
             modifier = Modifier.padding(5.dp)
         )
 
         Spacer(modifier = Modifier.height(11.dp))
         TextField( // Add this TextField
-            value = productState.value,
-            onValueChange = { productState.value = it },
+            value = dishElaboration.value,
+            onValueChange = { dishElaboration.value = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
@@ -272,7 +281,6 @@ fun CreateRecipe() {
                 Text(
                     text = "",
                     fontSize = 10.sp,
-                    onTextLayout = {}
                 )
             }
         )
@@ -285,8 +293,8 @@ fun CreateRecipe() {
         )
         Spacer(modifier = Modifier.height(11.dp))
         TextField( // Add this TextField
-            value = productState.value,
-            onValueChange = { productState.value = it },
+            value = dishElaboration.value,
+            onValueChange = { dishElaboration.value = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
@@ -295,7 +303,6 @@ fun CreateRecipe() {
                 Text(
                     text = "",
                     fontSize = 10.sp,
-                    onTextLayout = {}
                 )
             }
         )
@@ -318,7 +325,6 @@ fun CreateRecipe() {
                     )
                     Text(
                         text = text,
-                        onTextLayout = {},
                         style = MaterialTheme.typography.bodyLarge.merge(),
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -326,24 +332,24 @@ fun CreateRecipe() {
             }
         }
         Button(
-            onClick = { /* Handle button click */ },
+            onClick = { uploadDish(dishName, dishServings) },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .size(200.dp, 50.dp)
 
 
         ) {
-            Text(text = "Fet",
-                fontSize = 10.sp,
-                onTextLayout = {})
+            Text(
+                text = "Fet",
+                fontSize = 10.sp
+            )
         }
     }
 }
 
 @Composable
-fun ShowNumberPicker() {
-    var selectedValue by remember { mutableStateOf(0) }
-
+fun showNumberPicker(): Int {
+    var tempNumberPickerValue by remember { mutableIntStateOf(1) }
     AndroidView(
         modifier = Modifier.fillMaxWidth(),
         factory = { context ->
@@ -351,9 +357,27 @@ fun ShowNumberPicker() {
                 minValue = 1
                 maxValue = 5
                 setOnValueChangedListener { _, _, newVal ->
-                    selectedValue = newVal
+                    tempNumberPickerValue = newVal
                 }
             }
         }
     )
+    return tempNumberPickerValue
+}
+
+fun uploadDish(dishElaboration: MutableState<String>, dishServings: Int) {
+    val TAG = "CreateRecipe"
+    val dish = Dish(
+        dishElaboration,
+        dishServings
+    ).dishToMap()
+
+    FirebaseFirestore.getInstance().collection("Dish").add(dish)
+        .addOnSuccessListener {
+            Log.d(TAG, "dish ${dish} added")
+        }
+        .addOnFailureListener {
+            Log.d(TAG, "dish ${dish} not added")
+
+        }
 }
