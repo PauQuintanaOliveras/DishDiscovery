@@ -54,13 +54,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.R
-import cat.dam.dishdiscovery.objects.Ingridient
 import cat.dam.dishdiscovery.objects.Dish
+import cat.dam.dishdiscovery.objects.Ingridient
 import coil.compose.rememberImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 
 @Preview
@@ -382,6 +381,7 @@ fun searchbar(
     }
 }
 
+@Composable
 fun showNumberPicker(): Int {
     var tempNumberPickerValue by remember { mutableIntStateOf(1) }
     AndroidView(
@@ -398,20 +398,20 @@ fun showNumberPicker(): Int {
     )
     return tempNumberPickerValue
 }
-
 fun uploadDish(dishElaboration: MutableState<String>, dishServings: Int) {
     val TAG = "CreateRecipe"
     val dish = Dish(
         dishElaboration,
-        dishServings
+        dishServings,
+        mapOf<Ingridient, Mesurement>(ingridient to mesurement)
     ).dishToMap()
 
     FirebaseFirestore.getInstance().collection("Dish").add(dish)
         .addOnSuccessListener {
-            Log.d(TAG, "dish ${dish} added")
+            Log.d(TAG, "dish $dish added")
         }
         .addOnFailureListener {
-            Log.d(TAG, "dish ${dish} not added")
+            Log.d(TAG, "dish $dish not added")
 
         }
 }
