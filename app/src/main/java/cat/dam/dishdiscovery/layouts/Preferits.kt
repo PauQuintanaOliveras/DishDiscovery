@@ -1,6 +1,7 @@
 package cat.dam.dishdiscovery.layouts
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -63,9 +64,11 @@ import cat.dam.dishdiscovery.objects.Tag
 import cat.dam.dishdiscovery.objects.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 val client = Firebase.auth.currentUser?.uid
+
 val descripcioSandvitx="Tros de pa obert per la meitat o dues llesques de pa amb embotit, formatge o un altre menjar a dins"
 val descripcioSopar="Plat típic de la cuina japonesa que consisteix en una sopa feta amb brou de carn o verdures i salsa de soja al que s'afegeixen uns fideus llargs"
 val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, més gruixut que el fideu."
@@ -78,7 +81,7 @@ val diets = listOf(
 val ingridient = Ingridient("Ingridient1")
 val mesurement = Mesurement("unit", 1f)
 val mapingmes = mapOf<Ingridient,Mesurement>(ingridient to mesurement)
-val dish = Dish(mutableStateOf("very hard elabotarion"),4, mapingmes)
+val dish = Dish(mutableStateOf("very hard elabotarion"), "lmao", 3)
 val author = User(client,"Username",false, listOf("dish1","dish2"),"mealplaner",false, listOf("dish1","dish2"))
 val mealType = MealType("Lunch")
 val tags = listOf(
@@ -90,8 +93,10 @@ val dishHeaders = listOf(
         tags),
     DishHeader(diets, dish, author, descripcioSopar, "Dish2","imageName", mealType,false,true,
         tags),
-DishHeader(diets, dish, author, descripcioPasta, "Dish3","imageName", mealType,false,true,
-    tags),
+    DishHeader(
+        diets, dish, author, descripcioPasta, "Dish3", "imageName", mealType, false, true,
+        tags
+    ),
     DishHeader(diets, dish, author, descripcioSandvitx, "Dish4","imageName", mealType,false,true,
         tags),
     DishHeader(diets, dish, author, descripcioSandvitx, "Dish5","imageName", mealType,false,true,
@@ -108,11 +113,24 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedFilters by remember { mutableStateOf(listOf<String>()) }
+    val db = FirebaseFirestore.getInstance()
+
+    db.collection("DishHeader").get()
+        .addOnSuccessListener { querySnapshot ->
+            for (document in querySnapshot.documents) {
+                Log.d("Firebase", "DocumentSnapshot data: ${document.data}")
+            }
+        }
+        .addOnFailureListener { exception ->
+            Log.d("Firebase", "get failed with ", exception)
+        }
 
     ModalDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer)) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primaryContainer)) {
                 Column {
                     Text("Filtros seleccionados", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                     ChipGroup(items = selectedFilters, selectedItems = selectedFilters, onChipClick = { filter ->
@@ -205,7 +223,9 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
-                        Box(modifier = Modifier.fillMaxSize().padding(top = 80.dp)) {
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 80.dp)) {
                             LazyColumn(
                                 modifier = Modifier
                                     .align(Alignment.Center)

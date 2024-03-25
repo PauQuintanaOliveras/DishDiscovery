@@ -1,20 +1,30 @@
 package cat.dam.dishdiscovery.objects
 
+import android.net.Uri
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import cat.dam.dishdiscovery.Mesurement
 
 data class Dish(
-    val dishElaboration: MutableState<String>,
-    val dishServings: Int,
+    val dishName: MutableState<String> = mutableStateOf(""),
+    val dishImageId: String? = null,
+    val dishServings: Int = 0,
+    val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(),
+    val dishElaboration: MutableState<String> = mutableStateOf(""),
+    val dishNotes: String = "",
+    val dishVisibility: Boolean = false,
     //val dishUrl: String,
-    val ingridientsQty: Map<Ingridient, Mesurement>
 ) {
     fun dishToMap(): Map<String, Any?> {
         return mapOf(
-            "DishElaboration" to dishElaboration,
+            "DishName" to dishName.value,
+            "DishImageId" to dishImageId,
             "DishServings" to dishServings,
-            //"DishUrl" to dishUrl,
-            "IngridientsQty" to ingridientsQty
+            "IngridientsQty" to ingridientsQty.values,
+            "DishElaboration" to dishElaboration.value,
+            "DishNotes" to dishNotes,
+            "DishVisibility" to dishVisibility,
+            //"DishUrl" to dishUrl
         )
     }
 }

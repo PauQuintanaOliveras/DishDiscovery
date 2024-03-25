@@ -60,6 +60,7 @@ import cat.dam.dishdiscovery.objects.Dish
 import cat.dam.dishdiscovery.objects.Ingridient
 import coil.compose.rememberImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 
 @Preview
@@ -68,21 +69,24 @@ fun CreateRecipe() {
     val context = LocalContext.current
     val dishName = remember { mutableStateOf("") }
     val dishElaboration = remember { mutableStateOf("") }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var dishImage by remember { mutableStateOf<Uri?>(null) }
+    var dishImageId = ""
     var dishServings by remember { mutableIntStateOf(0) }
-
+    var dishNotes by remember { mutableStateOf("") }
+    var dishVisibility by remember { mutableStateOf(false) }
+    var dishIngridients by remember { mutableStateOf<Map<Ingridient, Mesurement>>(mapOf()) }
 
     val selectImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-            selectedImageUri = uri
+            dishImage = uri
         }
 
     val takePictureLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
             if (bitmap != null) {
-                val filename = System.currentTimeMillis().toString()
+                dishImageId = System.currentTimeMillis().toString()
                 val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, dishImageId)
                     put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
@@ -96,7 +100,7 @@ fun CreateRecipe() {
                     context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                     }
-                    selectedImageUri = uri
+                    dishImage = uri
                 } else {
                     Toast.makeText(context, "Failed to save picture", Toast.LENGTH_LONG).show()
                 }
@@ -180,9 +184,9 @@ fun CreateRecipe() {
             modifier = Modifier.padding(5.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        if (selectedImageUri != null) {
+        if (dishImage != null) {
             Image(
-                painter = rememberImagePainter(data = selectedImageUri),
+                painter = rememberImagePainter(data = dishImage),
                 contentDescription = "User's recipe image",
                 modifier = Modifier
                     .height(200.dp)
@@ -322,7 +326,18 @@ fun CreateRecipe() {
             }
         }
         Button(
-            onClick = { uploadDish(dishName, dishServings) },
+            onClick = {
+                uploadDish(
+                    dishName,
+                    dishImageId,
+                    dishImage,
+                    dishServings,
+                    dishIngridients,
+                    dishElaboration,
+                    dishNotes,
+                    dishVisibility
+                )
+            },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .size(200.dp, 50.dp)
@@ -348,9 +363,7 @@ fun searchbar(
 ) {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    Scaffold(
-
-    ) {
+    Scaffold {
         SearchBar(
             query = text,
             onQueryChange ={text = it},
@@ -381,12 +394,26 @@ fun showNumberPicker(): Int {
     )
     return tempNumberPickerValue
 }
-fun uploadDish(dishElaboration: MutableState<String>, dishServings: Int) {
+
+fun uploadDish(
+    dishName: MutableState<String>,
+    dishImageId: String?,
+    dishImage: Uri?,
+    dishServings: Int,
+    ingridientsQty: Map<Ingridient, Mesurement>,
+    dishElaboration: MutableState<String>,
+    dishNotes: String,
+    dishVisibility: Boolean
+) {
     val TAG = "CreateRecipe"
     val dish = Dish(
-        dishElaboration,
+        dishName,
+        dishImageId,
         dishServings,
-        mapOf<Ingridient, Mesurement>(ingridient to mesurement)
+        ingridientsQty,
+        dishElaboration,
+        dishNotes,
+        dishVisibility
     ).dishToMap()
 
     FirebaseFirestore.getInstance().collection("Dish").add(dish)
@@ -396,5 +423,16 @@ fun uploadDish(dishElaboration: MutableState<String>, dishServings: Int) {
         .addOnFailureListener {
             Log.d(TAG, "dish $dish not added")
 
+        }
+
+    FirebaseStorage.getInstance()
+        .getReference("DishImages")
+        .child(dishImageId!!)
+        .putFile(dishImage!!)
+        .addOnSuccessListener {
+            Log.d(TAG, "Image $dishImageId uploaded")
+        }
+        .addOnFailureListener {
+            Log.d(TAG, "Image $dishImageId not uploaded")
         }
 }
