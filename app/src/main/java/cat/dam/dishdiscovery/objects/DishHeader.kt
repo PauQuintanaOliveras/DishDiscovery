@@ -1,17 +1,16 @@
 package cat.dam.dishdiscovery.objects
 
-
 data class DishHeader(
-    val diets: List<Diet>,
-    val dish: Dish,
-    val dishAuthor: User,
-    val dishDescription: String,
-    val dishName: String,
-    val image: String,
-    val mealType: MealType,
-    val premium: Boolean,
-    val published: Boolean,
-    val tags: List<Tag>
+    val diets: List<Diet> = listOf(),
+    val dish: Dish = Dish(),
+    val dishAuthor: User = User(),
+    val dishDescription: String = "",
+    val dishName: String = "",
+    val image: String = "",
+    val mealType: List<MealType> = listOf(),
+    val premium: Boolean = false,
+    val published: Boolean = false,
+    val tags: List<Tag> = listOf()
 ) {
     fun dishHeaderToMap(): Map<String, Any?> {
         return mapOf(

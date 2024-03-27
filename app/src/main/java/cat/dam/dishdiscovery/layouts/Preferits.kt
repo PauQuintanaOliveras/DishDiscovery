@@ -1,6 +1,7 @@
 package cat.dam.dishdiscovery.layouts
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -64,49 +65,15 @@ import cat.dam.dishdiscovery.objects.Tag
 import cat.dam.dishdiscovery.objects.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 val client = Firebase.auth.currentUser?.uid
 
-val descripcioSandvitx="Tros de pa obert per la meitat o dues llesques de pa amb embotit, formatge o un altre menjar a dins"
-val descripcioSopar="Plat típic de la cuina japonesa que consisteix en una sopa feta amb brou de carn o verdures i salsa de soja al que s'afegeixen uns fideus llargs"
-val descripcioPasta="Pasta alimentària de farina en forma de fil llarg, més gruixut que el fideu."
-
-val diets = listOf(
-    Diet("Vegana"),
-    Diet("Vegatariana"),
-    Diet("Carnivora")
-)
-val ingridient = Ingridient("Ingridient1")
-val mesurement = Mesurement("unit", 1f)
-val mapingmes = mapOf<Ingridient,Mesurement>(ingridient to mesurement)
-val dish = Dish(mutableStateOf("very hard elabotarion"), "lmao", 3)
-val author = User(client,"Username",false, listOf("dish1","dish2"),"mealplaner",false, listOf("dish1","dish2"))
-val mealType = MealType("Lunch")
-val tags = listOf(
-    Tag("yummy"),
-    Tag("veryEasy")
-)
-val dishHeaders = listOf(
-    DishHeader(diets, dish, author, descripcioSandvitx, "Dish1","imageName", mealType,false,true,
-        tags),
-    DishHeader(diets, dish, author, descripcioSopar, "Dish2","imageName", mealType,false,true,
-        tags),
-    DishHeader(
-        diets, dish, author, descripcioPasta, "Dish3", "imageName", mealType, false, true,
-        tags
-    ),
-    DishHeader(diets, dish, author, descripcioSandvitx, "Dish4","imageName", mealType,false,true,
-        tags),
-    DishHeader(diets, dish, author, descripcioSandvitx, "Dish5","imageName", mealType,false,true,
-        tags),
-    DishHeader(diets, dish, author, descripcioSandvitx, "Dish6","imageName", mealType,false,true,
-        tags),
-    DishHeader(diets, dish, author, descripcioSandvitx, "Dish7","imageName", mealType,false,true,
-        tags),
-)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Preferits(navController: NavController, isPreferits: Boolean) {
@@ -115,15 +82,10 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
     var selectedFilters by remember { mutableStateOf(listOf<String>()) }
     val db = FirebaseFirestore.getInstance()
 
-    db.collection("DishHeader").get()
-        .addOnSuccessListener { querySnapshot ->
-            for (document in querySnapshot.documents) {
-                Log.d("Firebase", "DocumentSnapshot data: ${document.data}")
-            }
-        }
-        .addOnFailureListener { exception ->
-            Log.d("Firebase", "get failed with ", exception)
-        }
+    var dishHeaders by remember { mutableStateOf(listOf<DishHeader>()) }
+    rememberCoroutineScope().launch {
+        dishHeaders = getDishHeadersFromFirestore()
+    }
 
     ModalDrawer(
         drawerState = drawerState,
@@ -233,18 +195,18 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
 
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                for (header in dishHeaders) {
-                                    item {
-                                        DishCard().BasicCardPreview(
-                                            header.dishName,
-                                            header.dishDescription,
-                                            R.drawable.sandwich,
-                                            navController,
-                                            isPreferits
-                                        )
-                                        Spacer(modifier = Modifier.size(25.dp))
-                                    }
+
+                                items(dishHeaders) { header ->
+                                    DishCard().BasicCardPreview(
+                                        header.dishName,
+                                        header.dishDescription,
+                                        R.drawable.sandwich,
+                                        navController,
+                                        isPreferits
+                                    )
+                                    Spacer(modifier = Modifier.size(25.dp))
                                 }
+
                             }
                         }
                     }
@@ -282,6 +244,40 @@ fun ChipGroup(items: List<String>, selectedItems: List<String>, onChipClick: (St
             Chip(modifier = Modifier.padding(8.dp), text = item, onChipClick = onChipClick, isSelected = item in selectedItems, isFilterSelected = isFilterSelected)
         }
     }
+}
+
+suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
+    val db = FirebaseFirestore.getInstance()
+    val dishHeaders = mutableListOf<DishHeader>()
+
+    val result = db.collection("DishHeader").get().await()
+    for (document in result) {
+        val diets = (document.get("Diets") as List<DocumentReference>).map { it.get().await().toObject(Diet::class.java)!! }
+        val dish = (document.get("Dish") as DocumentReference).get().await().toObject(Dish::class.java)!!
+        val dishAuthor = (document.get("DishAuthor") as DocumentReference).get().await().toObject(User::class.java)!!
+        val dishDescription = document.get("DishDescription")?.toString() ?: ""
+        val dishName = document.get("DishName")?.toString() ?: ""
+        val mealType = (document.get("MealType") as List<DocumentReference>).map { it.get().await().toObject(MealType::class.java)!! }
+        val premium = document.getBoolean("Premium")!!
+        val published = document.get("Published") as? Boolean ?: false
+        val tags = (document.get("Tags") as List<DocumentReference>).map { it.get().await().toObject(Tag::class.java)!! }
+
+        val dishHeader = DishHeader(
+            diets = diets,
+            dish = dish,
+            dishAuthor = dishAuthor,
+            dishDescription = dishDescription,
+            dishName = dishName,
+            mealType = mealType,
+            premium = premium,
+            published = published,
+            tags = tags
+        )
+
+        dishHeaders.add(dishHeader)
+    }
+
+    return dishHeaders
 }
 
 

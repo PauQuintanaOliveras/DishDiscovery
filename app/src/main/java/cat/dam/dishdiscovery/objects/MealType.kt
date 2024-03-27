@@ -1,7 +1,7 @@
 package cat.dam.dishdiscovery.objects
 
 data class MealType(
-    val mealTypeName: String,
+    val mealTypeName: String = ""
 ) {
     fun mealTypeToMap(): Map<String, Any?> {
         return mapOf(

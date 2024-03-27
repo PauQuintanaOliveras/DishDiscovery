@@ -407,11 +407,11 @@ fun uploadDish(
 ) {
     val TAG = "CreateRecipe"
     val dish = Dish(
-        dishName,
+        dishName.value,
         dishImageId,
         dishServings,
         ingridientsQty,
-        dishElaboration,
+        dishElaboration.value,
         dishNotes,
         dishVisibility
     ).dishToMap()

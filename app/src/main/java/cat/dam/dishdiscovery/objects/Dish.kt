@@ -6,22 +6,21 @@ import androidx.compose.runtime.mutableStateOf
 import cat.dam.dishdiscovery.Mesurement
 
 data class Dish(
-    val dishName: MutableState<String> = mutableStateOf(""),
+    val dishName: String = "",
     val dishImageId: String? = null,
     val dishServings: Int = 0,
     val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(),
-    val dishElaboration: MutableState<String> = mutableStateOf(""),
+    val dishElaboration: String = "",
     val dishNotes: String = "",
     val dishVisibility: Boolean = false,
-    //val dishUrl: String,
 ) {
     fun dishToMap(): Map<String, Any?> {
         return mapOf(
-            "DishName" to dishName.value,
+            "DishName" to dishName,
             "DishImageId" to dishImageId,
             "DishServings" to dishServings,
             "IngridientsQty" to ingridientsQty.values,
-            "DishElaboration" to dishElaboration.value,
+            "DishElaboration" to dishElaboration,
             "DishNotes" to dishNotes,
             "DishVisibility" to dishVisibility,
             //"DishUrl" to dishUrl

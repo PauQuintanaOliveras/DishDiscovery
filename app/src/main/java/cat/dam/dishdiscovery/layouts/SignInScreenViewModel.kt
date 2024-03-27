@@ -31,13 +31,13 @@ class SignInScreenViewModel : ViewModel() {
 
     fun createUser() {
         val user = User(
-            auth.currentUser?.uid,
-            auth.currentUser?.email.toString(),
-            false,
-            listOf(),
-            "",
-            false,
-            listOf()
+            uuid = auth.currentUser?.uid.toString(),
+            userName = auth.currentUser?.email.toString(),
+            administrator = false,
+            likedDishes = listOf(),
+            mealPlanner = listOf(),
+            premium = false,
+            publishedDishes = listOf()
         ).userToMap()
 
         FirebaseFirestore.getInstance().collection("User")

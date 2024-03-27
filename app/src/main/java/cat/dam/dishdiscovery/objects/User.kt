@@ -1,13 +1,15 @@
 package cat.dam.dishdiscovery.objects
 
+import cat.dam.dishdiscovery.objects.MealType
+
 data class User(
-    val uuid: String?,
-    val userName: String,
-    val administrator: Boolean,
-    val likedDishes: List<String>,
-    val mealPlanner: String,
-    val premium: Boolean,
-    val publishedDishes: List<String>,
+    val administrator: Boolean = false,
+    val likedDishes: List<Dish> = listOf(),
+    val mealPlanner: List<MealType> = listOf(),
+    val premium: Boolean = false,
+    val publishedDishes: List<Dish> = listOf(),
+    val userName: String = "",
+    val uuid: String = ""
 ) {
     fun userToMap(): Map<String, Any?> {
         return mapOf(
