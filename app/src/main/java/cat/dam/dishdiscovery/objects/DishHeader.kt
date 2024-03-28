@@ -2,7 +2,7 @@ package cat.dam.dishdiscovery.objects
 
 data class DishHeader(
     val diets: List<Diet> = listOf(),
-    val dish: Dish = Dish(),
+    val dish: Dish,
     val dishAuthor: User = User(),
     val dishDescription: String = "",
     val dishName: String = "",

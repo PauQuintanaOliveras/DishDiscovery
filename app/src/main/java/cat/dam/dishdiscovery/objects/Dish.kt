@@ -10,10 +10,10 @@ data class Dish(
     val dishDescription: String = "",
     val dishImageId: String? = null,
     val dishServings: Int = 0,
-    val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(),
     val dishElaboration: String = "",
     val dishNotes: String = "",
     val dishVisibility: Boolean = false,
+    val ingridientsQty: Map<Ingridient, Mesurement>
 ) {
     fun dishToMap(): Map<String, Any?> {
         return mapOf(
