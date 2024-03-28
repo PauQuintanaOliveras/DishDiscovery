@@ -200,13 +200,12 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                                     DishCard().BasicCardPreview(
                                         header.dishName,
                                         header.dishDescription,
-                                        R.drawable.sandwich,
+                                        R.drawable.dia, // Assuming `image` is a property of `Dish` class
                                         navController,
                                         isPreferits
                                     )
                                     Spacer(modifier = Modifier.size(25.dp))
                                 }
-
                             }
                         }
                     }
@@ -255,11 +254,14 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
         val diets = (document.get("Diets") as List<DocumentReference>).map { it.get().await().toObject(Diet::class.java)!! }
         val dish = (document.get("Dish") as DocumentReference).get().await().toObject(Dish::class.java)!!
         val dishAuthor = (document.get("DishAuthor") as DocumentReference).get().await().toObject(User::class.java)!!
-        val dishDescription = document.get("DishDescription")?.toString() ?: ""
-        val dishName = document.get("DishName")?.toString() ?: ""
+        val dishDescription = (document.get("DishDescription") as DocumentReference).get().await()
+            .toObject(Dish::class.java)!!.dishDescription
+        val dishName = (document.get("DishName") as DocumentReference).get().await()
+            .toObject(Dish::class.java)!!.dishName
         val mealType = (document.get("MealType") as List<DocumentReference>).map { it.get().await().toObject(MealType::class.java)!! }
         val premium = document.getBoolean("Premium")!!
-        val published = document.get("Published") as? Boolean ?: false
+        val published = (document.get("Published") as DocumentReference).get().await()
+            .toObject(Dish::class.java)!!.dishVisibility
         val tags = (document.get("Tags") as List<DocumentReference>).map { it.get().await().toObject(Tag::class.java)!! }
 
         val dishHeader = DishHeader(
@@ -273,10 +275,8 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
             published = published,
             tags = tags
         )
-
         dishHeaders.add(dishHeader)
     }
-
     return dishHeaders
 }
 

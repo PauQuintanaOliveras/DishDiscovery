@@ -7,6 +7,7 @@ import cat.dam.dishdiscovery.Mesurement
 
 data class Dish(
     val dishName: String = "",
+    val dishDescription: String = "",
     val dishImageId: String? = null,
     val dishServings: Int = 0,
     val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(),

@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import cat.dam.dishdiscovery.objects.Ingridient
 import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.R
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Preview(showBackground = true)
 @Composable
@@ -51,6 +52,8 @@ fun ViewRecipeScreen() {
     var servings by remember { mutableFloatStateOf(4f) }
     //var servingsModifier by remember { mutableStateOf(1) }
     val ingridients = hashMapOf<Ingridient, Mesurement>()
+    val db = FirebaseFirestore.getInstance()
+
     ingridients[Ingridient("Bread")] = Mesurement(" Slices", 2f)
     ingridients[Ingridient("Ham")] = Mesurement(" Slices", 1f)
     ingridients[Ingridient("Cheese")] = Mesurement(" Slices", 1.33333f)

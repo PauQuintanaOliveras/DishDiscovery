@@ -75,7 +75,7 @@ fun CreateRecipe() {
     var dishNotes by remember { mutableStateOf("") }
     var dishVisibility by remember { mutableStateOf(false) }
     var dishIngridients by remember { mutableStateOf<Map<Ingridient, Mesurement>>(mapOf()) }
-
+    var dishDescription by remember { mutableStateOf("") }
     val selectImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             dishImage = uri
@@ -329,6 +329,7 @@ fun CreateRecipe() {
             onClick = {
                 uploadDish(
                     dishName,
+                    dishDescription,
                     dishImageId,
                     dishImage,
                     dishServings,
@@ -397,6 +398,7 @@ fun showNumberPicker(): Int {
 
 fun uploadDish(
     dishName: MutableState<String>,
+    dishDescription: String,
     dishImageId: String?,
     dishImage: Uri?,
     dishServings: Int,
@@ -408,6 +410,7 @@ fun uploadDish(
     val TAG = "CreateRecipe"
     val dish = Dish(
         dishName.value,
+        dishDescription,
         dishImageId,
         dishServings,
         ingridientsQty,
