@@ -68,15 +68,16 @@ import com.google.firebase.storage.FirebaseStorage
 @Composable
 fun CreateRecipe() {
     val context = LocalContext.current
-    val dishName = remember { mutableStateOf("") }
-    val dishElaboration = remember { mutableStateOf("") }
+    var dishName by remember { mutableStateOf("") }
+    var dishElaboration by remember { mutableStateOf("") }
     var dishImage by remember { mutableStateOf<Uri?>(null) }
     var dishImageId = ""
     var dishServings by remember { mutableIntStateOf(0) }
     var dishNotes by remember { mutableStateOf("") }
     var dishVisibility by remember { mutableStateOf(false) }
     var dishIngridients by remember { mutableStateOf<Map<Ingridient, Mesurement>>(mapOf()) }
-
+    val focusManager = LocalFocusManager.current
+    var authorNotes by remember { mutableStateOf("") }
     val selectImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             dishImage = uri
@@ -147,13 +148,11 @@ fun CreateRecipe() {
             fontSize = 24.sp,
             onTextLayout = {}
         )
-        Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = dishName,
-            enabled = active,
-            onValueChange = { newValue ->
-                if (!newValue.contains("\n")) {
-                    dishName = newValue
+            onValueChange = { it:String ->
+                if (!it.contains("\n")) {
+                    dishName = it
                 }
             },
             modifier = Modifier
@@ -233,10 +232,9 @@ fun CreateRecipe() {
            .heightIn(max = 30000.dp)){
             item{
                 vm.ingMes.forEach { it ->
-                    var qty = ""
                     if (it.key.name.isNotBlank()) {
                         Row(horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
-                            Text(modifier = Modifier.weight(2f), text = it.key.name);
+                            Text(modifier = Modifier.weight(2f), text = it.key.name)
                             TextField(
                                 modifier = Modifier.weight(0.5f),
                                 singleLine = true,
@@ -332,33 +330,6 @@ fun CreateRecipe() {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@ExperimentalMaterial3Api
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun searchbar(
-    searchQuery: String,
-    searchResult: List<Ingridient>,
-    onSearchQueryChange: (String) -> Unit
-) {
-    var text by remember { mutableStateOf("") }
-    var active by remember { mutableStateOf(false) }
-    Scaffold(
-
-    ) {
-        SearchBar(
-            query = text,
-            onQueryChange ={text = it},
-            onSearch = {active = false},
-            active = active,
-            onActiveChange = {active = it},
-            placeholder = { Text("Cerca un ingredient") },
-            trailingIcon = {}
-        ) {
-
-        }
-    }
-}
 
 @Composable
 fun showNumberPicker(): Int {
@@ -381,24 +352,24 @@ fun showNumberPicker(): Int {
 }
 
 fun uploadDish(
-    dishName: MutableState<String>,
+    dishName: String,
     dishImageId: String?,
     dishImage: Uri?,
     dishServings: Int,
     ingridientsQty: Map<Ingridient, Mesurement>,
-    dishElaboration: MutableState<String>,
+    dishElaboration: String,
     dishNotes: String,
     dishVisibility: Boolean
 ) {
     val TAG = "CreateRecipe"
     val dish = Dish(
-        dishName.value,
+        dishName,
         dishImageId,
         dishServings,
-        ingridientsQty,
-        dishElaboration.value,
+        dishElaboration,
         dishNotes,
-        dishVisibility
+        dishVisibility,
+        ingridientsQty,
     ).dishToMap()
 
     FirebaseFirestore.getInstance().collection("Dish").add(dish)
