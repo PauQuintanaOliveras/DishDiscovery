@@ -1,7 +1,5 @@
 package cat.dam.dishdiscovery.objects
 
-import cat.dam.dishdiscovery.objects.MealType
-
 data class User(
     val administrator: Boolean = false,
     val likedDishes: List<Dish> = listOf(),

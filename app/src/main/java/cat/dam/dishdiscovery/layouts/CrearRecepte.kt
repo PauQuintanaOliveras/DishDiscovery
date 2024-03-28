@@ -310,6 +310,7 @@ fun CreateRecipe() {
                 uploadDish(
                     dishName,
                     dishImageId,
+                    dishDescription = "",
                     dishImage,
                     dishServings,
                     dishIngridients,
@@ -353,7 +354,8 @@ fun showNumberPicker(): Int {
 
 fun uploadDish(
     dishName: String,
-    dishImageId: String?,
+    dishImageId: String,
+    dishDescription: String,
     dishImage: Uri?,
     dishServings: Int,
     ingridientsQty: Map<Ingridient, Mesurement>,
@@ -365,6 +367,7 @@ fun uploadDish(
     val dish = Dish(
         dishName,
         dishImageId,
+        dishDescription,
         dishServings,
         dishElaboration,
         dishNotes,

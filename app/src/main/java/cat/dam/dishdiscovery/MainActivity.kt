@@ -42,7 +42,6 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    startDestination = "create_recipe"
                     NavHost(navController, startDestination = startDestination) {
                         composable("login_screen") { LogInScreen(navController) }
                         composable("sign_in_screen") { SignIn(navController) }

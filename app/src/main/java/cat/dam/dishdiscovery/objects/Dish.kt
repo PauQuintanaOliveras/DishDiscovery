@@ -1,19 +1,25 @@
 package cat.dam.dishdiscovery.objects
 
-import android.net.Uri
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import cat.dam.dishdiscovery.Mesurement
+import com.google.firebase.firestore.PropertyName
 
 data class Dish(
+    @PropertyName("DishName")
     val dishName: String = "",
+    @PropertyName("DishDescription")
     val dishDescription: String = "",
+    @PropertyName("DishImage")
     val dishImageId: String? = null,
+    @PropertyName("DishServings")
     val dishServings: Int = 0,
+    @PropertyName("DishElaboration")
     val dishElaboration: String = "",
+    @PropertyName("DishNotes")
     val dishNotes: String = "",
+    @PropertyName("DishVisibility")
     val dishVisibility: Boolean = false,
-    val ingridientsQty: Map<Ingridient, Mesurement>
+    @PropertyName("DishUrl")
+    val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(Ingridient("empty") to Mesurement("empty", 0f))
 ) {
     fun dishToMap(): Map<String, Any?> {
         return mapOf(
