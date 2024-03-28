@@ -1,6 +1,6 @@
 package cat.dam.dishdiscovery
 
 data class Mesurement(
-    val name: String,
-    val amount: Float,
+    var name: String,
+    var amount: Float,
 )

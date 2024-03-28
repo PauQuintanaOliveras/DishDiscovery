@@ -1,10 +1,9 @@
 package cat.dam.dishdiscovery.objects
 
-import androidx.compose.runtime.MutableState
 import cat.dam.dishdiscovery.Mesurement
 
 data class Dish(
-    val dishElaboration: MutableState<String>,
+    val dishElaboration: String,
     val dishServings: Int,
     //val dishUrl: String,
     val ingridientsQty: Map<Ingridient, Mesurement>
