@@ -2,7 +2,6 @@
 
 package cat.dam.dishdiscovery.layouts
 
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.net.Uri
@@ -15,15 +14,17 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -33,12 +34,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,21 +46,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cat.dam.dishdiscovery.CreateRecipeViewModel
 import cat.dam.dishdiscovery.Mesurement
-import cat.dam.dishdiscovery.R
 import cat.dam.dishdiscovery.objects.Dish
 import cat.dam.dishdiscovery.objects.Ingridient
+import cat.dam.dishdiscovery.searchbar
 import coil.compose.rememberImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun CreateRecipe() {
@@ -136,8 +137,10 @@ fun CreateRecipe() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Crear Recepte",
@@ -145,57 +148,40 @@ fun CreateRecipe() {
             onTextLayout = {}
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Titol Recepte",
-            fontSize = 15.sp,
-            onTextLayout = {},
-            modifier = Modifier.padding(5.dp)
-        )
-        Spacer(modifier = Modifier.height(11.dp))
         TextField(
-            value = dishName.value,
+            value = dishName,
+            enabled = active,
             onValueChange = { newValue ->
                 if (!newValue.contains("\n")) {
-                    dishName.value = newValue
+                    dishName = newValue
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
-                .clip(RoundedCornerShape(100.dp)),
-
+                .clip(
+                    RoundedCornerShape(100.dp),
+                ),
             label = {
                 Text(
-                    text = "",
-                    fontSize = 10.sp,
+                    text = "Nom de la Recepta",
+                    fontSize = 15.sp,
                     onTextLayout = {}
                 )
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { /* Handle action */ })
-
+            keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()})
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Imatge de la Recepta",
             fontSize = 15.sp,
             onTextLayout = {},
             modifier = Modifier.padding(5.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
         if (dishImage != null) {
             Image(
                 painter = rememberImagePainter(data = dishImage),
                 contentDescription = "User's recipe image",
-                modifier = Modifier
-                    .height(200.dp)
-                    .fillMaxWidth()
-            )
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.recuadre),
-                contentDescription = "Placeholder image",
                 modifier = Modifier
                     .height(200.dp)
                     .fillMaxWidth()
@@ -229,78 +215,74 @@ fun CreateRecipe() {
                 )
             }
         }
-        Spacer(modifier = Modifier.height(11.dp))
-        Text(
-            text = "Per Quantes Persones",
-            fontSize = 15.sp,
-            onTextLayout = {},
-            modifier = Modifier.padding(5.dp)
-        )
-
-        dishServings = showNumberPicker()
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Afegir Ingredients",
-            fontSize = 15.sp,
-            onTextLayout = {},
-            modifier = Modifier.padding(5.dp)
-        )
-        Spacer(modifier = Modifier.height(11.dp))
-        Image(
-            painter = painterResource(id = R.drawable.ingredients),
-            contentDescription = "Imagen de ingredientes",
-            modifier = Modifier
-                .padding(5.dp)
-                .height(100.dp)
-                .fillMaxWidth()
-                .clickable { /* Aquí va el código para manejar el clic en la imagen */ }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Instruccions dels Ingredients (opcional)",
-            fontSize = 15.sp,
-            modifier = Modifier.padding(5.dp)
-        )
-
-        Spacer(modifier = Modifier.height(11.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Per Quantes Persones",
+                fontSize = 15.sp,
+                onTextLayout = {},
+                modifier = Modifier.padding(5.dp)
+            )
+            Spacer(modifier = Modifier.width(26.dp))
+            dishServings = showNumberPicker()
+        }
+        var vm = viewModel { CreateRecipeViewModel() }
+        vm.ingMes[Ingridient(searchbar())] = Mesurement("empty", 0.0f)
+        // Text(text =text
+       LazyColumn(modifier = Modifier
+           .fillMaxWidth()
+           .heightIn(max = 30000.dp)){
+            item{
+                vm.ingMes.forEach { it ->
+                    var qty = ""
+                    if (it.key.name.isNotBlank()) {
+                        Row(horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+                            Text(modifier = Modifier.weight(2f), text = it.key.name);
+                            TextField(
+                                modifier = Modifier.weight(0.5f),
+                                singleLine = true,
+                                value = "qty",
+                                onValueChange = { qty -> it.value.amount = qty.toFloat()},
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            TextField(
+                                modifier = Modifier.weight(0.5f),
+                                singleLine = true,
+                                value = "mesurement",
+                                onValueChange = { mes -> it.value.name = mes },
+                            )
+                        }
+                    }
+                }
+            }
+       }
         TextField( // Add this TextField
-            value = dishElaboration.value,
-            onValueChange = { dishElaboration.value = it },
+            value = dishElaboration,
+            onValueChange = { dishElaboration = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
                 .clip(RoundedCornerShape(100.dp)),
             label = {
                 Text(
-                    text = "",
-                    fontSize = 10.sp,
+                    text = "Els Passos de la Recepta",
+                    fontSize = 15.sp,
                 )
             }
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Notes de l'autor (opcional)",
-            fontSize = 15.sp,
-            onTextLayout = {},
-            modifier = Modifier.padding(5.dp)
-        )
-        Spacer(modifier = Modifier.height(11.dp))
         TextField( // Add this TextField
-            value = dishElaboration.value,
-            onValueChange = { dishElaboration.value = it },
+            value = authorNotes,
+            onValueChange = { authorNotes = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
                 .clip(RoundedCornerShape(100.dp)),
             label = {
                 Text(
-                    text = "",
-                    fontSize = 10.sp,
+                    text = "Author Notes",
+                    fontSize = 15.sp,
                 )
             }
         )
-        Spacer(modifier = Modifier.height(16.dp))
 
         var selectedOption by remember { mutableStateOf("Private") }
         val options = listOf("Private", "Public")
@@ -341,11 +323,9 @@ fun CreateRecipe() {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .size(200.dp, 50.dp)
-
-
         ) {
             Text(
-                text = "Fet",
+                text ="Fet",
                 fontSize = 10.sp
             )
         }
@@ -363,7 +343,9 @@ fun searchbar(
 ) {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    Scaffold {
+    Scaffold(
+
+    ) {
         SearchBar(
             query = text,
             onQueryChange ={text = it},
@@ -373,6 +355,7 @@ fun searchbar(
             placeholder = { Text("Cerca un ingredient") },
             trailingIcon = {}
         ) {
+
         }
     }
 }
@@ -381,11 +364,13 @@ fun searchbar(
 fun showNumberPicker(): Int {
     var tempNumberPickerValue by remember { mutableIntStateOf(1) }
     AndroidView(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .padding(5.dp)
+            .fillMaxWidth(),
         factory = { context ->
             NumberPicker(context).apply {
                 minValue = 1
-                maxValue = 5
+                maxValue = 99
                 setOnValueChangedListener { _, _, newVal ->
                     tempNumberPickerValue = newVal
                 }
