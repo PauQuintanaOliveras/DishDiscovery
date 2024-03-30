@@ -30,7 +30,6 @@ data class Dish(
             "DishElaboration" to dishElaboration,
             "DishNotes" to dishNotes,
             "DishVisibility" to dishVisibility,
-            //"DishUrl" to dishUrl
         )
     }
 }

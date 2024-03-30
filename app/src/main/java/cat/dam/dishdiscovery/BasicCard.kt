@@ -1,5 +1,6 @@
 package cat.dam.dishdiscovery
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 
 class DishCard {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +38,7 @@ class DishCard {
     fun BasicCardPreview(
         tag: String = "none",
         dishDescription: String = "none",
-        dishImage: Int = R.drawable.ic_launcher_background,
+        dishImage: String = "https://firebasestorage.googleapis.com/v0/b/dishdiscovery-b9ea4.appspot.com/o/Arroz.jpg?alt=media&token=d2100afe-e6b6-4f13-9b15-bb0bbc1845cc",
         navController: NavController,
         isPreferits: Boolean
     ) {
@@ -104,14 +106,13 @@ class DishCard {
     }
 
     @Composable
-    fun CardImagePreview(navController: NavController, dishImage: Int) {
+    fun CardImagePreview(navController: NavController, dishImage: String) {
+        val painter = rememberImagePainter(data = dishImage)
+
         Image(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .clip(RoundedCornerShape(0.dp, 10.dp, 10.dp, 0.dp)),
-            painter = painterResource(id = dishImage),
-            contentDescription = "Dish Image"
+            painter = painter,
+            contentDescription = "DishImage",
+            modifier = Modifier.fillMaxSize()
         )
     }
 }

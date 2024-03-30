@@ -74,6 +74,7 @@ dependencies {
     implementation ("androidx.appcompat:appcompat:1.4.1")
     implementation(platform("com.google.firebase:firebase-bom:32.7.1")) //firebase
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
+
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2") //coroutines play services
 
     implementation("com.google.firebase:firebase-analytics") //firebase analytics

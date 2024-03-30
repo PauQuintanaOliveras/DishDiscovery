@@ -13,8 +13,8 @@ data class DishHeader(
     val dishDescription: String = "",
     @PropertyName("DishName")
     val dishName: String = "",
-    @PropertyName("Image")
-    val image: String = "",
+    @PropertyName("DishImage")
+    val dishImage: String = "",
     @PropertyName("MealType")
     val mealType: List<MealType> = listOf(),
     @PropertyName("Premium")
@@ -22,7 +22,9 @@ data class DishHeader(
     @PropertyName("Published")
     val published: Boolean = false,
     @PropertyName("Tags")
-    val tags: List<Tag> = listOf()
+    val tags: List<Tag> = listOf(),
+    @PropertyName("Ingridients")
+    val ingridients: List<Ingridient> = listOf()
 ) {
     fun dishHeaderToMap(): Map<String, Any?> {
         return mapOf(
@@ -31,11 +33,12 @@ data class DishHeader(
             "DishAuthor" to dishAuthor,
             "DishDescription" to dishDescription,
             "DishName" to dishName,
-            "Image" to image,
+            "DishImage" to dishImage,
             "MealType" to mealType,
             "Premium" to premium,
             "Published" to published,
-            "Tags" to tags
+            "Tags" to tags,
+            "Ingridients" to ingridients
         )
     }
 }

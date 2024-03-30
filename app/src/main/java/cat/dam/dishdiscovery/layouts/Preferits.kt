@@ -83,8 +83,30 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
     val db = FirebaseFirestore.getInstance()
 
     var dishHeaders by remember { mutableStateOf(listOf<DishHeader>()) }
+    var filteredDishHeaders by remember { mutableStateOf(listOf<DishHeader>()) }
     rememberCoroutineScope().launch {
         dishHeaders = getDishHeadersFromFirestore()
+        filteredDishHeaders = dishHeaders
+    }
+
+    var diets by remember { mutableStateOf(listOf<String>()) }
+    rememberCoroutineScope().launch {
+        diets = getDietsFromFirestore()
+    }
+
+    var mealTypes by remember { mutableStateOf(listOf<String>()) }
+    rememberCoroutineScope().launch {
+        mealTypes = getMealTypesFromFirestore(selectedFilters)
+    }
+
+    var ingridients by remember { mutableStateOf(listOf<String>()) }
+    rememberCoroutineScope().launch {
+        ingridients = getIngridientsFromFirestore(selectedFilters)
+    }
+
+    var dishNames by remember { mutableStateOf(listOf<String>()) }
+    rememberCoroutineScope().launch {
+        dishNames = getDishNamesFromFirestore()
     }
 
     ModalDrawer(
@@ -99,7 +121,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                         selectedFilters = selectedFilters.filter { it != filter }
                     }, isFilterSelected = true)
                     Text("Dietas", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-                    ChipGroup(items = listOf("Vegana", "Vegetariana"), selectedItems = selectedFilters, onChipClick = { filter ->
+                    ChipGroup(items = diets, selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
                         } else {
@@ -108,7 +130,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                     })
 
                     Text("Tipos de Comida", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-                    ChipGroup(items = listOf("Desayuno", "Almuerzo"), selectedItems = selectedFilters, onChipClick = { filter ->
+                    ChipGroup(items = mealTypes, selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
                         } else {
@@ -116,15 +138,18 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                         }
                     })
 
-                    ChipGroup(items = listOf("Tomate", "Bistec"), selectedItems = selectedFilters, onChipClick = { filter ->
+                    Text("Platos", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    ChipGroup(items = dishNames, selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
                         } else {
                             selectedFilters = selectedFilters + filter
                         }
                     })
+
+
                     Text("Ingredientes", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-                    ChipGroup(items = listOf("Pollo", "Pescado"), selectedItems = selectedFilters, onChipClick = { filter ->
+                    ChipGroup(items = ingridients, selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
                         } else {
@@ -132,7 +157,13 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                         }
                     })
 
-                    Button(onClick = { /* Aquí va la lógica para aplicar los filtros */ }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    Button(onClick = {
+                        if (selectedFilters.isEmpty()) {
+                            filteredDishHeaders = dishHeaders
+                        } else {
+                            filteredDishHeaders = dishHeaders.filter { it.matchesFilters(selectedFilters) }
+                        }
+                    }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                         Text("Aplicar")
                     }
                 }
@@ -196,11 +227,11 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
 
-                                items(dishHeaders) { header ->
+                                items(filteredDishHeaders) { header ->
                                     DishCard().BasicCardPreview(
                                         header.dishName,
                                         header.dishDescription,
-                                        R.drawable.dia, // Assuming `image` is a property of `Dish` class
+                                        header.dishImage,
                                         navController,
                                         isPreferits
                                     )
@@ -245,24 +276,92 @@ fun ChipGroup(items: List<String>, selectedItems: List<String>, onChipClick: (St
     }
 }
 
+fun DishHeader.matchesFilters(selectedFilters: List<String>): Boolean {
+
+    if (selectedFilters.isEmpty()) {
+        return true
+    }
+
+    val selectedDiets = selectedFilters.filter { it in diets.map { it.dietName } }
+    val selectedMealTypes = selectedFilters.filter { it in mealType.map { it.mealTypeName } }
+    val selectedIngridients = selectedFilters.filter { it in ingridients.map { it.name } }
+    val selectedDishes = selectedFilters.filter { it == dish.dishName }
+
+    return selectedDiets.isNotEmpty() || selectedMealTypes.isNotEmpty() || selectedIngridients.isNotEmpty() || selectedDishes.isNotEmpty()
+}
+
+suspend fun getDietsFromFirestore(): List<String> {
+    val db = FirebaseFirestore.getInstance()
+    val diets = mutableListOf<String>()
+
+    val result = db.collection("Diet").get().await()
+    for (document in result) {
+        val dietName = document.getString("DietName") ?: ""
+        diets.add(dietName)
+    }
+    return diets
+}
+
+suspend fun getMealTypesFromFirestore(selectedMealTypes: List<String> = listOf()): List<String> {
+    val db = FirebaseFirestore.getInstance()
+    val mealTypes = mutableListOf<String>()
+
+    val result = db.collection("MealType").get().await()
+    for (document in result) {
+        val mealTypeName = document.getString("MealTypeName") ?: ""
+        if (selectedMealTypes.isEmpty() || mealTypeName in selectedMealTypes) {
+            mealTypes.add(mealTypeName)
+        }
+    }
+    return mealTypes
+}
+
+suspend fun getIngridientsFromFirestore(selectedIngridients: List<String> = listOf()): List<String> {
+    val db = FirebaseFirestore.getInstance()
+    val ingridients = mutableListOf<String>()
+
+    val result = db.collection("Ingridient").get().await()
+    for (document in result) {
+        val ingridientName = document.getString("IngridientName") ?: ""
+        if (selectedIngridients.isEmpty() || ingridientName in selectedIngridients) {
+            ingridients.add(ingridientName)
+        }
+    }
+    return ingridients
+}
+
+suspend fun getDishNamesFromFirestore(): List<String> {
+    val db = FirebaseFirestore.getInstance()
+    val dishNames = mutableListOf<String>()
+
+    val result = db.collection("Dish").get().await()
+    for (document in result) {
+        val dishName = document.getString("DishName") ?: ""
+        dishNames.add(dishName)
+    }
+    return dishNames
+}
+
 suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
     val db = FirebaseFirestore.getInstance()
     val dishHeaders = mutableListOf<DishHeader>()
 
     val result = db.collection("DishHeader").get().await()
     for (document in result) {
-        val diets = (document.get("Diets") as List<DocumentReference>).map { it.get().await().toObject(Diet::class.java)!! }
-        val dish = (document.get("Dish") as DocumentReference).get().await().toObject(Dish::class.java)!!
-        val dishAuthor = (document.get("DishAuthor") as DocumentReference).get().await().toObject(User::class.java)!!
-        val dishDescription = (document.get("DishDescription") as DocumentReference).get().await()
-            .toObject(Dish::class.java)!!.dishDescription
-        val dishName = (document.get("DishName") as DocumentReference).get().await()
-            .toObject(Dish::class.java)!!.dishName
-        val mealType = (document.get("MealType") as List<DocumentReference>).map { it.get().await().toObject(MealType::class.java)!! }
-        val premium = document.getBoolean("Premium")!!
-        val published = (document.get("Published") as DocumentReference).get().await()
-            .toObject(Dish::class.java)!!.dishVisibility
-        val tags = (document.get("Tags") as List<DocumentReference>).map { it.get().await().toObject(Tag::class.java)!! }
+        val diets = (document.get("Diets") as? List<DocumentReference>)?.map { it.get().await()?.toObject(Diet::class.java) }?.filterNotNull() ?: listOf()
+        val dish = (document.get("Dish") as? DocumentReference)?.get()?.await()?.toObject(Dish::class.java) ?: Dish()
+        val dishAuthor = (document.get("DishAuthor") as? DocumentReference)?.get()?.await()?.toObject(User::class.java) ?: User()
+        val dishDescription = (document.get("DishDescription") as? DocumentReference)?.get()?.await()
+            ?.toObject(Dish::class.java)?.dishDescription ?: ""
+        val dishName = (document.get("DishName") as? DocumentReference)?.get()?.await()
+            ?.toObject(Dish::class.java)?.dishName ?: ""
+        val dishImage = (document.get("DishImage") as? DocumentReference)?.get()?.await()
+            ?.toObject(Dish::class.java)?.dishImageId ?: ""
+        val mealType = (document.get("MealType") as? List<DocumentReference>)?.map { it.get().await()?.toObject(MealType::class.java) }?.filterNotNull() ?: listOf()
+        val premium = document.getBoolean("Premium") ?: false
+        val published = (document.get("Published") as? DocumentReference)?.get()?.await()
+            ?.toObject(Dish::class.java)?.dishVisibility ?: false
+        val tags = (document.get("Tags") as? List<DocumentReference>)?.map { it.get().await()?.toObject(Tag::class.java) }?.filterNotNull() ?: listOf()
 
         val dishHeader = DishHeader(
             diets = diets,
@@ -270,6 +369,7 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
             dishAuthor = dishAuthor,
             dishDescription = dishDescription,
             dishName = dishName,
+            dishImage = dishImage,
             mealType = mealType,
             premium = premium,
             published = published,
