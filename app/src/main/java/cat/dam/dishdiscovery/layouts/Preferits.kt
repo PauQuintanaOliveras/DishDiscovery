@@ -241,6 +241,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
 
                                 items(filteredDishHeaders) { header ->
                                     DishCard().BasicCardPreview(
+                                        header.dishId,
                                         header.dishName,
                                         header.dishDescription,
                                         header.dishImage,
@@ -398,6 +399,8 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
     for (document in result) {
         val diets = (document.get("Diets") as? List<DocumentReference>)?.map { it.get().await()?.toObject(Diet::class.java) }?.filterNotNull() ?: listOf()
         val dish = (document.get("Dish") as? DocumentReference)?.get()?.await()?.toObject(Dish::class.java) ?: Dish()
+        val dishId = (document.get("Dish") as? DocumentReference)?.id ?: ""
+        Log.d("AAAAAAAAAAAAAAAAAAAAAAAA", "getDishHeadersFromFirestore: $dishId")
         val dishAuthor = (document.get("DishAuthor") as? DocumentReference)?.get()?.await()?.toObject(User::class.java) ?: User()
         val dishDescription = (document.get("DishDescription") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishDescription ?: ""
@@ -405,7 +408,6 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
             ?.toObject(Dish::class.java)?.dishName ?: ""
         val dishImage = (document.get("DishImage") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishImageId ?: ""
-        Log.d("", "getDishHeadersFromFirestore: $dishImage")
         val mealType = (document.get("MealType") as? List<DocumentReference>)?.map { it.get().await()?.toObject(MealType::class.java) }?.filterNotNull() ?: listOf()
         val premium = document.getBoolean("Premium") ?: false
         val published = (document.get("Published") as? DocumentReference)?.get()?.await()
@@ -423,6 +425,7 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
         val dishHeader = DishHeader(
             diets = diets,
             dish = dish,
+            dishId = dishId,
             dishAuthor = dishAuthor,
             dishDescription = dishDescription,
             dishName = dishName,

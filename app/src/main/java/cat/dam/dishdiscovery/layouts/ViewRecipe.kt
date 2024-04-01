@@ -1,5 +1,6 @@
 package cat.dam.dishdiscovery.layouts
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,9 +25,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,28 +39,45 @@ import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import cat.dam.dishdiscovery.objects.Ingridient
 import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.R
+import cat.dam.dishdiscovery.objects.Dish
 import com.google.firebase.firestore.FirebaseFirestore
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
-fun ViewRecipeScreen() {
+fun ViewRecipeScreen(dishId: String?, navController: NavController) {
     val boxSize = 100.dp
     val defaultPadding = 16.dp
     val dishServings = 4f
     var servings by remember { mutableFloatStateOf(4f) }
     //var servingsModifier by remember { mutableStateOf(1) }
-    val ingridients = hashMapOf<Ingridient, Mesurement>()
-    val db = FirebaseFirestore.getInstance()
+    var ingridients = hashMapOf<Ingridient, Mesurement>()
+    val backStackEntry = navController.currentBackStackEntryAsState()
+    val dishId = backStackEntry.value?.arguments?.getString("dishId") ?: ""
 
-    ingridients[Ingridient("Bread")] = Mesurement(" Slices", 2f)
+    val dish = produceState<Dish?>(initialValue = null) {
+        value = getDishFromFirestore(dishId)
+    }.value
+
+    Log.d("BBBBBBBBBBBBBB", "ViewRecipeScreen: $dishId")
+
+
+    //val dish = remember { mutableStateOf<Dish?>(null) }
+
+    LaunchedEffect(dishId) {
+        dish.value = getDishFromFirestore(dishId)
+    }
+
+
+    /*ingridients[Ingridient("Bread")] = Mesurement(" Slices", 2f)
     ingridients[Ingridient("Ham")] = Mesurement(" Slices", 1f)
     ingridients[Ingridient("Cheese")] = Mesurement(" Slices", 1.33333f)
-    ingridients[Ingridient("tomato")] = Mesurement("", 1f)
+    ingridients[Ingridient("tomato")] = Mesurement("", 1f)*/
 
     //Must be after Ingridients added to the list
     var updatedIngredients by remember { mutableStateOf(updateMesurements(ingridients,servings,dishServings)) }
@@ -264,3 +284,18 @@ fun updateMesurements(ingridients: HashMap<Ingridient, Mesurement>, servings: Fl
     }
     return updatedIngridients
 }
+
+suspend fun getDishFromFirestore(dishId: String): Dish? {
+    val db = FirebaseFirestore.getInstance()
+    val docRef = db.collection("Dish").document(dishId)
+    var dish: Dish? = null
+
+    docRef.get()
+        .addOnSuccessListener { document ->
+            if (document != null) {
+                dish = document.toObject(Dish::class.java)
+            }
+        }
+    return dish
+}
+

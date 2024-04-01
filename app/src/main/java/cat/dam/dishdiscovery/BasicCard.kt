@@ -38,8 +38,9 @@ class DishCard {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun BasicCardPreview(
-        tag: String = "none",
-        dishDescription: String = "none",
+        dishId: String,
+        tag: String,
+        dishDescription: String,
         dishImage: Uri? = Uri.EMPTY,
         navController: NavController,
         isPreferits: Boolean
@@ -52,7 +53,7 @@ class DishCard {
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 20.dp),
-            onClick = { navController.navigate("view_recipe_screen") },
+            onClick = { navController.navigate("view_recipe_screen/$dishId") },
         ) {
             Row(
                 modifier = Modifier

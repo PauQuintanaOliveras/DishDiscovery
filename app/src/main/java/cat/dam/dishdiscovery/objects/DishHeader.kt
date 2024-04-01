@@ -8,6 +8,8 @@ data class DishHeader(
     val diets: List<Diet> = listOf(),
     @PropertyName("Dish")
     val dish: Dish,
+    @PropertyName("DishId")
+    val dishId: String = "",
     @PropertyName("DishAuthor")
     val dishAuthor: User = User(),
     @PropertyName("DishDescription")
