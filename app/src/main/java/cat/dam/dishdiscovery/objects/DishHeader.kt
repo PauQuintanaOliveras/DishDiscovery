@@ -1,5 +1,6 @@
 package cat.dam.dishdiscovery.objects
 
+import android.net.Uri
 import com.google.firebase.firestore.PropertyName
 
 data class DishHeader(
@@ -14,7 +15,7 @@ data class DishHeader(
     @PropertyName("DishName")
     val dishName: String = "",
     @PropertyName("DishImage")
-    val dishImage: String = "",
+    val dishImage: Uri = Uri.EMPTY,
     @PropertyName("MealType")
     val mealType: List<MealType> = listOf(),
     @PropertyName("Premium")

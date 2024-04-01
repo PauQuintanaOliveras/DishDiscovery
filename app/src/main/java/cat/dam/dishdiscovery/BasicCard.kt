@@ -1,5 +1,6 @@
 package cat.dam.dishdiscovery
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,7 +39,7 @@ class DishCard {
     fun BasicCardPreview(
         tag: String = "none",
         dishDescription: String = "none",
-        dishImage: String = "https://firebasestorage.googleapis.com/v0/b/dishdiscovery-b9ea4.appspot.com/o/Arroz.jpg?alt=media&token=d2100afe-e6b6-4f13-9b15-bb0bbc1845cc",
+        dishImage: Uri? = Uri.EMPTY,
         navController: NavController,
         isPreferits: Boolean
     ) {
@@ -106,7 +107,7 @@ class DishCard {
     }
 
     @Composable
-    fun CardImagePreview(navController: NavController, dishImage: String) {
+    fun CardImagePreview(navController: NavController, dishImage: Uri?) {
         val painter = rememberImagePainter(data = dishImage)
 
         Image(
