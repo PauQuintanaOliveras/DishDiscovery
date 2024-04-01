@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 
 class DishCard {
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun BasicCardPreview(
@@ -43,6 +44,7 @@ class DishCard {
         navController: NavController,
         isPreferits: Boolean
     ) {
+        Log.d("DishImageFromCard", "BasicCardPreview: $dishImage")
         ElevatedCard(
             modifier = Modifier
                 .width(300.dp)
@@ -108,6 +110,7 @@ class DishCard {
 
     @Composable
     fun CardImagePreview(navController: NavController, dishImage: Uri?) {
+        Log.d("CurrentCardImage", "CardImagePreview: $dishImage")
         val painter = rememberImagePainter(data = dishImage)
 
         Image(

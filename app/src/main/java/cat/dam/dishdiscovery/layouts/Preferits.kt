@@ -51,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.DishCard
@@ -69,9 +70,13 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 val client = Firebase.auth.currentUser?.uid
 
@@ -110,9 +115,9 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
         dishNames = getDishNamesFromFirestore()
     }
 
-    var dishImage by remember { mutableStateOf<Uri?>(null) }
+    var dishImage by remember { mutableStateOf(listOf<Uri>()) }
     rememberCoroutineScope().launch {
-        dishImage = getDishImageFromFirestore()
+        dishImage = getDishImagesFromFirestore()
     }
 
     ModalDrawer(
@@ -350,32 +355,42 @@ suspend fun getDishNamesFromFirestore(): List<String> {
 }
 
 
-suspend fun getDishImageFromFirestore(): Uri {
+suspend fun getDishImagesFromFirestore(): List<Uri> {
     val db = FirebaseFirestore.getInstance()
     val storage = FirebaseStorage.getInstance()
     val storageRef = storage.reference
-    var dishImage = Uri.EMPTY
 
     val result = db.collection("Dish").get().await()
+    val dishImages = mutableListOf<Uri>()
     for (document in result) {
-        val dishImageId = document.getString("DishImageId") ?: ""
-        val imageRef = storageRef.child(dishImageId)
+        val dishImageId = document.getString("DishImage") ?: ""
+        val imageRef = storageRef.child("DishImages/$dishImageId")
 
-        imageRef.downloadUrl.addOnSuccessListener {
-            Log.d(TAG, "getDishImageFromFirestore: Image downloaded successfully")
-            dishImage = it
-            Log.d(TAG, "getDishImageFromFirestore: $dishImage")
-        }.addOnFailureListener {
+        val dishImage = try {
+            getDownloadUrl(imageRef)
+        } catch (e: Exception) {
             Log.d(TAG, "getDishImageFromFirestore: Failed to download image")
+            Uri.EMPTY
+        }
+        Log.d(TAG, "getDishImageFromFirestore: $dishImage")
+        dishImages.add(dishImage)
+    }
+    return dishImages
+}
+
+suspend fun getDownloadUrl(ref: StorageReference): Uri =
+    suspendCancellableCoroutine { continuation ->
+        ref.downloadUrl.addOnSuccessListener { uri ->
+            continuation.resume(uri)
+        }.addOnFailureListener { exception ->
+            continuation.resumeWithException(exception)
         }
     }
-    return dishImage
-}
 
 suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
     val db = FirebaseFirestore.getInstance()
     val storage = FirebaseStorage.getInstance()
-    val storageRef = storage.reference
+    //val storageRef = storage.reference
     val dishHeaders = mutableListOf<DishHeader>()
 
     val result = db.collection("DishHeader").get().await()
@@ -401,7 +416,7 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
             dishAuthor = dishAuthor,
             dishDescription = dishDescription,
             dishName = dishName,
-            dishImage = dishImage,
+            dishImage = dishImage.toUri(),
             mealType = mealType,
             premium = premium,
             published = published,
