@@ -14,7 +14,7 @@ data class DishHeader(
     val dishDescription: String = "",
     @PropertyName("DishName")
     val dishName: String = "",
-    @PropertyName("DishImage")
+    @PropertyName("Image")
     val dishImage: Uri = Uri.EMPTY,
     @PropertyName("MealType")
     val mealType: List<MealType> = listOf(),
@@ -34,7 +34,7 @@ data class DishHeader(
             "DishAuthor" to dishAuthor,
             "DishDescription" to dishDescription,
             "DishName" to dishName,
-            "DishImage" to dishImage,
+            "Image" to dishImage,
             "MealType" to mealType,
             "Premium" to premium,
             "Published" to published,

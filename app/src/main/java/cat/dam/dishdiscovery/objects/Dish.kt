@@ -9,7 +9,7 @@ data class Dish(
     @PropertyName("DishDescription")
     val dishDescription: String = "",
     @PropertyName("DishImage")
-    val dishImageId: String? = null,
+    val dishImageId: String = "",
     @PropertyName("DishServings")
     val dishServings: Int = 0,
     @PropertyName("DishElaboration")

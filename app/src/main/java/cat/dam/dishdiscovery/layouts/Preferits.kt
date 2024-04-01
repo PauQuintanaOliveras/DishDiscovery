@@ -89,6 +89,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
     var selectedFilters by remember { mutableStateOf(listOf<String>()) }
 
     var dishHeaders by remember { mutableStateOf(listOf<DishHeader>()) }
+
     var filteredDishHeaders by remember { mutableStateOf(listOf<DishHeader>()) }
     rememberCoroutineScope().launch {
         dishHeaders = getDishHeadersFromFirestore()
@@ -115,10 +116,10 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
         dishNames = getDishNamesFromFirestore()
     }
 
-    var dishImage by remember { mutableStateOf(listOf<Uri>()) }
+    /*var dishImage by remember { mutableStateOf(listOf<Uri>()) }
     rememberCoroutineScope().launch {
         dishImage = getDishImagesFromFirestore()
-    }
+    }*/
 
     ModalDrawer(
         drawerState = drawerState,
@@ -355,7 +356,7 @@ suspend fun getDishNamesFromFirestore(): List<String> {
 }
 
 
-suspend fun getDishImagesFromFirestore(): List<Uri> {
+/*suspend fun getDishImagesFromFirestore(): List<Uri> {
     val db = FirebaseFirestore.getInstance()
     val storage = FirebaseStorage.getInstance()
     val storageRef = storage.reference
@@ -385,12 +386,12 @@ suspend fun getDownloadUrl(ref: StorageReference): Uri =
         }.addOnFailureListener { exception ->
             continuation.resumeWithException(exception)
         }
-    }
+    }*/
 
 suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
     val db = FirebaseFirestore.getInstance()
     val storage = FirebaseStorage.getInstance()
-    //val storageRef = storage.reference
+    val storageRef = storage.reference
     val dishHeaders = mutableListOf<DishHeader>()
 
     val result = db.collection("DishHeader").get().await()
@@ -404,11 +405,20 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
             ?.toObject(Dish::class.java)?.dishName ?: ""
         val dishImage = (document.get("DishImage") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishImageId ?: ""
+        Log.d("", "getDishHeadersFromFirestore: $dishImage")
         val mealType = (document.get("MealType") as? List<DocumentReference>)?.map { it.get().await()?.toObject(MealType::class.java) }?.filterNotNull() ?: listOf()
         val premium = document.getBoolean("Premium") ?: false
         val published = (document.get("Published") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishVisibility ?: false
         val tags = (document.get("Tags") as? List<DocumentReference>)?.map { it.get().await()?.toObject(Tag::class.java) }?.filterNotNull() ?: listOf()
+
+        var storageImage: Uri = Uri.EMPTY
+
+        storageRef.child("DishImages/$dishImage").downloadUrl.addOnSuccessListener { uri ->
+            storageImage = uri
+        }.addOnFailureListener {
+            Log.d(TAG, "getDishHeadersFromFirestore: Failed to download image")
+        }
 
         val dishHeader = DishHeader(
             diets = diets,
