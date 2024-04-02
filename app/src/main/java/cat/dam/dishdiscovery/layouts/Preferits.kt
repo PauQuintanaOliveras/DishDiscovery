@@ -51,17 +51,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.DishCard
-import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.R
 import cat.dam.dishdiscovery.navbar
 import cat.dam.dishdiscovery.objects.Diet
 import cat.dam.dishdiscovery.objects.Dish
 import cat.dam.dishdiscovery.objects.DishHeader
-import cat.dam.dishdiscovery.objects.Ingridient
 import cat.dam.dishdiscovery.objects.MealType
 import cat.dam.dishdiscovery.objects.Tag
 import cat.dam.dishdiscovery.objects.User
@@ -70,10 +67,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -403,8 +397,8 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
             ?.toObject(Dish::class.java)?.dishDescription ?: ""
         val dishName = (document.get("DishName") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishName ?: ""
-        val dishImage = (document.get("DishImage") as? DocumentReference)?.get()?.await()
-            ?.toObject(Dish::class.java)?.dishImageId ?: ""
+        val dishImage = Uri.parse((document.get("DishImage") as? DocumentReference)?.get()?.await()
+            ?.toObject(Dish::class.java)?.dishImageId ?: "")
         Log.d("", "getDishHeadersFromFirestore: $dishImage")
         val mealType = (document.get("MealType") as? List<DocumentReference>)?.map { it.get().await()?.toObject(MealType::class.java) }?.filterNotNull() ?: listOf()
         val premium = document.getBoolean("Premium") ?: false
@@ -426,7 +420,7 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
             dishAuthor = dishAuthor,
             dishDescription = dishDescription,
             dishName = dishName,
-            dishImage = dishImage.toUri(),
+            dishImage = dishImage,
             mealType = mealType,
             premium = premium,
             published = published,

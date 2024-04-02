@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                         composable("main_page") { Preferits(navController,false) }
                         composable("preferits") { Preferits(navController,true) }
                         composable("view_recipe_screen") { ViewRecipeScreen() }
-                        composable("create_recipe") { CreateRecipe() }
+                        composable("create_recipe") { CreateRecipe(navController) }
                         composable("map") { MapScreen(navController) }
                         composable("temp") { searchbar() }
                         composable("Settings") { SettingsScreen(navController) }
