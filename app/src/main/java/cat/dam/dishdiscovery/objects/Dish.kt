@@ -6,8 +6,16 @@ import com.google.firebase.firestore.PropertyName
 data class Dish(
     @PropertyName("DishName")
     val dishName: String = "",
+    @PropertyName("DishNameCat")
+    val dishNameCat: String = "",
+    @PropertyName("DishNameEsp")
+    val dishNameEsp: String = "",
     @PropertyName("DishDescription")
     val dishDescription: String = "",
+    @PropertyName("DishDescriptionCat")
+    val dishDescriptionCat: String = "",
+    @PropertyName("DishDescriptionEsp")
+    val dishDescriptionEsp: String = "",
     @PropertyName("DishImage")
     val dishImageId: String = "",
     @PropertyName("DishServings")
@@ -19,17 +27,22 @@ data class Dish(
     @PropertyName("DishVisibility")
     val dishVisibility: Boolean = false,
     @PropertyName("DishUrl")
-    val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(Ingridient("empty") to Mesurement("empty", 0f))
+    val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(Ingridient("empty") to Mesurement("empty", 0f)),
+
 ) {
     fun dishToMap(): Map<String, Any?> {
         return mapOf(
             "DishName" to dishName,
-            "DishImageId" to dishImageId,
+            "DishNameCat" to dishNameCat,
+            "DishNameEsp" to dishNameEsp,
+            "DishImage" to dishImageId,
             "DishServings" to dishServings,
-            "IngridientsQty" to ingridientsQty.values,
             "DishElaboration" to dishElaboration,
             "DishNotes" to dishNotes,
             "DishVisibility" to dishVisibility,
+            "DishDescription" to dishDescription,
+            "DishDescriptionCat" to dishDescription,
+            "DishDescriptionEsp" to dishDescriptionEsp,
         )
     }
 }
