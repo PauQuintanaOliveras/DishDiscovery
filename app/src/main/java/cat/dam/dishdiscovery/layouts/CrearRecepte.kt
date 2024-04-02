@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import cat.dam.dishdiscovery.CreateRecipeViewModel
 import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.objects.Dish
@@ -64,9 +65,9 @@ import com.google.firebase.storage.FirebaseStorage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+
 @Composable
-fun CreateRecipe() {
+fun CreateRecipe(navController:NavController) {
     val context = LocalContext.current
     var dishName by remember { mutableStateOf("") }
     var dishElaboration by remember { mutableStateOf("") }
@@ -309,8 +310,12 @@ fun CreateRecipe() {
             onClick = {
                 uploadDish(
                     dishName,
+                    dishNameCat="",
+                    dishNameEsp="",
                     dishImageId,
                     dishDescription = "",
+                    dishDescriptionCat = "",
+                    dishDescriptionEsp = "",
                     dishImage,
                     dishServings,
                     dishIngridients,
@@ -318,6 +323,7 @@ fun CreateRecipe() {
                     dishNotes,
                     dishVisibility
                 )
+                navController.navigate("preferits")
             },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -354,21 +360,30 @@ fun showNumberPicker(): Int {
 
 fun uploadDish(
     dishName: String,
+    dishNameCat: String,
+    dishNameEsp: String,
     dishImageId: String,
     dishDescription: String,
+    dishDescriptionCat: String,
+    dishDescriptionEsp: String,
     dishImage: Uri?,
     dishServings: Int,
     ingridientsQty: Map<Ingridient, Mesurement>,
     dishElaboration: String,
     dishNotes: String,
     dishVisibility: Boolean
+
 ) {
     val TAG = "CreateRecipe"
     val dish = Dish(
         dishId = "",
         dishName,
+        dishNameCat,
+        dishNameEsp,
         dishImageId,
         dishDescription,
+        dishDescriptionCat,
+        dishDescriptionEsp,
         dishServings,
         dishElaboration,
         dishNotes,
@@ -384,7 +399,7 @@ fun uploadDish(
             Log.d(TAG, "dish $dish not added")
 
         }
-
+    if (!dishImageId.isNullOrEmpty() && dishImage != null) {
     FirebaseStorage.getInstance()
         .getReference("DishImages")
         .child(dishImageId!!)
@@ -395,4 +410,7 @@ fun uploadDish(
         .addOnFailureListener {
             Log.d(TAG, "Image $dishImageId not uploaded")
         }
+}else {
+        Log.d(TAG, "dishImageId or dishImage is null or empty")
+    }
 }

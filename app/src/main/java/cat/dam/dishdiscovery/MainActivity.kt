@@ -48,10 +48,9 @@ class MainActivity : ComponentActivity() {
                         composable("recover_password_screen") { RecoverPassword() }
                         composable("main_page") { Preferits(navController,false) }
                         composable("preferits") { Preferits(navController,true) }
-                        //composable("view_recipe_screen") { ViewRecipeScreen() }
-                        composable("view_recipe_screen/{id}") { backStackEntry ->
-                            val id = backStackEntry.arguments?.getString("id")
-                            ViewRecipeScreen(id)
+                        composable("view_recipe_screen/{dishId}") { backStackEntry ->
+                            val dishId = backStackEntry.arguments?.getString("dishId")
+                            ViewRecipeScreen(dishId, navController)
                         }
                         composable("create_recipe") { CreateRecipe() }
                         composable("map") { MapScreen(navController) }

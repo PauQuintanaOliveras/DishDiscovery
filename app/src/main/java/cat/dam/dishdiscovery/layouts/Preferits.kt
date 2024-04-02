@@ -234,7 +234,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
 
                                 items(filteredDishHeaders) { header ->
                                     DishCard().BasicCardPreview(
-                                        header.dish.dishId,
+                                        header.dishId,
                                         header.dishName,
                                         header.dishDescription,
                                         header.dishImage.toString(),
@@ -392,27 +392,21 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
     for (document in result) {
         val diets = (document.get("Diets") as? List<DocumentReference>)?.map { it.get().await()?.toObject(Diet::class.java) }?.filterNotNull() ?: listOf()
         val dish = (document.get("Dish") as? DocumentReference)?.get()?.await()?.toObject(Dish::class.java) ?: Dish()
+        val dishId = document.get("DishId") as? String ?: ""
         val dishAuthor = (document.get("DishAuthor") as? DocumentReference)?.get()?.await()?.toObject(User::class.java) ?: User()
         val dishDescription = (document.get("DishDescription") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishDescription ?: ""
         val dishName = (document.get("DishName") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishName ?: ""
-        val dishImage = (document.get("DishImage") as? DocumentReference)?.get()?.await()
-            ?.toObject(Dish::class.java)?.dishImageId ?: ""
-        Log.d("", "getDishHeadersFromFirestore: $dishImage")
+        val dishImageName =
+            (document.get("Image") as? DocumentReference)?.get()?.await()?.get("DishImage")
         val mealType = (document.get("MealType") as? List<DocumentReference>)?.map { it.get().await()?.toObject(MealType::class.java) }?.filterNotNull() ?: listOf()
         val premium = document.getBoolean("Premium") ?: false
         val published = (document.get("Published") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishVisibility ?: false
         val tags = (document.get("Tags") as? List<DocumentReference>)?.map { it.get().await()?.toObject(Tag::class.java) }?.filterNotNull() ?: listOf()
-
-        var storageImage: Uri = Uri.EMPTY
-
-        storageRef.child("DishImages/$dishImage").downloadUrl.addOnSuccessListener { uri ->
-            storageImage = uri
-        }.addOnFailureListener {
-            Log.d(TAG, "getDishHeadersFromFirestore: Failed to download image")
-        }
+        val storageImage =
+            if (dishImageName != null) storageRef.child("DishImages/$dishImageName").downloadUrl.await() else Uri.EMPTY
 
         val dishHeader = DishHeader(
             diets = diets,
@@ -420,7 +414,7 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
             dishAuthor = dishAuthor,
             dishDescription = dishDescription,
             dishName = dishName,
-            dishImage = dishImage.toUri(),
+            dishImage = storageImage,
             mealType = mealType,
             premium = premium,
             published = published,
