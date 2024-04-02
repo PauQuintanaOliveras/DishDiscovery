@@ -69,9 +69,9 @@ fun ViewRecipeScreen(dishId: String?, navController: NavController) {
 
     //val dish = remember { mutableStateOf<Dish?>(null) }
 
-    LaunchedEffect(dishId) {
+    /*LaunchedEffect(dishId) {
         dish.value = getDishFromFirestore(dishId)
-    }
+    }*/
 
 
     /*ingridients[Ingridient("Bread")] = Mesurement(" Slices", 2f)
