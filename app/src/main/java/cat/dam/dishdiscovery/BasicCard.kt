@@ -3,7 +3,6 @@ package cat.dam.dishdiscovery
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +36,8 @@ class DishCard {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun BasicCardPreview(
+        id: String,
+        dishName: String = "none",
         tag: String = "none",
         dishDescription: String = "none",
         dishImage: Uri? = Uri.EMPTY,
@@ -52,7 +52,7 @@ class DishCard {
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 20.dp),
-            onClick = { navController.navigate("view_recipe_screen") },
+            onClick = { navController.navigate("view_recipe_screen/${id}") },
         ) {
             Row(
                 modifier = Modifier

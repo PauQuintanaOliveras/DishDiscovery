@@ -365,6 +365,7 @@ fun uploadDish(
 ) {
     val TAG = "CreateRecipe"
     val dish = Dish(
+        dishId = "",
         dishName,
         dishImageId,
         dishDescription,

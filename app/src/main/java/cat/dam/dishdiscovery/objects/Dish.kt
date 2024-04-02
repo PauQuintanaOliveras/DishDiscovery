@@ -1,15 +1,18 @@
 package cat.dam.dishdiscovery.objects
 
 import cat.dam.dishdiscovery.Mesurement
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
 
 data class Dish(
+    @DocumentId
+    val dishId: String = "",
     @PropertyName("DishName")
     val dishName: String = "",
-    @PropertyName("DishDescription")
-    val dishDescription: String = "",
     @PropertyName("DishImage")
     val dishImageId: String = "",
+    @PropertyName("DishDescription")
+    val dishDescription: String = "",
     @PropertyName("DishServings")
     val dishServings: Int = 0,
     @PropertyName("DishElaboration")

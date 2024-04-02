@@ -55,13 +55,11 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.DishCard
-import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.R
 import cat.dam.dishdiscovery.navbar
 import cat.dam.dishdiscovery.objects.Diet
 import cat.dam.dishdiscovery.objects.Dish
 import cat.dam.dishdiscovery.objects.DishHeader
-import cat.dam.dishdiscovery.objects.Ingridient
 import cat.dam.dishdiscovery.objects.MealType
 import cat.dam.dishdiscovery.objects.Tag
 import cat.dam.dishdiscovery.objects.User
@@ -70,13 +68,8 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 val client = Firebase.auth.currentUser?.uid
 
@@ -241,11 +234,12 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
 
                                 items(filteredDishHeaders) { header ->
                                     DishCard().BasicCardPreview(
+                                        header.dish.dishId,
                                         header.dishName,
                                         header.dishDescription,
-                                        header.dishImage,
-                                        navController,
-                                        isPreferits
+                                        header.dishImage.toString(),
+                                        navController = navController,
+                                        isPreferits = isPreferits
                                     )
                                     Spacer(modifier = Modifier.size(25.dp))
                                 }
