@@ -82,6 +82,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.1") //firebase authentication
     implementation("com.google.firebase:firebase-storage:20.3.0") //firebase storage
     implementation("com.google.android.gms:play-services-auth:21.0.0") //google sign in
+
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation("androidx.compose.material3:material3-android:1.2.0")
     implementation("androidx.compose.material3:material3:1.2.0")
