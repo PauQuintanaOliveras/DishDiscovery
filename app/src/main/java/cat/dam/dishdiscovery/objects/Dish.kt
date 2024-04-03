@@ -9,10 +9,16 @@ data class Dish(
     val dishId: String = "",
     @PropertyName("DishName")
     val dishName: String = "",
+    @PropertyName("DishNameCat")
+    val dishNameCat: String = "",
+    @PropertyName("DishNameEsp")
+    val dishNameEsp: String = "",
     @PropertyName("DishImage")
     val dishImageId: String = "",
     @PropertyName("DishDescription")
     val dishDescription: String = "",
+    @PropertyName("DishDescriptionEsp")
+    val dishDescriptionEsp: String = "",
     @PropertyName("DishServings")
     val dishServings: Int = 0,
     @PropertyName("DishElaboration")
@@ -24,7 +30,7 @@ data class Dish(
     @PropertyName("DishUrl")
     val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(Ingridient("empty") to Mesurement("empty", 0f)),
 
-) {
+    ) {
     fun dishToMap(): Map<String, Any?> {
         return mapOf(
             "DishName" to dishName,
@@ -37,7 +43,6 @@ data class Dish(
             "DishNotes" to dishNotes,
             "DishVisibility" to dishVisibility,
             "DishDescription" to dishDescription,
-            "DishDescriptionCat" to dishDescription,
             "DishDescriptionEsp" to dishDescriptionEsp,
         )
     }

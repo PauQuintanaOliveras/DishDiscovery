@@ -50,9 +50,9 @@ class MainActivity : ComponentActivity() {
                         composable("preferits") { Preferits(navController,true) }
                         composable("view_recipe_screen/{dishId}") { backStackEntry ->
                             val dishId = backStackEntry.arguments?.getString("dishId")
-                            ViewRecipeScreen(dishId, navController)
+                            ViewRecipeScreen(dishId)
                         }
-                        composable("create_recipe") { CreateRecipe() }
+                        composable("create_recipe") { CreateRecipe(navController) }
                         composable("map") { MapScreen(navController) }
                         composable("temp") { searchbar() }
                         composable("Settings") { SettingsScreen(navController) }
