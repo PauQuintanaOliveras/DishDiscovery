@@ -73,6 +73,7 @@ fun CreateRecipe(navController:NavController) {
     var dishElaboration by remember { mutableStateOf("") }
     var dishImage by remember { mutableStateOf<Uri?>(null) }
     var dishImageId = ""
+    var dishDescription by remember { mutableStateOf("") }
     var dishServings by remember { mutableFloatStateOf(0f) }
     var dishNotes by remember { mutableStateOf("") }
     var dishVisibility by remember { mutableStateOf(false) }
@@ -255,6 +256,20 @@ fun CreateRecipe(navController:NavController) {
             }
        }
         TextField( // Add this TextField
+            value = dishDescription,
+            onValueChange = { dishDescription = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+                .clip(RoundedCornerShape(100.dp)),
+            label = {
+                Text(
+                    text = "Descripcio de la Recepta",
+                    fontSize = 15.sp,
+                )
+            }
+        )
+        TextField( // Add this TextField
             value = dishElaboration,
             onValueChange = { dishElaboration = it },
             modifier = Modifier
@@ -313,7 +328,7 @@ fun CreateRecipe(navController:NavController) {
                     dishNameCat="",
                     dishNameEsp="",
                     dishImageId,
-                    dishDescription = "",
+                    dishDescription,
                     dishDescriptionCat = "",
                     dishDescriptionEsp = "",
                     dishImage,
@@ -392,25 +407,41 @@ fun uploadDish(
     ).dishToMap()
 
     FirebaseFirestore.getInstance().collection("Dish").add(dish)
-        .addOnSuccessListener {
+        .addOnSuccessListener { documentReference ->
+            val dishId = documentReference.id
             Log.d(TAG, "dish $dish added")
+
+            if (!dishImageId.isNullOrEmpty() && dishImage != null) {
+                val imageRef = FirebaseStorage.getInstance()
+                    .getReference("DishImage")
+                    .child(dishImageId!!)
+
+                imageRef.putFile(dishImage!!)
+                    .addOnSuccessListener {
+                        Log.d(TAG, "Image $dishImageId uploaded")
+
+                        // After the image is uploaded, get the download URL
+                        imageRef.downloadUrl.addOnSuccessListener { uri ->
+                            // Update the Firestore document with the download URL
+                            FirebaseFirestore.getInstance().collection("Dish").document(dishId)
+                                .update("dishImageId", uri.toString())
+                                .addOnSuccessListener {
+                                    Log.d(TAG, "Image URL saved")
+                                }
+                                .addOnFailureListener {
+                                    Log.d(TAG, "Image URL not saved")
+                                }
+                        }
+                    }
+                    .addOnFailureListener {
+                        Log.d(TAG, "Image $dishImageId not uploaded")
+                    }
+            } else {
+                Log.d(TAG, "dishImageId or dishImage is null or empty")
+            }
         }
         .addOnFailureListener {
             Log.d(TAG, "dish $dish not added")
-
         }
-    if (!dishImageId.isNullOrEmpty() && dishImage != null) {
-    FirebaseStorage.getInstance()
-        .getReference("DishImages")
-        .child(dishImageId!!)
-        .putFile(dishImage!!)
-        .addOnSuccessListener {
-            Log.d(TAG, "Image $dishImageId uploaded")
-        }
-        .addOnFailureListener {
-            Log.d(TAG, "Image $dishImageId not uploaded")
-        }
-}else {
-        Log.d(TAG, "dishImageId or dishImage is null or empty")
-    }
 }
+

@@ -2,6 +2,7 @@ package cat.dam.dishdiscovery.layouts
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -233,8 +234,9 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                                     DishCard().BasicCardPreview(
                                         header.dish.dishId,
                                         header.dishName,
+                                        header.tags[0].tagName,
                                         header.dishDescription,
-                                        header.dishImage.toString(),
+                                        header.dishImage,
                                         navController = navController,
                                         isPreferits = isPreferits
                                     )
@@ -387,27 +389,38 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
 
     val result = db.collection("DishHeader").get().await()
     for (document in result) {
-        val diets = (document.get("Diets") as? List<DocumentReference>)?.map { it.get().await()?.toObject(Diet::class.java) }?.filterNotNull() ?: listOf()
-        val dish = (document.get("Dish") as? DocumentReference)?.get()?.await()?.toObject(Dish::class.java) ?: Dish()
+        val diets = (document.get("Diets") as? List<DocumentReference>)?.map {
+            it.get().await()?.toObject(Diet::class.java)
+        }?.filterNotNull() ?: listOf()
+        val dish =
+            (document.get("Dish") as? DocumentReference)?.get()?.await()?.toObject(Dish::class.java)
+                ?: Dish()
         val dishId = document.get("DishId") as? String ?: ""
-        val dishAuthor = (document.get("DishAuthor") as? DocumentReference)?.get()?.await()?.toObject(User::class.java) ?: User()
-        val dishDescription = (document.get("DishDescription") as? DocumentReference)?.get()?.await()
-            ?.toObject(Dish::class.java)?.dishDescription ?: ""
+        val dishAuthor = (document.get("DishAuthor") as? DocumentReference)?.get()?.await()
+            ?.toObject(User::class.java) ?: User()
+        val dishDescription =
+            (document.get("DishDescription") as? DocumentReference)?.get()?.await()
+                ?.toObject(Dish::class.java)?.dishDescription ?: ""
         val dishName = (document.get("DishName") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishName ?: ""
         val dishImageName =
             (document.get("Image") as? DocumentReference)?.get()?.await()?.get("DishImage")
-        val mealType = (document.get("MealType") as? List<DocumentReference>)?.map { it.get().await()?.toObject(MealType::class.java) }?.filterNotNull() ?: listOf()
+        val mealType = (document.get("MealType") as? List<DocumentReference>)?.map {
+            it.get().await()?.toObject(MealType::class.java)
+        }?.filterNotNull() ?: listOf()
         val premium = document.getBoolean("Premium") ?: false
         val published = (document.get("Published") as? DocumentReference)?.get()?.await()
             ?.toObject(Dish::class.java)?.dishVisibility ?: false
-        val tags = (document.get("Tags") as? List<DocumentReference>)?.map { it.get().await()?.toObject(Tag::class.java) }?.filterNotNull() ?: listOf()
+        val tags = (document.get("Tags") as? List<DocumentReference>)?.map {
+            it.get().await()?.toObject(Tag::class.java)
+        }?.filterNotNull() ?: listOf()
         val storageImage =
             if (dishImageName != null) storageRef.child("DishImages/$dishImageName").downloadUrl.await() else Uri.EMPTY
 
         val dishHeader = DishHeader(
             diets = diets,
             dish = dish,
+            dishId = dishId,
             dishAuthor = dishAuthor,
             dishDescription = dishDescription,
             dishName = dishName,
@@ -421,6 +434,7 @@ suspend fun getDishHeadersFromFirestore(): List<DishHeader> {
     }
     return dishHeaders
 }
+
 @Preview
 @Composable
 fun PreviewScaffoldWithTopBarAndButtonBar() {
