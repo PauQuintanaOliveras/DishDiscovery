@@ -48,16 +48,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cat.dam.dishdiscovery.CreateRecipeViewModel
-import cat.dam.dishdiscovery.Mesurement
 import cat.dam.dishdiscovery.objects.Dish
 import cat.dam.dishdiscovery.objects.Ingridient
+import cat.dam.dishdiscovery.objects.Mesurement
 import cat.dam.dishdiscovery.searchbar
 import coil.compose.rememberImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -76,7 +75,7 @@ fun CreateRecipe(navController:NavController) {
     var dishServings by remember { mutableIntStateOf(0) }
     var dishNotes by remember { mutableStateOf("") }
     var dishVisibility by remember { mutableStateOf(false) }
-    var dishIngridients by remember { mutableStateOf<Map<Ingridient, Mesurement>>(mapOf()) }
+    var dishIngridients: MutableMap<Ingridient, Mesurement> = mutableMapOf()
     val focusManager = LocalFocusManager.current
     var authorNotes by remember { mutableStateOf("") }
     val selectImageLauncher =
@@ -240,14 +239,14 @@ fun CreateRecipe(navController:NavController) {
                                 modifier = Modifier.weight(0.5f),
                                 singleLine = true,
                                 value = "qty",
-                                onValueChange = { qty -> it.value.amount = qty.toFloat()},
+                                onValueChange = { qty -> it.value.quantity = qty.toFloat()},
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             TextField(
                                 modifier = Modifier.weight(0.5f),
                                 singleLine = true,
                                 value = "mesurement",
-                                onValueChange = { mes -> it.value.name = mes },
+                                onValueChange = { mes -> it.value.mesurementName = mes },
                             )
                         }
                     }
@@ -368,7 +367,7 @@ fun uploadDish(
     dishDescriptionEsp: String,
     dishImage: Uri?,
     dishServings: Int,
-    ingridientsQty: Map<Ingridient, Mesurement>,
+    ingridientsQty: MutableMap<Ingridient, Mesurement>,
     dishElaboration: String,
     dishNotes: String,
     dishVisibility: Boolean

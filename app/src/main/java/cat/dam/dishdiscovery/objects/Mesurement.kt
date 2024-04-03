@@ -1,12 +1,11 @@
 package cat.dam.dishdiscovery.objects
 
-import cat.dam.dishdiscovery.Mesurement
 import com.google.firebase.firestore.PropertyName
 
 data class Mesurement(
     @PropertyName("MesurementName")
-    val mesurementName: String,
-    val quantity: Float,
+    var mesurementName: String,
+    var quantity: Float,
 ) {
     fun mesurementToMap(): Map<String, Any?> {
         return mapOf(

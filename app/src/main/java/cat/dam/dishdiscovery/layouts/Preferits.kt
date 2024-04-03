@@ -1,9 +1,7 @@
 package cat.dam.dishdiscovery.layouts
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,7 +49,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import cat.dam.dishdiscovery.DishCard
@@ -127,28 +124,28 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                     }, isFilterSelected = true)
                     Text("Dietas", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                     ChipGroup(items = diets, selectedItems = selectedFilters, onChipClick = { filter ->
-                        if (selectedFilters.contains(filter)) {
-                            selectedFilters = selectedFilters.filter { it != filter }
+                        selectedFilters = if (selectedFilters.contains(filter)) {
+                            selectedFilters.filter { it != filter }
                         } else {
-                            selectedFilters = selectedFilters + filter
+                            selectedFilters + filter
                         }
                     })
 
                     Text("Tipos de Comida", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                     ChipGroup(items = mealTypes, selectedItems = selectedFilters, onChipClick = { filter ->
-                        if (selectedFilters.contains(filter)) {
-                            selectedFilters = selectedFilters.filter { it != filter }
+                        selectedFilters = if (selectedFilters.contains(filter)) {
+                            selectedFilters.filter { it != filter }
                         } else {
-                            selectedFilters = selectedFilters + filter
+                            selectedFilters + filter
                         }
                     })
 
                     Text("Platos", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                     ChipGroup(items = dishNames, selectedItems = selectedFilters, onChipClick = { filter ->
-                        if (selectedFilters.contains(filter)) {
-                            selectedFilters = selectedFilters.filter { it != filter }
+                        selectedFilters = if (selectedFilters.contains(filter)) {
+                            selectedFilters.filter { it != filter }
                         } else {
-                            selectedFilters = selectedFilters + filter
+                            selectedFilters + filter
                         }
                     })
 
@@ -163,10 +160,10 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                     })
 
                     Button(onClick = {
-                        if (selectedFilters.isEmpty()) {
-                            filteredDishHeaders = dishHeaders
+                        filteredDishHeaders = if (selectedFilters.isEmpty()) {
+                            dishHeaders
                         } else {
-                            filteredDishHeaders = dishHeaders.filter { it.matchesFilters(selectedFilters) }
+                            dishHeaders.filter { it.matchesFilters(selectedFilters) }
                         }
                     }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                         Text("Aplicar")
@@ -234,7 +231,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
 
                                 items(filteredDishHeaders) { header ->
                                     DishCard().BasicCardPreview(
-                                        header.dishId,
+                                        header.dish.dishId,
                                         header.dishName,
                                         header.dishDescription,
                                         header.dishImage.toString(),

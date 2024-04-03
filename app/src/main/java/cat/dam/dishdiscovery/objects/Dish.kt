@@ -1,6 +1,5 @@
 package cat.dam.dishdiscovery.objects
 
-import cat.dam.dishdiscovery.Mesurement
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
 
@@ -17,6 +16,8 @@ data class Dish(
     val dishImageId: String = "",
     @PropertyName("DishDescription")
     val dishDescription: String = "",
+    @PropertyName("DishDescriptionCat")
+    val dishDescriptionCat: String = "",
     @PropertyName("DishDescriptionEsp")
     val dishDescriptionEsp: String = "",
     @PropertyName("DishServings")
@@ -27,8 +28,8 @@ data class Dish(
     val dishNotes: String = "",
     @PropertyName("DishVisibility")
     val dishVisibility: Boolean = false,
-    @PropertyName("DishUrl")
-    val ingridientsQty: Map<Ingridient, Mesurement> = mapOf(Ingridient("empty") to Mesurement("empty", 0f)),
+
+    val ingridientsQty: MutableMap<Ingridient,Mesurement> = mutableMapOf(),
 
     ) {
     fun dishToMap(): Map<String, Any?> {
