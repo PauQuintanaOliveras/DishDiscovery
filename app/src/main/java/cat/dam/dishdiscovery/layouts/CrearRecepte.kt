@@ -72,7 +72,7 @@ fun CreateRecipe(navController:NavController) {
     var dishName by remember { mutableStateOf("") }
     var dishElaboration by remember { mutableStateOf("") }
     var dishImage by remember { mutableStateOf<Uri?>(null) }
-    var dishImageId = ""
+    var dishImageId by remember { mutableStateOf("") }
     var dishDescription by remember { mutableStateOf("") }
     var dishServings by remember { mutableFloatStateOf(0f) }
     var dishNotes by remember { mutableStateOf("") }
@@ -89,6 +89,9 @@ fun CreateRecipe(navController:NavController) {
         rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
             if (bitmap != null) {
                 dishImageId = System.currentTimeMillis().toString()
+
+                Log.d("CreateRecipe:", "dishImageId: $dishImageId")
+
                 val contentValues = ContentValues().apply {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, dishImageId)
                     put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
@@ -116,6 +119,10 @@ fun CreateRecipe(navController:NavController) {
     val requestCameraPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
+                dishImageId = System.currentTimeMillis().toString()
+
+                Log.d("CreateRecipe:", "dishImageId: $dishImageId")
+
                 takePictureLauncher.launch(null)
             } else {
                 Toast.makeText(
@@ -229,9 +236,9 @@ fun CreateRecipe(navController:NavController) {
         var vm = viewModel { CreateRecipeViewModel() }
         vm.ingMes[Ingridient(searchbar())] = Mesurement("empty", 0.0f)
         // Text(text =text
-       LazyColumn(modifier = Modifier
-           .fillMaxWidth()
-           .heightIn(max = 30000.dp)){
+        LazyColumn(modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = 30000.dp)){
             item{
                 vm.ingMes.forEach { it ->
                     if (it.key.name.isNotBlank()) {
@@ -254,7 +261,7 @@ fun CreateRecipe(navController:NavController) {
                     }
                 }
             }
-       }
+        }
         TextField( // Add this TextField
             value = dishDescription,
             onValueChange = { dishDescription = it },
@@ -292,14 +299,14 @@ fun CreateRecipe(navController:NavController) {
                 .clip(RoundedCornerShape(100.dp)),
             label = {
                 Text(
-                    text = "Author Notes",
+                    text = "Notes del Autor",
                     fontSize = 15.sp,
                 )
             }
         )
 
         var selectedOption by remember { mutableStateOf("Private") }
-        val options = listOf("Private", "Public")
+        val options = listOf("Privat", "Públic")
 
         Column {
             options.forEach { text ->
@@ -405,43 +412,25 @@ fun uploadDish(
         dishVisibility,
         ingridientsQty,
     ).dishToMap()
+    Log.d(TAG, "uploadDish: $dishImageId ---- $dishImage")
+        val firebaseFirestore = FirebaseFirestore.getInstance()
 
-    FirebaseFirestore.getInstance().collection("Dish").add(dish)
-        .addOnSuccessListener { documentReference ->
-            val dishId = documentReference.id
-            Log.d(TAG, "dish $dish added")
-
-            if (!dishImageId.isNullOrEmpty() && dishImage != null) {
-                val imageRef = FirebaseStorage.getInstance()
-                    .getReference("DishImage")
-                    .child(dishImageId!!)
-
-                imageRef.putFile(dishImage!!)
-                    .addOnSuccessListener {
-                        Log.d(TAG, "Image $dishImageId uploaded")
-
-                        // After the image is uploaded, get the download URL
-                        imageRef.downloadUrl.addOnSuccessListener { uri ->
-                            // Update the Firestore document with the download URL
-                            FirebaseFirestore.getInstance().collection("Dish").document(dishId)
-                                .update("dishImageId", uri.toString())
-                                .addOnSuccessListener {
-                                    Log.d(TAG, "Image URL saved")
-                                }
-                                .addOnFailureListener {
-                                    Log.d(TAG, "Image URL not saved")
-                                }
-                        }
-                    }
-                    .addOnFailureListener {
-                        Log.d(TAG, "Image $dishImageId not uploaded")
-                    }
-            } else {
-                Log.d(TAG, "dishImageId or dishImage is null or empty")
-            }
+        firebaseFirestore.collection("Dish").add(dish).addOnSuccessListener {
+            Log.d(TAG, "uploadDish: Dish uploaded")
+        }.addOnFailureListener {
+            Log.d(TAG, "uploadDish: Dish not uploaded")
         }
-        .addOnFailureListener {
-            Log.d(TAG, "dish $dish not added")
+
+        val firebaseStorage = FirebaseStorage.getInstance()
+        val storageRef = firebaseStorage.reference
+        val imagesRef = storageRef.child("DishImages/$dishImageId")
+
+        val uploadTask = if (dishImage != null) imagesRef.putFile(dishImage) else imagesRef.putFile(Uri.EMPTY)
+
+        uploadTask.addOnSuccessListener {
+            Log.d(TAG, "uploadDish: Image uploaded")
+        }.addOnFailureListener {
+            Log.d(TAG, "uploadDish: Image not uploaded")
         }
 }
 
