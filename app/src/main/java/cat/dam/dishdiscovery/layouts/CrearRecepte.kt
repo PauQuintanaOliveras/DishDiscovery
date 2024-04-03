@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,7 +73,7 @@ fun CreateRecipe(navController:NavController) {
     var dishElaboration by remember { mutableStateOf("") }
     var dishImage by remember { mutableStateOf<Uri?>(null) }
     var dishImageId = ""
-    var dishServings by remember { mutableIntStateOf(0) }
+    var dishServings by remember { mutableFloatStateOf(0f) }
     var dishNotes by remember { mutableStateOf("") }
     var dishVisibility by remember { mutableStateOf(false) }
     var dishIngridients: MutableMap<Ingridient, Mesurement> = mutableMapOf()
@@ -222,7 +223,7 @@ fun CreateRecipe(navController:NavController) {
                 modifier = Modifier.padding(5.dp)
             )
             Spacer(modifier = Modifier.width(26.dp))
-            dishServings = showNumberPicker()
+            dishServings = showNumberPicker().toFloat()
         }
         var vm = viewModel { CreateRecipeViewModel() }
         vm.ingMes[Ingridient(searchbar())] = Mesurement("empty", 0.0f)
@@ -366,7 +367,7 @@ fun uploadDish(
     dishDescriptionCat: String,
     dishDescriptionEsp: String,
     dishImage: Uri?,
-    dishServings: Int,
+    dishServings: Float,
     ingridientsQty: MutableMap<Ingridient, Mesurement>,
     dishElaboration: String,
     dishNotes: String,

@@ -52,55 +52,8 @@ fun ViewRecipeScreen(dishId: String?) {
     val defaultPadding = 16.dp
     val db = FirebaseFirestore.getInstance()
     var dish by remember { mutableStateOf<Dish?>(null) }
-
-    LaunchedEffect(dishId) {
-        dishId?.let {
-            val dishRef = db.collection("Dish").document(it)
-            dishRef.get().addOnSuccessListener { document ->
-                if (document != null) {
-                    dish = document.toObject(Dish::class.java)
-                } else {
-                    Log.d("ViewRecipeScreen", "No document found with DishName: $it")
-                }
-            }
-
-
-            //var ingridientsQty : IngridientQty? = null
-            var ingridientsQtyRef = dishRef.collection("IngridientsQty")
-            ingridientsQtyRef.get().addOnSuccessListener { documents ->
-                if (!documents.isEmpty) {
-                    for (document in documents) {
-                        if (document != null) {
-                            db.collection("Ingridient").document(document.id).get()
-                                .addOnSuccessListener { ingDoc ->
-                                    val tempIngridient: Ingridient = Ingridient(
-                                        ingDoc.getString("IngridientName") ?: "Empty"
-                                    )
-                                    val tempMesurement: Mesurement = Mesurement(
-                                        ingDoc.getDocumentReference("Mesurement")?.id ?: "Empty",
-                                        ingDoc.getDouble("Qty")?.toFloat() ?: 0f
-                                    )
-                                    dish?.ingridientsQty?.set(tempIngridient, tempMesurement)
-                                }
-
-                            //ingridientsQty.ingridient = document.id
-                            //ingridientsQty.mesurement = document.getDocumentReference("Mesurement")?.id ?: ""
-                            //ingridientsQty.qty = document.getDouble("Qty")?.toFloat() ?: 0f
-
-                        }
-                    }
-                } else {
-                    Log.d("ViewRecipeScreen", "No document found with DishName: $it")
-                }
-            }
-        }
-    }
-
-    val dishServings = dish?.dishServings?.toFloat() ?: 1f
+    var dishServings = dish?.dishServings?.toFloat() ?: 1f
     var servings by remember { mutableFloatStateOf(dishServings) }
-
-
-    //Must be after Ingridients added to the list
     var updatedIngredients by remember {
         mutableStateOf(
             updateMeasurements(
@@ -110,6 +63,98 @@ fun ViewRecipeScreen(dishId: String?) {
             )
         )
     }
+
+    LaunchedEffect(dishId) {
+        dishId?.let {
+            val dishRef = db.collection("Dish").document(it)
+            dishRef.get().addOnSuccessListener { document ->
+                if (document != null) {
+                    dish = document.toObject(Dish::class.java)
+                    var ingridientsQtyRef = dishRef.collection("IngridientsQty")
+                    ingridientsQtyRef.get().addOnSuccessListener { documents ->
+                        if (!documents.isEmpty) {
+                            for (document in documents) {
+                                Log.d("ViewRecipeScreen", "DocumentSnapshot data: ${document.data}")
+                                //var test = document.getDouble("Qty")?.toFloat() ?: 0f
+                                //Log.d("test", "test: $test")
+                                if (document != null) {
+                                    db.collection("Ingridient").document(document.id).get()
+                                        .addOnSuccessListener { ingDoc ->
+                                            val tempIngridient: Ingridient = Ingridient(
+                                                ingDoc.getString("IngridientName") ?: "Empty"
+                                            )
+                                            var tmpMesurementName : String = "empty"
+                                            val measurementRef =
+                                                document.getDocumentReference("Mesurement")
+                                            measurementRef?.get()
+                                                ?.addOnSuccessListener { measurementDocument ->
+                                                    Log.d(
+                                                        "AAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                                                        "DocumentSnapshot data: ${measurementDocument.data}"
+                                                    )
+                                                    tmpMesurementName =
+                                                        measurementDocument.getString("MesurementName")
+                                                            ?: "empty"
+                                                    Log.d(
+                                                        "AAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                                                        "MesurementName: $tmpMesurementName"
+                                                    )
+                                                    // Now you can use the `measurement` object
+
+                                                    val tempMesurement: Mesurement = Mesurement(
+                                                        tmpMesurementName,
+                                                        document.getDouble("Qty")?.toFloat() ?: 0f
+                                                    )
+                                                    dish?.ingridientsQty?.set(
+                                                        tempIngridient,
+                                                        tempMesurement
+                                                    )
+                                                    Log.d("tempIng", "Ingridient: $tempIngridient")
+                                                    Log.d("tempMes", "Mesurement: $tempMesurement")
+                                                    dishServings = dish?.dishServings ?: 1f
+                                                    servings = dish?.dishServings ?: 1f
+                                                    updatedIngredients =
+                                                        updateMeasurements(
+                                                            dish?.ingridientsQty ?: mapOf(),
+                                                            servings,
+                                                            dishServings
+                                                        )
+                                                }
+                                        }
+//                                   //ingridientsQty.ingridient = document.id
+                                    //ingridientsQty.mesurement = document.getDocumentReference("Mesurement")?.id ?: ""
+                                    //ingridientsQty.qty = document.getDouble("Qty")?.toFloat() ?: 0f
+                                }
+                            }
+                        } else {
+                            Log.d("ViewRecipeScreen", "No document found with DishName: $it")
+                        }
+                    }
+                } else {
+                    Log.d("ViewRecipeScreen", "No document found with DishName: $it")
+                }
+                Log.d("doc data", "DocumentSnapshot data: ${document.data}")
+                Log.d("dish data", "Dish data: ${dish}")
+                Log.d("ingridientsQty data", "IngridientsQty data: ${dish?.ingridientsQty}")
+            }
+
+
+            //var ingridientsQty : IngridientQty? = null
+
+        }
+    }
+
+
+    //Must be after Ingridients added to the list
+//    var updatedIngredients by remember {
+//        mutableStateOf(
+//            updateMeasurements(
+//                dish?.ingridientsQty ?: mapOf(),
+//                servings,
+//                dishServings
+//            )
+//        )
+//    }
 
     Column(
         modifier = Modifier
@@ -305,12 +350,12 @@ fun ViewRecipeScreen(dishId: String?) {
                         fontWeight = FontWeight.Normal,
                         //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
                     )
-                    val amount = if (measurement.quantity % 1 == 0f) String.format(
+                    val amount =if (measurement.quantity==0f) "" else if (measurement.quantity % 1 == 0f) String.format(
                         "%.0f",
                         measurement.quantity
-                    ) else String.format("%.2f", measurement.quantity.toString())
+                    ) else String.format("%.2f", measurement.quantity)
                     Text(
-                        text = amount + measurement.mesurementName,
+                        text = amount + " " + measurement.mesurementName,
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .weight(1f),
@@ -331,14 +376,19 @@ fun ViewRecipeScreen(dishId: String?) {
                 fontWeight = FontWeight.Black,
                 //fontWeight = MaterialTheme.typography.titleMedium.fontWeight
             )
-            Text(
-                text = dish?.dishElaboration ?: "",
-                modifier = Modifier
-                    .padding(defaultPadding),
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                fontWeight = FontWeight.Normal,
-                //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
-            )
+           //val elaboration = dish?.dishElaboration?.split("\n")
+           //elaboration?.forEach {
+           //    Log.d("elaboration", it)
+            val elaboration = dish?.dishElaboration?.replace("\\n", "\n\n")?:""
+                Text(
+                    text = elaboration,
+                    modifier = Modifier
+                        .padding(defaultPadding),
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    fontWeight = FontWeight.Normal,
+                    //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
+                )
+            //}
         }
     }
 }

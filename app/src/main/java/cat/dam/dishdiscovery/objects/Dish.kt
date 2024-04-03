@@ -21,7 +21,7 @@ data class Dish(
     @PropertyName("DishDescriptionEsp")
     val dishDescriptionEsp: String = "",
     @PropertyName("DishServings")
-    val dishServings: Int = 0,
+    val dishServings: Float = 0f,
     @PropertyName("DishElaboration")
     val dishElaboration: String = "",
     @PropertyName("DishNotes")
