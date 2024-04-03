@@ -3,6 +3,7 @@ package cat.dam.dishdiscovery.objects
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
 
+
 data class Dish(
     @DocumentId
     val dishId: String = "",
@@ -31,7 +32,9 @@ data class Dish(
 
     val ingridientsQty: MutableMap<Ingridient,Mesurement> = mutableMapOf(),
 
-    ) {
+    )
+
+{
     fun dishToMap(): Map<String, Any?> {
         return mapOf(
             "DishName" to dishName,
@@ -39,7 +42,7 @@ data class Dish(
             "DishNameEsp" to dishNameEsp,
             "DishImage" to dishImageId,
             "DishServings" to dishServings,
-            "IngridientsQty" to ingridientsQty.values,
+            "IngridientsQty" to ingridientsQty,
             "DishElaboration" to dishElaboration,
             "DishNotes" to dishNotes,
             "DishVisibility" to dishVisibility,
