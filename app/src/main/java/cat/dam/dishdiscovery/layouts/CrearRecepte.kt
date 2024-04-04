@@ -432,6 +432,25 @@ fun uploadDish(
         Log.d(TAG, "uploadDish: Dish not uploaded")
     }
 
+    //bagin of changes
+    /*val ingridirentsQtyCollection = firebaseFirestore.collection("IngridientsQty")
+
+    ingridientsQty.forEach { (ingridient, mesurement) ->
+        val ingridientQty = mapOf(
+            " " to ingridient.name,
+            "Mesurement" to mesurement.mesurementName,
+            "Quantity" to mesurement.quantity
+        )
+
+        ingridirentsQtyCollection.add(ingridientQty).addOnSuccessListener {
+            Log.d(TAG, "uploadDish: IngridientQty uploaded")
+        }.addOnFailureListener {
+            Log.d(TAG, "uploadDish: IngridientQty not uploaded")
+        }
+    }*/
+    //end of changes
+
+
     val firebaseStorage = FirebaseStorage.getInstance()
     val storageRef = firebaseStorage.reference
     val imagesRef = storageRef.child("DishImages/$dishImageId")
