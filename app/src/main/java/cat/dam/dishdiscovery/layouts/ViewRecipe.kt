@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import cat.dam.dishdiscovery.R
@@ -171,7 +172,7 @@ fun ViewRecipeScreen(dishId: String?) {
             Column {
                 Image(
                     painter = painterResource(id = R.drawable.sandwich),
-                    contentDescription = "Dish Image",
+                    contentDescription = stringResource(R.string.dish_image),
                     contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -197,7 +198,7 @@ fun ViewRecipeScreen(dishId: String?) {
                     modifier = Modifier.align(Alignment.Center)
                 ) {
                     Text(
-                        text = "RECIPE",
+                        text = stringResource(R.string.recipe),
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         fontSize = MaterialTheme.typography.bodySmall.fontSize,
                         fontWeight = MaterialTheme.typography.bodySmall.fontWeight
@@ -278,7 +279,7 @@ fun ViewRecipeScreen(dishId: String?) {
                         //fontWeight = MaterialTheme.typography.titleMedium.fontWeight
                     )
                     Text(
-                        text = "Total Time",
+                        text = stringResource(R.string.total_time),
                         modifier = Modifier.padding(
                             bottom = defaultPadding
                         ),
@@ -297,7 +298,7 @@ fun ViewRecipeScreen(dishId: String?) {
                 .background(Transparent) //MaterialTheme.colorScheme.surface)
         ) {
             Text(
-                text = "Ingredients",
+                text = stringResource(R.string.ingredients),
                 modifier = Modifier
                     .align(Alignment.CenterStart),
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
@@ -321,7 +322,7 @@ fun ViewRecipeScreen(dishId: String?) {
             ) {
             }
             Spacer(modifier = Modifier.width(defaultPadding / 1.5f))
-            Text(text = "Servings " + String.format("%.0f", servings))
+            Text(text = stringResource(R.string.servings) + String.format("%.0f", servings))
             Spacer(modifier = Modifier.width(defaultPadding / 1.5f))
             Button(
                 onClick = {
@@ -369,7 +370,7 @@ fun ViewRecipeScreen(dishId: String?) {
         }
         Column(modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer)) {
             Text(
-                text = "Instructions",
+                text = stringResource(R.string.instructions),
                 modifier = Modifier
                     .padding(defaultPadding),
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,

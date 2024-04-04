@@ -1,40 +1,41 @@
 package cat.dam.dishdiscovery.layouts
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cat.dam.dishdiscovery.R
 import com.google.firebase.firestore.FirebaseFirestore
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.window.Dialog
 
 @Composable
 fun SignIn(navController: NavController) {
@@ -74,7 +75,7 @@ fun SignIn(navController: NavController) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Logo",
+            contentDescription = R.string.logo.toString(),
             modifier = Modifier
                 .height(200.dp)
                 .fillMaxWidth()
@@ -86,7 +87,7 @@ fun SignIn(navController: NavController) {
         OutlinedTextField(
             value = username.value,
             onValueChange = { username.value = it },
-            label = { Text("nom Usuari") },
+            label = { Text(stringResource(R.string.nom_usuari)) },
             singleLine = true
         )
 
@@ -95,7 +96,7 @@ fun SignIn(navController: NavController) {
         OutlinedTextField(
             value = email.value,
             onValueChange = { email.value = it },
-            label = { Text("Correu Electrònic") },
+            label = { Text(stringResource(R.string.correu_electr_nic)) },
             singleLine = true
         )
 
@@ -104,7 +105,7 @@ fun SignIn(navController: NavController) {
         OutlinedTextField(
             value = password.value,
             onValueChange = { password.value = it },
-            label = { Text("Contrasenya") },
+            label = { Text(R.string.contrasenya.toString()) },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
         )
@@ -158,7 +159,7 @@ fun SignIn(navController: NavController) {
             Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
                 Image(
                     painter = painterResource(id = R.drawable.tick),
-                    contentDescription = "Sign In Successful"
+                    contentDescription = stringResource(R.string.sign_in_successful)
                 )
             }
         }

@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,6 +56,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cat.dam.dishdiscovery.CreateRecipeViewModel
+import cat.dam.dishdiscovery.R
 import cat.dam.dishdiscovery.objects.Dish
 import cat.dam.dishdiscovery.objects.Ingridient
 import cat.dam.dishdiscovery.objects.Mesurement
@@ -106,10 +108,10 @@ fun CreateRecipe(navController:NavController) {
                     }
                     dishImage = uri
                 } else {
-                    Toast.makeText(context, "Failed to save picture", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, R.string.failed_to_save_picture, Toast.LENGTH_LONG).show()
                 }
             } else {
-                Toast.makeText(context, "Failed to take picture", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, R.string.failed_to_take_picture, Toast.LENGTH_LONG).show()
             }
         }
 
@@ -120,7 +122,7 @@ fun CreateRecipe(navController:NavController) {
             } else {
                 Toast.makeText(
                     context,
-                    "Camera permission is required to take pictures",
+                    R.string.camera_permission_is_required_to_take_pictures,
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -132,7 +134,7 @@ fun CreateRecipe(navController:NavController) {
             } else {
                 Toast.makeText(
                     context,
-                    "Write external storage permission is required",
+                    R.string.write_external_storage_permissionon_required,
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -146,7 +148,7 @@ fun CreateRecipe(navController:NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Crear Recepte",
+            text = stringResource(R.string.crear_recepte),
             fontSize = 24.sp,
             onTextLayout = {}
         )
@@ -165,7 +167,7 @@ fun CreateRecipe(navController:NavController) {
                 ),
             label = {
                 Text(
-                    text = "Nom de la Recepta",
+                    text = stringResource(R.string.nom_de_la_recepta),
                     fontSize = 15.sp,
                     onTextLayout = {}
                 )
@@ -174,7 +176,7 @@ fun CreateRecipe(navController:NavController) {
             keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()})
         )
         Text(
-            text = "Imatge de la Recepta",
+            text = stringResource(R.string.imatge_de_la_recepta),
             fontSize = 15.sp,
             onTextLayout = {},
             modifier = Modifier.padding(5.dp)
@@ -182,7 +184,7 @@ fun CreateRecipe(navController:NavController) {
         if (dishImage != null) {
             Image(
                 painter = rememberImagePainter(data = dishImage),
-                contentDescription = "User's recipe image",
+                contentDescription = stringResource(R.string.user_s_recipe_image),
                 modifier = Modifier
                     .height(200.dp)
                     .fillMaxWidth()
@@ -198,7 +200,7 @@ fun CreateRecipe(navController:NavController) {
                 onClick = { selectImageLauncher.launch("image/*") }
             ) {
                 Text(
-                    text = "Galeria",
+                    text = stringResource(R.string.galeria),
                     onTextLayout = {}
                 )
 
@@ -218,7 +220,7 @@ fun CreateRecipe(navController:NavController) {
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "Per Quantes Persones",
+                text = stringResource(R.string.per_quantes_persones),
                 fontSize = 15.sp,
                 onTextLayout = {},
                 modifier = Modifier.padding(5.dp)
@@ -227,7 +229,7 @@ fun CreateRecipe(navController:NavController) {
             dishServings = showNumberPicker().toFloat()
         }
         var vm = viewModel { CreateRecipeViewModel() }
-        vm.ingMes[Ingridient(searchbar())] = Mesurement("empty", 0.0f)
+        vm.ingMes[Ingridient(searchbar())] = Mesurement(stringResource(R.string.empty), 0.0f)
         // Text(text =text
        LazyColumn(modifier = Modifier
            .fillMaxWidth()
@@ -240,14 +242,14 @@ fun CreateRecipe(navController:NavController) {
                             TextField(
                                 modifier = Modifier.weight(0.5f),
                                 singleLine = true,
-                                value = "qty",
+                                value = stringResource(R.string.qty),
                                 onValueChange = { qty -> it.value.quantity = qty.toFloat()},
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             TextField(
                                 modifier = Modifier.weight(0.5f),
                                 singleLine = true,
-                                value = "mesurement",
+                                value = stringResource(R.string.mesurement),
                                 onValueChange = { mes -> it.value.mesurementName = mes },
                             )
                         }
@@ -264,7 +266,7 @@ fun CreateRecipe(navController:NavController) {
                 .clip(RoundedCornerShape(100.dp)),
             label = {
                 Text(
-                    text = "Descripcio de la Recepta",
+                    text = stringResource(R.string.descripcio_de_la_recepta),
                     fontSize = 15.sp,
                 )
             }
@@ -278,7 +280,7 @@ fun CreateRecipe(navController:NavController) {
                 .clip(RoundedCornerShape(100.dp)),
             label = {
                 Text(
-                    text = "Els Passos de la Recepta",
+                    text = stringResource(R.string.els_passos_de_la_recepta),
                     fontSize = 15.sp,
                 )
             }
@@ -292,14 +294,14 @@ fun CreateRecipe(navController:NavController) {
                 .clip(RoundedCornerShape(100.dp)),
             label = {
                 Text(
-                    text = "Author Notes",
+                    text = stringResource(R.string.author_notes),
                     fontSize = 15.sp,
                 )
             }
         )
 
         var selectedOption by remember { mutableStateOf("Private") }
-        val options = listOf("Private", "Public")
+        val options = listOf(stringResource(R.string.privatee), stringResource(R.string.publicc))
 
         Column {
             options.forEach { text ->
@@ -338,14 +340,14 @@ fun CreateRecipe(navController:NavController) {
                     dishNotes,
                     dishVisibility
                 )
-                navController.navigate("preferits")
+                navController.navigate(context.getString(R.string.preferits))
             },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .size(200.dp, 50.dp)
         ) {
             Text(
-                text ="Fet",
+                text = stringResource(R.string.fet),
                 fontSize = 10.sp
             )
         }

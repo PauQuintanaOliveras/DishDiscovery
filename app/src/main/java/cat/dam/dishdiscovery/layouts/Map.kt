@@ -5,42 +5,56 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.location.Location
 import android.os.Bundle
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import cat.dam.dishdiscovery.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
-import cat.dam.dishdiscovery.R
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import com.google.android.gms.maps.model.MapStyleOptions
 
 class GeoLocator(private val activity: Activity) {
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
@@ -154,7 +168,7 @@ fun MapScreen(navController: NavController) {
                         .padding(8.dp)
                 ) {
                     IconButton(onClick = { showDialog = true }) {
-                        Icon(Icons.Filled.ArrowDropDown, contentDescription = "Expand Legend")
+                        Icon(Icons.Filled.ArrowDropDown, contentDescription = stringResource(R.string.expand_legend))
                     }
 
                     if (showDialog) {
@@ -178,7 +192,7 @@ fun MapScreen(navController: NavController) {
                             },
                             confirmButton = {
                                 Button(onClick = { showDialog = false }) {
-                                    Text("Close")
+                                    Text(stringResource(R.string.close))
                                 }
                             }
                         )
@@ -195,15 +209,15 @@ fun MapScreen(navController: NavController) {
                 content = {
                     IconButton(onClick = { navController.navigate("main_page") }) {
                         val painter = painterResource(id = R.drawable.preferits)
-                        Icon(painter = painter, contentDescription = "First Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Icon(painter = painter, contentDescription = stringResource(R.string.first_icon), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                     IconButton(onClick = { navController.navigate("main_page") }) {
                         val painter = painterResource(id = R.drawable.descobrir)
-                        Icon(painter = painter, contentDescription = "Second Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Icon(painter = painter, contentDescription = stringResource(R.string.second_icon), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                     IconButton(onClick = { navController.navigate("map") }) {
                         val painter = painterResource(id = R.drawable.botiga)
-                        Icon(painter = painter, contentDescription = "Third Icon", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Icon(painter = painter, contentDescription = stringResource(R.string.third_icon), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                     }
                 }
             )
