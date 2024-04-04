@@ -1,10 +1,14 @@
 package cat.dam.dishdiscovery
 
+import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -28,18 +32,22 @@ fun searchbar(
     //searchQuery: String,
     //searchResult: List<Ingridient>,
     //onSearchQueryChange: (String) -> Unit
+    items : List<String> = listOf("empty")
 ): String {
     var text by remember {mutableStateOf("") }
     var active by remember {mutableStateOf(false) }
-    var items = remember { mutableStateListOf(
+    /*items = remember { mutableStateListOf(
         "Ingridient 1",
         "Ingridient 2",
-    )}
-        SearchBar(
+    )}*/
+
+    val itemList by remember { mutableStateOf(items) }
+
+    SearchBar(
             modifier = Modifier
                 .padding()
                 .fillMaxWidth()
-                .heightIn(max=600.dp),
+                .heightIn(max = 600.dp),
             query = text,
             onQueryChange = { text = it },
             onSearch = { active = false },
@@ -55,15 +63,25 @@ fun searchbar(
                 }
             },
         ){
-            items.forEach { item ->
-                Row(modifier = Modifier.fillMaxWidth().padding(start = 50.dp).padding(vertical = 15.dp).clickable{text = item; active = false}) {
-                    Text(
-                        text = item,
-                    )
+            Column(
+                Modifier.verticalScroll(rememberScrollState())
+            ){
+                itemList.forEach { item ->
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 50.dp)
+                        .padding(vertical = 15.dp)
+                        .clickable { text = item; active = false }) {
+                        Text(
+                            text = item,
+                        )
+                    }
                 }
             }
+
         }
-    if (text.isNotEmpty() && !active) {
+    if (text.isNotEmpty() && !active && itemList.contains(text)) {
+        Log.d("", "searchbar: $text")
         return text
     }else{
         return ""

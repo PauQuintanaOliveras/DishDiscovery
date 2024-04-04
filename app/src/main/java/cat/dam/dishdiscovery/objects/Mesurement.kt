@@ -5,7 +5,7 @@ import com.google.firebase.firestore.PropertyName
 data class Mesurement(
     @PropertyName("MesurementName")
     var mesurementName: String,
-    var quantity: Float,
+    var quantity: Float = 0.0f,
 ) {
     fun mesurementToMap(): Map<String, Any?> {
         return mapOf(

@@ -83,7 +83,7 @@ fun ViewRecipeScreen(dishId: String?) {
                                             val tempIngridient: Ingridient = Ingridient(
                                                 ingDoc.getString("IngridientName") ?: "Empty"
                                             )
-                                            var tmpMesurementName : String = "empty"
+                                            var tmpMesurementName: String = "empty"
                                             val measurementRef =
                                                 document.getDocumentReference("Mesurement")
                                             measurementRef?.get()
@@ -350,10 +350,11 @@ fun ViewRecipeScreen(dishId: String?) {
                         fontWeight = FontWeight.Normal,
                         //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
                     )
-                    val amount =if (measurement.quantity==0f) "" else if (measurement.quantity % 1 == 0f) String.format(
-                        "%.0f",
-                        measurement.quantity
-                    ) else String.format("%.2f", measurement.quantity)
+                    val amount =
+                        if (measurement.quantity == 0f) "" else if (measurement.quantity % 1 == 0f) String.format(
+                            "%.0f",
+                            measurement.quantity
+                        ) else String.format("%.2f", measurement.quantity)
                     Text(
                         text = amount + " " + measurement.mesurementName,
                         modifier = Modifier
@@ -376,22 +377,23 @@ fun ViewRecipeScreen(dishId: String?) {
                 fontWeight = FontWeight.Black,
                 //fontWeight = MaterialTheme.typography.titleMedium.fontWeight
             )
-           //val elaboration = dish?.dishElaboration?.split("\n")
-           //elaboration?.forEach {
-           //    Log.d("elaboration", it)
-            val elaboration = dish?.dishElaboration?.replace("\\n", "\n\n")?:""
-                Text(
-                    text = elaboration,
-                    modifier = Modifier
-                        .padding(defaultPadding),
-                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    fontWeight = FontWeight.Normal,
-                    //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
-                )
+            //val elaboration = dish?.dishElaboration?.split("\n")
+            //elaboration?.forEach {
+            //    Log.d("elaboration", it)
+            val elaboration = dish?.dishElaboration?.replace("\\n", "\n\n") ?: ""
+            Text(
+                text = elaboration,
+                modifier = Modifier
+                    .padding(defaultPadding),
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                fontWeight = FontWeight.Normal,
+                //fontWeight = MaterialTheme.typography.bodyMedium.fontWeight
+            )
             //}
         }
     }
 }
+
 
 
 fun updateMeasurements(

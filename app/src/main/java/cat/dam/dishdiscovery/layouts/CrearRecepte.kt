@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package cat.dam.dishdiscovery.layouts
 
 import android.content.ContentValues
@@ -67,7 +65,7 @@ import com.google.firebase.storage.FirebaseStorage
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun CreateRecipe(navController:NavController) {
+fun CreateRecipe(navController: NavController) {
     val context = LocalContext.current
     var dishName by remember { mutableStateOf("") }
     var dishElaboration by remember { mutableStateOf("") }
@@ -75,11 +73,16 @@ fun CreateRecipe(navController:NavController) {
     var dishImageId by remember { mutableStateOf("") }
     var dishDescription by remember { mutableStateOf("") }
     var dishServings by remember { mutableFloatStateOf(0f) }
-    var dishNotes by remember { mutableStateOf("") }
-    var dishVisibility by remember { mutableStateOf(false) }
-    var dishIngridients: MutableMap<Ingridient, Mesurement> = mutableMapOf()
+    val dishNotes by remember { mutableStateOf("") }
+    val dishVisibility by remember { mutableStateOf(false) }
+    val dishIngridients: MutableMap<Ingridient, Mesurement> = mutableMapOf()
     val focusManager = LocalFocusManager.current
     var authorNotes by remember { mutableStateOf("") }
+
+    //launched a courutine to get the ingridients from firestore
+    val ingridientList = getIngredientsFromFirestore()
+
+
     val selectImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             dishImage = uri
@@ -149,8 +152,8 @@ fun CreateRecipe(navController:NavController) {
             .fillMaxWidth()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Crear Recepte",
@@ -159,7 +162,7 @@ fun CreateRecipe(navController:NavController) {
         )
         TextField(
             value = dishName,
-            onValueChange = { it:String ->
+            onValueChange = { it: String ->
                 if (!it.contains("\n")) {
                     dishName = it
                 }
@@ -178,7 +181,7 @@ fun CreateRecipe(navController:NavController) {
                 )
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()})
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
         )
         Text(
             text = "Imatge de la Recepta",
@@ -233,26 +236,32 @@ fun CreateRecipe(navController:NavController) {
             Spacer(modifier = Modifier.width(26.dp))
             dishServings = showNumberPicker().toFloat()
         }
-        var vm = viewModel { CreateRecipeViewModel() }
-        vm.ingMes[Ingridient(searchbar())] = Mesurement("empty", 0.0f)
-        // Text(text =text
-        LazyColumn(modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(max = 30000.dp)){
-            item{
-                vm.ingMes.forEach { it ->
+        val vm = viewModel { CreateRecipeViewModel() }
+        vm.ingMes[Ingridient(searchbar(ingridientList))] = Mesurement("empty", 0.0f)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 30000.dp)
+        ) {
+            item {
+                vm.ingMes.forEach {
                     if (it.key.name.isNotBlank()) {
-                        Row(horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(modifier = Modifier.weight(2f), text = it.key.name)
+                            var qtyText by remember { mutableStateOf("") }
                             TextField(
-                                modifier = Modifier.weight(0.5f),
+                                modifier = Modifier.weight(1f),
                                 singleLine = true,
-                                value = "qty",
-                                onValueChange = { qty -> it.value.quantity = qty.toFloat()},
+                                value = qtyText,
+                                label = { Text("qty") },
+                                onValueChange = { qty -> it.value.quantity = qty.toFloat(); qtyText = qty},
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             TextField(
-                                modifier = Modifier.weight(0.5f),
+                                modifier = Modifier.weight(1f),
                                 singleLine = true,
                                 value = "mesurement",
                                 onValueChange = { mes -> it.value.mesurementName = mes },
@@ -332,8 +341,8 @@ fun CreateRecipe(navController:NavController) {
             onClick = {
                 uploadDish(
                     dishName,
-                    dishNameCat="",
-                    dishNameEsp="",
+                    dishNameCat = "",
+                    dishNameEsp = "",
                     dishImageId,
                     dishDescription,
                     dishDescriptionCat = "",
@@ -352,7 +361,7 @@ fun CreateRecipe(navController:NavController) {
                 .size(200.dp, 50.dp)
         ) {
             Text(
-                text ="Fet",
+                text = "Fet",
                 fontSize = 10.sp
             )
         }
@@ -412,25 +421,67 @@ fun uploadDish(
         dishVisibility,
         ingridientsQty,
     ).dishToMap()
+
     Log.d(TAG, "uploadDish: $dishImageId ---- $dishImage")
-        val firebaseFirestore = FirebaseFirestore.getInstance()
 
-        firebaseFirestore.collection("Dish").add(dish).addOnSuccessListener {
-            Log.d(TAG, "uploadDish: Dish uploaded")
-        }.addOnFailureListener {
-            Log.d(TAG, "uploadDish: Dish not uploaded")
-        }
+    val firebaseFirestore = FirebaseFirestore.getInstance()
 
-        val firebaseStorage = FirebaseStorage.getInstance()
-        val storageRef = firebaseStorage.reference
-        val imagesRef = storageRef.child("DishImages/$dishImageId")
+    firebaseFirestore.collection("Dish").add(dish).addOnSuccessListener {
+        Log.d(TAG, "uploadDish: Dish uploaded")
+    }.addOnFailureListener {
+        Log.d(TAG, "uploadDish: Dish not uploaded")
+    }
 
-        val uploadTask = if (dishImage != null) imagesRef.putFile(dishImage) else imagesRef.putFile(Uri.EMPTY)
+    val firebaseStorage = FirebaseStorage.getInstance()
+    val storageRef = firebaseStorage.reference
+    val imagesRef = storageRef.child("DishImages/$dishImageId")
 
-        uploadTask.addOnSuccessListener {
-            Log.d(TAG, "uploadDish: Image uploaded")
-        }.addOnFailureListener {
-            Log.d(TAG, "uploadDish: Image not uploaded")
-        }
+    val uploadTask =
+        if (dishImage != null) imagesRef.putFile(dishImage) else imagesRef.putFile(Uri.EMPTY)
+
+    uploadTask.addOnSuccessListener {
+        Log.d(TAG, "uploadDish: Image uploaded")
+    }.addOnFailureListener {
+        Log.d(TAG, "uploadDish: Image not uploaded")
+    }
 }
+
+fun getIngredientsFromFirestore() : MutableList<String> {
+    val TAG = "CreateRecipe"
+    val firebaseFirestore = FirebaseFirestore.getInstance()
+    val ingridientsNames : MutableList<String> = mutableListOf()
+
+    firebaseFirestore.collection("Ingridient").get().addOnSuccessListener { documents ->
+        for (document in documents) {
+            val ingridientName = document.data["IngridientName"].toString()
+
+            ingridientsNames.add(ingridientName)
+
+        }
+    }.addOnFailureListener {
+        Log.d(TAG, "getIngredientsFromFirestore: Error getting documents")
+    }
+
+    return ingridientsNames
+}
+
+fun getMesurementsFromFirestore() {
+    val TAG = "CreateRecipe"
+    val firebaseFirestore = FirebaseFirestore.getInstance()
+    val mesurements = mutableListOf<Mesurement>()
+
+    firebaseFirestore.collection("Mesurement").get().addOnSuccessListener { result ->
+        for (document in result) {
+            val mesurement = Mesurement(
+                mesurementName = document.data["MesurementName"].toString(),
+            )
+            mesurements.add(mesurement)
+        }
+    }.addOnFailureListener {
+        Log.d(TAG, "getMesurementsFromFirestore: Error getting documents")
+    }
+}
+
+
+
 
