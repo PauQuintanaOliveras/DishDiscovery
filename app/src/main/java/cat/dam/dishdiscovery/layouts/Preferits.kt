@@ -2,7 +2,6 @@ package cat.dam.dishdiscovery.layouts
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -119,7 +119,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.primaryContainer)) {
                 Column {
-                    Text("Filtros seleccionados", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    Text(stringResource(R.string.filtros_seleccionados), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                     ChipGroup(items = selectedFilters, selectedItems = selectedFilters, onChipClick = { filter ->
                         selectedFilters = selectedFilters.filter { it != filter }
                     }, isFilterSelected = true)
@@ -132,7 +132,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                         }
                     })
 
-                    Text("Tipos de Comida", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    Text(stringResource(R.string.tipos_de_comida), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                     ChipGroup(items = mealTypes, selectedItems = selectedFilters, onChipClick = { filter ->
                         selectedFilters = if (selectedFilters.contains(filter)) {
                             selectedFilters.filter { it != filter }
@@ -141,7 +141,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                         }
                     })
 
-                    Text("Platos", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    Text(stringResource(R.string.platos), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                     ChipGroup(items = dishNames, selectedItems = selectedFilters, onChipClick = { filter ->
                         selectedFilters = if (selectedFilters.contains(filter)) {
                             selectedFilters.filter { it != filter }
@@ -151,7 +151,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                     })
 
 
-                    Text("Ingredientes", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+                    Text(stringResource(R.string.ingredientes), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
                     ChipGroup(items = ingridients, selectedItems = selectedFilters, onChipClick = { filter ->
                         if (selectedFilters.contains(filter)) {
                             selectedFilters = selectedFilters.filter { it != filter }
@@ -167,7 +167,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                             dishHeaders.filter { it.matchesFilters(selectedFilters) }
                         }
                     }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                        Text("Aplicar")
+                        Text(stringResource(R.string.aplicar))
                     }
                 }
             }
@@ -184,7 +184,10 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                             TextField(
                                 value = searchText,
                                 onValueChange = { searchText = it },
-                                placeholder = { Text(if (isPreferits)"Cercar Receptes Guardades" else "Cercar Receptes") },
+                                placeholder = { Text(if (isPreferits) stringResource(R.string.cercar_receptes_guardades) else stringResource(
+                                    R.string.cercar_receptes
+                                )
+                                ) },
                                 singleLine = true,
                                 colors = TextFieldDefaults.textFieldColors(
                                     textColor = MaterialTheme.colorScheme.onSurface,
@@ -200,12 +203,12 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
 
                         navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Filled.Menu, contentDescription = "Menu Icon")
+                                Icon(Icons.Filled.Menu, contentDescription = stringResource(R.string.menu_icon))
                             }
                         },
                         actions = {
                             IconButton(onClick = { navController.navigate("Settings") }) {
-                                Icon(Icons.Filled.Settings, contentDescription = "Settings Icon")
+                                Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings_icon))
                             }
                         },
                         backgroundColor = MaterialTheme.colorScheme.primaryContainer
@@ -215,7 +218,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(
                             painter = painterResource(id = R.drawable.fonsblurred5),
-                            contentDescription = "Background",
+                            contentDescription = stringResource(R.string.background),
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
@@ -248,7 +251,7 @@ fun Preferits(navController: NavController, isPreferits: Boolean) {
                 },
                 floatingActionButton = {
                     FloatingActionButton(onClick = { navController.navigate("create_recipe")}) {
-                        Icon(Icons.Filled.Add, contentDescription = "Add")
+                        Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add))
                     }
                 },
                 bottomBar = {

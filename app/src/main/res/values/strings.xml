@@ -1,3 +1,63 @@
 <resources>
-    <string name="app_name">DishDiscovery</string>
+    <string name="app_name" translatable="false">DishDiscovery</string>
+    <string name="failed_to_save_picture">Failed to save picture</string>
+    <string name="failed_to_take_picture">Failed to take picture</string>
+    <string name="camera_permission_is_required_to_take_pictures">Camera permission is required to take pictures</string>
+    <string name="write_external_storage_permissionon_required">Write external storage permission is required</string>
+    <string name="crear_recepte">Create recipe</string>
+    <string name="nom_de_la_recepta">Recipe Name</string>
+    <string name="user_s_recipe_image">User\'s recipe image</string>
+    <string name="imatge_de_la_recepta">Recipe Image</string>
+    <string name="galeria">Gallery</string>
+    <string name="per_quantes_persones">For How Many People</string>
+    <string name="empty">empty</string>
+    <string name="qty" translatable="false">qty</string>
+    <string name="mesurement">mesurement</string>
+    <string name="descripcio_de_la_recepta">Recipe Description</string>
+    <string name="els_passos_de_la_recepta">The Recipe Steps</string>
+    <string name="author_notes">Author Notes</string>
+    <string name="privatee">Private</string>
+    <string name="publicc">Public</string>
+    <string name="preferits">Favorite</string>
+    <string name="fet">Done</string>
+    <string name="logo" translatable="false">Logo</string>
+    <string name="correu_electronic">eMail</string>
+    <string name="has_de_emplenar_tots_els_camps">You must fill in all fields.</string>
+    <string name="accedir">LogIn</string>
+    <string name="accedir_amb_google">Sign in with Google</string>
+    <string name="login_successful">Login Successful</string>
+    <string name="has_oblidat_la_contrasenya">Forgot your password?\"</string>
+    <string name="third_icon">Third Icon</string>
+    <string name="second_icon">Second Icon</string>
+    <string name="first_icon">First Icon</string>
+    <string name="close">Close</string>
+    <string name="expand_legend">Expand Legend</string>
+    <string name="filtros_seleccionados">Selected Filters</string>
+    <string name="platos">Dishes</string>
+    <string name="aplicar">Apply</string>
+    <string name="menu_icon">Menu Icon</string>
+    <string name="settings_icon">Settings Icon</string>
+    <string name="background">Background</string>
+    <string name="add">Add</string>
+    <string name="sign_in_successful">Sign In Successful</string>
+    <string name="dish_image">Dish Image</string>
+    <string name="recipe">RECIPE</string>
+    <string name="total_time">Total Time</string>
+    <string name="servings">"Servings "</string>
+    <string name="instructions">Instructions</string>
+    <string name="contrasenya">Password</string>
+    <string name="registrar_se">SingIn</string>
+    <string name="tipos_de_comida">Meal Type</string>
+    <string name="ingredientes">Ingridients</string>
+    <string name="cercar_receptes_guardades">Search Saved Recipes</string>
+    <string name="cercar_receptes">Search  Recipes</string>
+    <string name="nom_d_usuari">Username</string>
+    <string name="nova_contrasenya">New password</string>
+    <string name="repeteix_la_contrasenya">Repeat the password</string>
+    <string name="confirmar">Confirm</string>
+    <string name="retornar">Back</string>
+    <string name="eliminar_compte">Deletre Acount</string>
+    <string name="nom_usuari">Username</string>
+    <string name="correu_electr_nic">eMail</string>
+    <string name="ingredients">Ingridients</string>
 </resources>

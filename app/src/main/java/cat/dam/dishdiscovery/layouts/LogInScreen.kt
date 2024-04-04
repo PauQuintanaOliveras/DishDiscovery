@@ -1,6 +1,7 @@
 package cat.dam.dishdiscovery.layouts
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.LinearEasing
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
@@ -102,7 +104,7 @@ fun LogInScreen(navController: NavController) {
     ) {
         Image(
             painter = logo,
-            contentDescription = "Logo",
+            contentDescription = stringResource(R.string.logo),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .rotate(rotation)
@@ -113,7 +115,7 @@ fun LogInScreen(navController: NavController) {
         TextField(
             value = username.value,
             onValueChange = { username.value = it },
-            label = { Text("Correu Electronic") },
+            label = { Text(stringResource(R.string.correu_electronic)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -121,7 +123,7 @@ fun LogInScreen(navController: NavController) {
         TextField(
             value = password.value,
             onValueChange = { password.value = it },
-            label = { Text("Contrasenya") },
+            label = { Text(stringResource(R.string.contrasenya)) },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
@@ -130,12 +132,17 @@ fun LogInScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            loginViewModel.logInWithEmailAndPassword(username.value.text, password.value.text) {
-                loginSuccessful.value = true // Set this to true when login is successful
-                navController.navigate("main_page")
+            if (username.value.text.isBlank() || password.value.text.isBlank()){
+                Toast.makeText(context,
+                    context.getString(R.string.has_de_emplenar_tots_els_camps), Toast.LENGTH_SHORT).show()
+            }else {
+                loginViewModel.logInWithEmailAndPassword(username.value.text, password.value.text) {
+                    loginSuccessful.value = true // Set this to true when login is successful
+                    navController.navigate("main_page")
+                }
             }
         }) {
-            Text("Accedir")
+            Text(stringResource(R.string.accedir))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -157,13 +164,13 @@ fun LogInScreen(navController: NavController) {
                     .size(24.dp),
                 painter = painterResource(id = R.drawable.googlelogo), contentDescription = ""
             )
-            Text("Accedir amb Google")
+            Text(stringResource(R.string.accedir_amb_google))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Registrar-se",
+            text = stringResource(R.string.registrar_se),
             textDecoration = TextDecoration.Underline,
             modifier = Modifier.clickable { navController.navigate("sign_in_screen") }
 
@@ -172,7 +179,7 @@ fun LogInScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Has oblidat la contrasenya?",
+            text = stringResource(R.string.has_oblidat_la_contrasenya),
             textDecoration = TextDecoration.Underline,
             modifier = Modifier.clickable { navController.navigate("recover_password_screen") }
         )
@@ -186,7 +193,7 @@ fun LogInScreen(navController: NavController) {
             Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
                 Image(
                     painter = painterResource(id = R.drawable.tick), // Replace with your tick image resource
-                    contentDescription = "Login Successful"
+                    contentDescription = stringResource(R.string.login_successful)
                 )
             }
         }
